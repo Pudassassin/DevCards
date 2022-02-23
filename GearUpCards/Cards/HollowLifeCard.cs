@@ -22,8 +22,8 @@ namespace GearUpCards.Cards
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
             //Edits values on player when card is selected
-            characterStats.health *= 2.0f;
-            characterStats.sizeMultiplier *= .75f;
+            data.maxHealth *= 2.0f;
+            characterStats.sizeMultiplier *= .85f;
             HollowLifeEffect effect = player.gameObject.GetOrAddComponent<HollowLifeEffect>();
             effect.AddStack();
 
@@ -68,7 +68,7 @@ namespace GearUpCards.Cards
                 {
                     positive = false,
                     stat = "HP Cap",
-                    amount = "-25%",
+                    amount = "-30%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };

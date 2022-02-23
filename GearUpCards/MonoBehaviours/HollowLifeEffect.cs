@@ -11,28 +11,45 @@ namespace GearUpCards.MonoBehaviours
 {
     internal class HollowLifeEffect : MonoBehaviour
     {
-        private const float healthCapFactor = .75f;
+        private const float healthCapFactor = .70f;
+        private const float procTime = .25f;
 
         private int stackCount = 0;
         float healthCapPercentage = 1.0f;
+
+        float timer = 0.0f;
 
         private Player player;
 
         void Awake()
         {
             this.player = this.gameObject.GetComponent<Player>();
+            this.enabled = false;
         }
 
         void Update()
         {
-            // Check whether the player's health is above the certain caps, then apply 'negative' healing to keep it below the line 
-            if (!player.data.dead)
+            timer += Time.deltaTime;
+            if (timer > procTime)
             {
-                if (player.data.HealthPercentage > healthCapPercentage)
+                // Check whether the player's health is above the certain caps, then apply health removal damage
+                if (!player.data.dead)
                 {
-                    float healthCut = player.data.maxHealth * (player.data.HealthPercentage - healthCapPercentage);
-                    player.data.healthHandler.Heal(-healthCut);
+                    if (player.data.HealthPercentage > healthCapPercentage)
+                    {
+                        float healthCut = player.data.maxHealth * (player.data.HealthPercentage - healthCapPercentage);
+                        // directly deduce player's health
+                        player.data.health = player.data.maxHealth * healthCapPercentage;
+
+                        // health removal/self damage is not count toward taking an actual damage, except for EXC's [Second Wind]
+                        // player.data.healthHandler.DoDamage(new Vector2(0.0f, healthCut), Vector2.zero, Color.clear, healthRemoval: true, lethal: false, ignoreBlock: true);
+
+                        // negative heal does nothing
+                        // player.data.healthHandler.Heal(-healthCut);
+                    }
                 }
+
+                timer -= procTime;
             }
         }
 
@@ -43,23 +60,29 @@ namespace GearUpCards.MonoBehaviours
 
         public void Destroy()
         {
-            UnityEngine.Object.Destroy(this);
+
         }
 
         public void AddStack()
         {
             this.stackCount += 1;
             this.healthCapPercentage = Mathf.Pow(healthCapFactor, stackCount);
+
+            if (this.stackCount > 0)
+            {
+                this.enabled = true;
+            }
         }
 
         public void RemoveStack()
         {
+            // **Found desync issue on removal
             this.stackCount -= 1;
             this.healthCapPercentage = Mathf.Pow(healthCapFactor, stackCount);
 
             if (this.stackCount <= 0)
             {
-                this.Destroy();
+                this.enabled = false;
             }
         }
 

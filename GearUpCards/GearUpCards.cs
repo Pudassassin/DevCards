@@ -22,9 +22,9 @@ namespace GearUpCards
     {
         private const string ModId = "com.pudassassin.rounds.GearUpCards";
         private const string ModName = "GearUpCards";
-        public const string Version = "0.0.0";
+        public const string Version = "0.0.3";
 
-        public const string ModInitials = "DEV";
+        public const string ModInitials = "Gear Up";
 
         public static GearUpCards Instance { get; private set; }
 
@@ -38,7 +38,7 @@ namespace GearUpCards
         {
             Instance = this;
 
-            // CustomCard.BuildCard<MyCardName>();
+            CustomCard.BuildCard<HollowLifeCard>();
         }
     }
 }
