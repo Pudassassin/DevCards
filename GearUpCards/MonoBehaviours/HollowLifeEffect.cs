@@ -32,7 +32,8 @@ namespace GearUpCards.MonoBehaviours
             timer += Time.deltaTime;
             if (timer > procTime)
             {
-                // Check whether the player's health is above the certain caps, then apply health removal damage
+                // Check whether the player's health is above the certain caps, then adjust it accordingly
+                // EXC's [Second Wind] implement it differently and seem to either look for health removal or it tries its best to heal up to said health point
                 if (!player.data.dead)
                 {
                     if (player.data.HealthPercentage > healthCapPercentage)
@@ -41,11 +42,6 @@ namespace GearUpCards.MonoBehaviours
                         // directly deduce player's health
                         player.data.health = player.data.maxHealth * healthCapPercentage;
 
-                        // health removal/self damage is not count toward taking an actual damage, except for EXC's [Second Wind]
-                        // player.data.healthHandler.DoDamage(new Vector2(0.0f, healthCut), Vector2.zero, Color.clear, healthRemoval: true, lethal: false, ignoreBlock: true);
-
-                        // negative heal does nothing
-                        // player.data.healthHandler.Heal(-healthCut);
                     }
                 }
 
