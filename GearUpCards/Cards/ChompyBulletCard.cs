@@ -28,7 +28,7 @@ namespace GearUpCards.Cards
             {
                 List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList<ObjectsToSpawn>();
 
-                GameObject chompyBulletModifier = new GameObject("A_Sugar", new Type[]
+                chompyBulletModifier = new GameObject("ChompyBulletModifier", new Type[]
                     {
                         typeof(ChompyBulletEffect)
                     });
@@ -47,7 +47,7 @@ namespace GearUpCards.Cards
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
             // -1 stack and potentially remove the effect
-            chompyBulletModifier.GetComponent<ChompyBulletEffect>().RemoveStack();
+            // chompyBulletModifier.GetComponent<ChompyBulletEffect>().RemoveStack();
 
             UnityEngine.Debug.Log($"[{GearUpCards.ModInitials}][Card] {GetTitle()} has been removed to player {player.playerID}.");
         }
@@ -104,7 +104,7 @@ namespace GearUpCards.Cards
         }
         protected override CardThemeColor.CardThemeColorType GetTheme()
         {
-            return CardThemeColor.CardThemeColorType.ColdBlue;
+            return CardThemeColor.CardThemeColorType.DestructiveRed;
         }
         public override string GetModName()
         {

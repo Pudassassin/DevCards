@@ -6,7 +6,7 @@ namespace GearUpCards.MonoBehaviours
 	public class ChompyBulletEffect : RayHitEffect
 	{
 		// value per stack at 1 bullet per second
-		private const float healthCullBaseFactor = 0.075f;
+		private const float healthCullBaseFactor = 0.1f;
 		private Gun shooterGun;
 		private Player shooterPlayer;
 
@@ -18,17 +18,24 @@ namespace GearUpCards.MonoBehaviours
 			{
 				return HasToReturn.canContinue;
 			}
-			if (stackCount <= 0)
+            if (stackCount <= 0)
             {
-				return HasToReturn.canContinue;
+            	return HasToReturn.canContinue;
             }
 
-			// calculate user's bullet fired per second
-
-			// do damage to victim
 			CharacterData victim = hit.transform.GetComponent<CharacterData>();
-			float chompDamage = healthCullBaseFactor * stackCount * victim.health;
-			victim.healthHandler.DoDamage(new Vector2(chompDamage, 0.0f), Vector2.zero, new Color(1.0f, 0.0f, 0.0f, 0.5f), damagingPlayer: shooterPlayer);
+			if (victim != null)
+            {
+				// calculate shooter's bullet fired per second
+
+				// do damage to victim
+				float chompDamage = healthCullBaseFactor * stackCount * victim.health;
+				// float chompDamage = healthCullBaseFactor * victim.health;
+				victim.healthHandler.TakeDamage(new Vector2(chompDamage, 0.0f), Vector2.zero, new Color(1.0f, 0.0f, 0.0f, 0.85f), damagingPlayer: shooterPlayer);
+				// victim.healthHandler.TakeDamage(new Vector2(chompDamage, 0.0f), Vector2.zero, new Color(1.0f, 0.0f, 0.0f, 0.85f));
+
+				UnityEngine.Debug.Log($"CHOMP!, dealt [{chompDamage}] to player [{victim.player.playerID}]");
+			}
 
 			return HasToReturn.canContinue;
 		}
