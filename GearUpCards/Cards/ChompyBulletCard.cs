@@ -37,7 +37,7 @@ namespace GearUpCards.Cards
 
             gun.objectsToSpawn = list.ToArray();
 
-            gameObject.GetComponent<ChompyBulletEffect>().Setup(player, gun);
+            // gameObject.GetComponent<ChompyBulletEffect>().Setup(player, gun);
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -50,7 +50,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Bullets deal bonus damage the more health enemy has. Has reduced effect the more bullets you shoot at once.";
+            return "Bullets deal bonus damage based on enemy's current HP.\nHas reduced effect on rapid-fire guns.";
         }
         protected override GameObject GetCardArt()
         {
@@ -75,21 +75,21 @@ namespace GearUpCards.Cards
                 {
                     positive = false,
                     stat = "Damage",
-                    amount = "-xx%",
+                    amount = "-25%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
-                    stat = "Fire Rate",
-                    amount = "-xx%",
+                    stat = "ATK SPD",
+                    amount = "-25%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
-                    stat = "Reload Speed",
-                    amount = "-xx%",
+                    stat = "Reload SPD",
+                    amount = "-25%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
 
