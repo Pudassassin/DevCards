@@ -7,12 +7,16 @@ using Photon.Pun;
 using System.Reflection;
 using ModdingUtils.MonoBehaviours;
 
+using GearUpCards.Extensions;
+
 namespace GearUpCards.MonoBehaviours
 {
-    internal class HollowLifeEffect : MonoBehaviour
+    internal class HollowLifeEffect : ReversibleEffect
     {
         private const float healthCapFactor = .70f;
-        private const float procTime = .25f;
+
+        private const float healthCullRate = .05f;
+        private const float procTime = .10f;
 
         private int stackCount = 0;
         float healthCapPercentage = 1.0f;
@@ -20,27 +24,36 @@ namespace GearUpCards.MonoBehaviours
         float timer = 0.0f;
 
         private Player player;
+        private CharacterStatModifiers stats;
 
-        void Awake()
+        override public void OnAwake()
         {
             this.player = this.gameObject.GetComponent<Player>();
-            this.enabled = false;
         }
 
-        void Update()
+        override public void OnUpdate()
         {
             timer += Time.deltaTime;
+
             if (timer > procTime)
             {
                 // Check whether the player's health is above the certain caps, then adjust it accordingly
-                // EXC's [Second Wind] implement it differently and seem to either look for health removal or it tries its best to heal up to said health point
-                if (!player.data.dead)
+                // [?] EXC's [Second Wind] implement it differently and seem to either look for health removal or it tries its best to heal up to said health point
+                // [!!] HDC's [Holy Light] directly compare current health with previous health each Update() calls and 'charge' on positive gains
+                //      leading to it having massive charge at round starts, and will accumulate on each of ebb and flow of health now incurred by [Hollow Life]
+                stackCount = base.characterStatModifiers.GetGearData().hollowLifeStack;
+                RecalculateHealthCap();
+
+                if (!player.data.dead && !player.data.healthHandler.isRespawning && stackCount > 0)
                 {
-                    if (player.data.HealthPercentage > healthCapPercentage)
+                    if (player.data.HealthPercentage > .85f)
                     {
-                        float healthCut = player.data.maxHealth * (player.data.HealthPercentage - healthCapPercentage);
-                        // directly deduce player's health
-                        player.data.health = player.data.maxHealth * healthCapPercentage;
+                        player.data.health = player.data.maxHealth * .85f;
+                    }
+                    else if (player.data.HealthPercentage > healthCapPercentage)
+                    {
+                        float healthCullPercentage = Mathf.Clamp(player.data.HealthPercentage - healthCapPercentage, 0.0f, healthCullRate);
+                        player.data.health -= player.data.maxHealth * healthCullPercentage;
 
                     }
                 }
@@ -49,37 +62,14 @@ namespace GearUpCards.MonoBehaviours
             }
         }
 
-        public void OnDestroy()
+        override public void OnOnDestroy()
         {
 
         }
 
-        public void Destroy()
+        public void RecalculateHealthCap()
         {
-
-        }
-
-        public void AddStack()
-        {
-            this.stackCount += 1;
             this.healthCapPercentage = Mathf.Pow(healthCapFactor, stackCount);
-
-            if (this.stackCount > 0)
-            {
-                this.enabled = true;
-            }
-        }
-
-        public void RemoveStack()
-        {
-            // **Found desync issue on removal
-            this.stackCount -= 1;
-            this.healthCapPercentage = Mathf.Pow(healthCapFactor, stackCount);
-
-            if (this.stackCount <= 0)
-            {
-                this.enabled = false;
-            }
         }
 
     }

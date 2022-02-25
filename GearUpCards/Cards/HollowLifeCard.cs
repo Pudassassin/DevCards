@@ -5,9 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using UnboundLib;
 using UnboundLib.Cards;
+using ModdingUtils;
 using UnityEngine;
 
 using GearUpCards.MonoBehaviours;
+using GearUpCards.Extensions;
 
 namespace GearUpCards.Cards
 {
@@ -15,21 +17,23 @@ namespace GearUpCards.Cards
     {
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            //Edits values on card itself, which are then applied to the player in `ApplyCardStats`
+            
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            //Edits values on player when card is selected
             data.maxHealth *= 2.0f;
-            characterStats.sizeMultiplier *= .85f;
+            characterStats.sizeMultiplier *= .95f;
+
+            characterStats.GetGearData().hollowLifeStack += 1;
+
             HollowLifeEffect effect = player.gameObject.GetOrAddComponent<HollowLifeEffect>();
-            effect.AddStack();
+            
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            //Run when the card is removed from the player
-            HollowLifeEffect effect = player.gameObject.GetOrAddComponent<HollowLifeEffect>();
-            effect.RemoveStack();
+            // (?) characterStats.GetGearData().hollowLifeStack -= 1;
+
+            // UnityEngine.Debug.Log($"[{GearUpCards.ModInitials}][Card] {GetTitle()} has been removed to player {player.playerID}.");
         }
         protected override string GetTitle()
         {
@@ -37,7 +41,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Double your total Max HP, but you can no longer regain to full health.\n(Stack multiplicatively)";
+            return "Double your total Max HP,\nbut you can no longer heal to full health.\n(Stack multiplicatively)";
         }
         protected override GameObject GetCardArt()
         {
