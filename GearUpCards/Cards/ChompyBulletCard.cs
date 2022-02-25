@@ -11,8 +11,6 @@ namespace GearUpCards.Cards
 {
     class ChompyBulletCard : CustomCard
     {
-        private GameObject chompyBulletModifier = null;
-
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
             
@@ -23,33 +21,28 @@ namespace GearUpCards.Cards
             gun.attackSpeedMultiplier *= .75f;
             gunAmmo.reloadTimeMultiplier += .25f;
 
-            // add ChompyBulletEffect and/or +1 stack
-            if (chompyBulletModifier == null)
+            gun.projectileColor = new Color(1f, 0.0f, 0.0f, 1f);
+            // add one stack of ChompyBulletEffect to the bullet modifier pool
+
+            List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList<ObjectsToSpawn>();
+
+            GameObject gameObject = new GameObject("ChompyBulletModifier", new Type[]
             {
-                List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList<ObjectsToSpawn>();
+                typeof(ChompyBulletEffect)
+            });
+            list.Add(new ObjectsToSpawn
+            {
+                AddToProjectile = gameObject
+            });
 
-                chompyBulletModifier = new GameObject("ChompyBulletModifier", new Type[]
-                    {
-                        typeof(ChompyBulletEffect)
-                    });
-                list.Add(new ObjectsToSpawn
-                    {
-                        AddToProjectile = chompyBulletModifier
-                    });
+            gun.objectsToSpawn = list.ToArray();
 
-                gun.objectsToSpawn = list.ToArray();
-
-                chompyBulletModifier.GetComponent<ChompyBulletEffect>().Setup(player, gun);
-            }
-
-            chompyBulletModifier.GetComponent<ChompyBulletEffect>().AddStack();
+            gameObject.GetComponent<ChompyBulletEffect>().Setup(player, gun);
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            // -1 stack and potentially remove the effect
-            // chompyBulletModifier.GetComponent<ChompyBulletEffect>().RemoveStack();
-
-            UnityEngine.Debug.Log($"[{GearUpCards.ModInitials}][Card] {GetTitle()} has been removed to player {player.playerID}.");
+            // bullet modifier pool auto-reset on card removal, simply let it do its jobs
+            // UnityEngine.Debug.Log($"[{GearUpCards.ModInitials}][Card] {GetTitle()} has been removed to player {player.playerID}.");
         }
         protected override string GetTitle()
         {
@@ -57,7 +50,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Bullets deal bonus damage based on victim's current health. Reduced effect the more bullets you shoot at once.";
+            return "Bullets deal bonus damage the more health enemy has. Has reduced effect the more bullets you shoot at once.";
         }
         protected override GameObject GetCardArt()
         {
@@ -75,7 +68,7 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "HP Culling",
-                    amount = "~ +%",
+                    amount = "+10%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()

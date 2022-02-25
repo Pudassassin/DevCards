@@ -10,28 +10,28 @@ namespace GearUpCards.MonoBehaviours
 		private Gun shooterGun;
 		private Player shooterPlayer;
 
-		private int stackCount = 0;
-
 		public override HasToReturn DoHitEffect(HitInfo hit)
 		{
-			if (!hit.transform)
+			UnityEngine.Debug.Log($"CHOMP!, hit [{hit.transform.gameObject.name}]");
+			if (hit.transform == null)
 			{
 				return HasToReturn.canContinue;
 			}
-            if (stackCount <= 0)
-            {
-            	return HasToReturn.canContinue;
-            }
 
-			CharacterData victim = hit.transform.GetComponent<CharacterData>();
-			if (victim != null)
+			UnityEngine.Debug.Log($"CHOMP! #2");
+
+			if (hit.transform.gameObject.name.Contains("Player"))
             {
+				UnityEngine.Debug.Log($"CHOMP! #3");
+
+				CharacterData victim = hit.transform.gameObject.GetComponent<CharacterData>();
+
 				// calculate shooter's bullet fired per second
+				float bps = this.CalculateBulletPerSecond();
 
 				// do damage to victim
-				float chompDamage = healthCullBaseFactor * stackCount * victim.health;
-				// float chompDamage = healthCullBaseFactor * victim.health;
-				victim.healthHandler.TakeDamage(new Vector2(chompDamage, 0.0f), Vector2.zero, new Color(1.0f, 0.0f, 0.0f, 0.85f), damagingPlayer: shooterPlayer);
+				float chompDamage = healthCullBaseFactor / bps * victim.health;
+				victim.healthHandler.RPCA_SendTakeDamage(new Vector2(chompDamage, 0.0f), Vector2.zero, playerID: shooterGun.player.playerID);
 				// victim.healthHandler.TakeDamage(new Vector2(chompDamage, 0.0f), Vector2.zero, new Color(1.0f, 0.0f, 0.0f, 0.85f));
 
 				UnityEngine.Debug.Log($"CHOMP!, dealt [{chompDamage}] to player [{victim.player.playerID}]");
@@ -47,27 +47,29 @@ namespace GearUpCards.MonoBehaviours
 
 		private float CalculateBulletPerSecond()
         {
-			return 0.0f;
+			UnityEngine.Debug.Log($"CHOMP! BPS CHECK");
+
+			float attackTime = this.shooterGun.attackSpeed * shooterGun.attackSpeedMultiplier;
+			int projectileCount = this.shooterGun.numberOfProjectiles;
+
+			float burstTime = this.shooterGun.timeBetweenBullets;
+			int burstCount = this.shooterGun.bursts;
+
+			float bps = projectileCount / attackTime;
+
+			if (burstCount > 0)
+            {
+				bps *= burstCount / burstTime;
+            }
+
+			UnityEngine.Debug.Log($"CHOMP! BPS = [{bps}]");
+			return Mathf.Clamp(bps, .75f, 50.0f);
         }
 
 		public void Setup(Player player, Gun gun)
         {
 			this.shooterPlayer = player;
 			this.shooterGun = gun;
-        }
-
-		public void AddStack()
-        {
-			this.stackCount += 1;
-		}
-
-		public void RemoveStack()
-        {
-			this.stackCount -= 1;
-            if (this.stackCount <= 0)
-            {
-				this.stackCount = 0;
-            }
         }
 	}
 }
