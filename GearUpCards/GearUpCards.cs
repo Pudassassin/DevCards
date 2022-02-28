@@ -4,6 +4,8 @@ using UnboundLib.Cards;
 using GearUpCards.Cards;
 using HarmonyLib;
 using CardChoiceSpawnUniqueCardPatch.CustomCategories;
+using UnityEngine;
+using Jotunn;
 
 namespace GearUpCards
 {
@@ -22,9 +24,9 @@ namespace GearUpCards
     {
         private const string ModId = "com.pudassassin.rounds.GearUpCards";
         private const string ModName = "GearUpCards";
-        public const string Version = "0.0.19";
+        public const string Version = "0.0.23";
 
-        public const string ModInitials = "Gear Up";
+        public const string ModInitials = "GearUP";
 
         public static GearUpCards Instance { get; private set; }
 
@@ -40,6 +42,10 @@ namespace GearUpCards
 
             CustomCard.BuildCard<HollowLifeCard>();
             CustomCard.BuildCard<ChompyBulletCard>();
+            CustomCard.BuildCard<TacticalScannerCard>();
         }
+
+        // Assets loader
+        public static readonly AssetBundle VFXBundle = Jotunn.Utils.AssetUtils.LoadAssetBundleFromResources("gearup_asset", typeof(GearUpCards).Assembly);
     }
 }

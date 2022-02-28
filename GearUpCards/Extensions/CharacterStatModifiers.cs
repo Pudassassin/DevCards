@@ -11,10 +11,12 @@ namespace GearUpCards.Extensions
     public class CharacterStatModifiersGearData
     {
         public int hollowLifeStack;
+        public int tacticalScannerStack;
 
         public CharacterStatModifiersGearData()
         {
             hollowLifeStack = 0;
+            tacticalScannerStack = 0;
         }
     }
 
@@ -44,6 +46,7 @@ namespace GearUpCards.Extensions
         private static void Prefix(CharacterStatModifiers __instance)
         {
             __instance.GetGearData().hollowLifeStack = 0;
+            __instance.GetGearData().tacticalScannerStack = 0;
         }
     }
 }
