@@ -32,5 +32,10 @@ namespace GearUpCards.Utils
 			// UnityEngine.Debug.Log($"BPS = [{bps}]");
 			return bps;
 		}
+
+		public static float GetGunAmmoReloadTime(GunAmmo gunAmmo)
+        {
+			return (gunAmmo.reloadTime + gunAmmo.reloadTimeAdd) * gunAmmo.reloadTimeMultiplier;
+        }
     }
 }

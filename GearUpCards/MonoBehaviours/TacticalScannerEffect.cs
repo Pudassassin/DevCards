@@ -193,6 +193,13 @@ namespace GearUpCards.MonoBehaviours
             scannerReady = false;
             empowerCharged = false;
 
+            GameObject gameObject = GameObject.Find("ScanDataUICopy");
+            while (gameObject != null)
+            {
+                Destroy(gameObject);
+                gameObject = GameObject.Find("ScanDataUICopy");
+            }
+
             yield break;
         }
 
@@ -216,12 +223,14 @@ namespace GearUpCards.MonoBehaviours
         public void OnDestroy()
         {
             // This effect should persist between rounds, and at 0 stack it should do nothing mechanically
+            UnityEngine.Debug.Log($"Destroying Scanner  [{this.player.playerID}]");
 
             GameModeManager.RemoveHook(GameModeHooks.HookPointStart, OnPointStart);
             GameModeManager.RemoveHook(GameModeHooks.HookBattleStart, OnBattleStart);
             GameModeManager.RemoveHook(GameModeHooks.HookPointEnd, OnPointEnd);
 
             this.block.BlockAction = (Action<BlockTrigger.BlockTriggerType>)Delegate.Remove(this.block.BlockAction, this.scannerAction);
+            UnityEngine.Debug.Log($"Scanner destroyed  [{this.player.playerID}]");
         }
     }
 }

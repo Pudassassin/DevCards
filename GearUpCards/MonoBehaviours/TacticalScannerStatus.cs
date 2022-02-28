@@ -41,12 +41,24 @@ namespace GearUpCards.MonoBehaviours
         internal float healthDeltaTotal = 0.0f;
 
         internal GameObject scanDataUI = null;
+        internal List<Vector3> scanDataUIOffsets;
+        internal Text[] textArray;
+
+        internal Image marker;
+        internal Text dataDamage;
+        internal Text dataBPS;
+        internal Text dataBlockCooldown;
+        internal Text dataBlockCount;
+        internal Text dataHealth;
+        internal Text dataHealthDelta;
+        internal Text dataReloadSpeed;
 
 
         internal Player player;
         internal CharacterStatModifiers playerStats;
         internal Gun playerGun;
         internal Block playerBlock;
+        internal GunAmmo playerGunAmmo;
 
 
         internal float healthDelta;
@@ -56,10 +68,13 @@ namespace GearUpCards.MonoBehaviours
             // get the affected player data
             this.player = this.gameObject.GetComponent<Player>();
             this.playerStats = this.gameObject.GetComponent<CharacterStatModifiers>();
-            this.playerGun = this.gameObject.GetComponent<Gun>();
+            this.playerGun = this.gameObject.GetComponent<WeaponHandler>().gun;
             this.playerBlock = this.gameObject.GetComponent<Block>();
+            this.playerGunAmmo = this.gameObject.GetComponent<WeaponHandler>().gun.GetComponentInChildren<GunAmmo>();
 
-            GameModeManager.AddHook(GameModeHooks.HookPointEnd, OnPointEnd);
+            previousHealth = this.player.data.health;
+
+            // GameModeManager.AddHook(GameModeHooks.HookPointEnd, OnPointEnd);
 
             SpawnScanDataUI();
         }
@@ -81,7 +96,7 @@ namespace GearUpCards.MonoBehaviours
             {
                 scannerAmpAmount += healthDelta;
             }
-            else if (healthDelta < 0)
+            else if (!isFriendly && healthDelta < 0)
             {
                 scannerAmpAmount += -healthDelta;
             }
@@ -139,56 +154,58 @@ namespace GearUpCards.MonoBehaviours
             if (scanDataUI == null)
             {
                 scanDataUI = Instantiate(scanDataUIPrefab, this.player.transform.position, Quaternion.identity);
-                WorldSpaceOverlayUI component = scanDataUI.AddComponent<WorldSpaceOverlayUI>();
-                Graphic[] graphics = component.gameObject.GetComponentsInChildren<Graphic>();
-                component.uiElementsToApplyTo = graphics;
-                component.Apply();
-
+                scanDataUI.name = "ScanDataUICopy";
                 scanDataUI.transform.SetParent(this.player.transform);
-                scanDataUI.transform.localScale = new Vector3(0.025f, 0.025f, 0.025f) * playerStats.sizeMultiplier * .75f;
-                scanDataUI.transform.localPosition += new Vector3(0.0f, 0.0f, 500.0f);
+                scanDataUI.transform.localScale = new Vector3(0.025f, 0.025f, 0.025f) * playerStats.sizeMultiplier * 1.2f;
+                scanDataUI.transform.localPosition += new Vector3(0.0f, 0.0f, 50.0f);
 
+                textArray = scanDataUI.GetComponentsInChildren<Text>();
+                scanDataUIOffsets = new List<Vector3>();
+                for (int i = 0; i < textArray.Length; i++)
+                {
+                    textArray[i].transform.localScale = new Vector3(1.0f, 1.0f, 1.0f) * .85f * Mathf.Sqrt(playerStats.sizeMultiplier);
+                    scanDataUIOffsets.Add(textArray[i].rectTransform.localPosition);
+                    textArray[i].rectTransform.localPosition *= (.85f + Mathf.Sqrt(playerStats.sizeMultiplier));
+                }
+
+                this.dataDamage         = textArray[0];
+                this.dataBPS            = textArray[1];
+                this.dataBlockCooldown  = textArray[2];
+                this.dataBlockCount     = textArray[3];
+                this.dataHealth         = textArray[4];
+                this.dataHealthDelta    = textArray[5];
+                this.dataReloadSpeed    = textArray[6];
             }
         }
 
         private void UpdateScanDataUI()
         {
-            Text[] textArray = scanDataUI.GetComponentsInChildren<Text>();
+            // Prefab Adjustment
+            scanDataUI.transform.localScale = new Vector3(0.025f, 0.025f, 0.025f) * Mathf.Sqrt(playerStats.sizeMultiplier) * .75f;
+            for (int i = 0; i < textArray.Length; i++)
+            {
+                textArray[i].transform.localScale = new Vector3(1.0f, 1.0f, 1.0f) * .85f * Mathf.Sqrt(playerStats.sizeMultiplier);
+                textArray[i].rectTransform.localPosition = scanDataUIOffsets[i] * (1 - Mathf.Sqrt(playerStats.sizeMultiplier));
+            }
 
-            Text dataDamage         = textArray[0];
-            Text dataBPS            = textArray[1];
-            Text dataBlockCooldown  = textArray[2];
-            Text dataBlockCount     = textArray[3];
-            Text dataHealth         = textArray[4];
-
-            UnityEngine.Debug.Log("ScanData - #1");
-
-            dataDamage.text = $"[{this.playerGun.damage:f2}] < DMG";
-            UnityEngine.Debug.Log("ScanData - #2");
+            // Data part
+            this.dataDamage.text = $"[{this.playerGun.damage * 55.0f:f2}] < DMG";
 
             float bps = GearUpCalc.GetGunBPS(this.playerGun);
-            dataBPS.text = $"BPS > [{bps:f2}]";
-            UnityEngine.Debug.Log("ScanData - #3");
+            this.dataBPS.text = $"BPS > [{bps:f2}]";
 
-            dataBlockCooldown.text = $"BlkCD > [{this.playerBlock.Cooldown():f2}]";
-            UnityEngine.Debug.Log("ScanData - #4");
+            this.dataReloadSpeed.text = $"RLD > [{GearUpCalc.GetGunAmmoReloadTime(gunAmmo):f2}]";
 
-            dataBlockCount.text = $"x[{this.playerBlock.additionalBlocks + 1}] < Blocks";
-            UnityEngine.Debug.Log("ScanData - #5");
+            this.dataBlockCooldown.text = $"BlkCD > [{this.playerBlock.Cooldown():f2}]";
 
-            dataHealth.text = $"[{this.player.data.health} / {this.player.data.maxHealth}]";
-            UnityEngine.Debug.Log("ScanData - #6");
+            this.dataBlockCount.text = $"x[{this.playerBlock.additionalBlocks + 1}] < Blocks";
+
+            this.dataHealth.text = $"[{this.player.data.health:f2} / {this.player.data.maxHealth:f2}]";
         }
 
         private void UpdateScanDataHealthDelta()
         {
-            Text[] textArray = scanDataUI.GetComponentsInChildren<Text>();
-            Text dataHealthDelta = textArray[5];
-
-            UnityEngine.Debug.Log("ScanData - #7");
-
-            dataHealthDelta.text = $"[{this.healthDeltaTotal:f3}]";
-            UnityEngine.Debug.Log("ScanData - #8");
+            this.dataHealthDelta.text = $"[{this.healthDeltaTotal:f3}]";
         }
 
         public void ApplyStatus(float ampFactor, float duration, bool isFriendly)
@@ -201,10 +218,11 @@ namespace GearUpCards.MonoBehaviours
 
         private void PurgeStatus()
         {
-            GameModeManager.RemoveHook(GameModeHooks.HookPointEnd, OnPointEnd);
+            UnityEngine.Debug.Log($"Purging 'Scanned' [{this.player.playerID}]");
 
-            Destroy(scanDataUI);
             Destroy(this);
+
+            UnityEngine.Debug.Log($"Purged 'Scanned' [{this.player.playerID}]");
         }
 
         private IEnumerator OnPointEnd(IGameModeHandler gm)
@@ -223,7 +241,8 @@ namespace GearUpCards.MonoBehaviours
 
         override public void OnOnDestroy()
         {
-           
+            // GameModeManager.RemoveHook(GameModeHooks.HookPointEnd, OnPointEnd);
+            /**/Destroy(scanDataUI);
         }
     }
 }
