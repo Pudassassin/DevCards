@@ -45,7 +45,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Blocking scans nearby players' power\nEnemies take more damage\nAllies heal for more.";
+            return "Blocking scans nearby players' power,\nenemies take more damage and allies heal more.";
         }
         protected override GameObject GetCardArt()
         {
@@ -70,21 +70,21 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "Duration",
-                    amount = "+5 sec",
+                    amount = "6s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "Block CD",
-                    amount = "+0.5 sec",
+                    amount = "+0.5s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "Ability CD",
-                    amount = "9 sec",
+                    amount = "9s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };

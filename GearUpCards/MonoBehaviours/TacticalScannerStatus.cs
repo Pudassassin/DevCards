@@ -25,8 +25,8 @@ namespace GearUpCards.MonoBehaviours
         private static GameObject scanDataUIPrefab = GearUpCards.VFXBundle.LoadAsset<GameObject>("ScanDataUI");
 
         // to be assigned by TacticalScannerEffect Monobehavior
-        private float scannerAmpFactor = .25f;
-        private float scannerDuration = 10.0f;
+        private float scannerAmpFactor = .20f;
+        private float scannerDuration = 6.0f;
         private bool isFriendly = false;
         // ===
 
@@ -36,15 +36,19 @@ namespace GearUpCards.MonoBehaviours
         internal bool statusEnable = false;
         internal int proc_count = 0;
 
+        internal float timeApplied = 0.0f;
+
         internal float previousHealth = 0.0f;
+        internal float previousMaxHealth = 0.0f;
         internal float scannerAmpAmount = 0.0f;
         internal float healthDeltaTotal = 0.0f;
 
         internal GameObject scanDataUI = null;
         internal List<Vector3> scanDataUIOffsets;
+        internal List<float> scanDataUITextScales;
         internal Text[] textArray;
+        internal Image[] imageArray;
 
-        internal Image marker;
         internal Text dataDamage;
         internal Text dataBPS;
         internal Text dataBlockCooldown;
@@ -73,6 +77,7 @@ namespace GearUpCards.MonoBehaviours
             this.playerGunAmmo = this.gameObject.GetComponent<WeaponHandler>().gun.GetComponentInChildren<GunAmmo>();
 
             previousHealth = this.player.data.health;
+            previousMaxHealth = this.player.data.maxHealth;
 
             // GameModeManager.AddHook(GameModeHooks.HookPointEnd, OnPointEnd);
 
@@ -92,12 +97,17 @@ namespace GearUpCards.MonoBehaviours
             previousHealth = player.data.health;
             healthDeltaTotal += healthDelta;
 
+            float flagPristineLoss = (previousMaxHealth) / player.data.maxHealth;
+            float flagPristineGain = (player.data.maxHealth) / previousMaxHealth;
+
             if (isFriendly && healthDelta > 0)
             {
+                if (flagPristineGain >= 3.5f) healthDelta /= flagPristineGain;
                 scannerAmpAmount += healthDelta;
             }
             else if (!isFriendly && healthDelta < 0)
             {
+                if (flagPristineLoss >= 3.5f) healthDelta /= flagPristineLoss;
                 scannerAmpAmount += -healthDelta;
             }
 
@@ -142,11 +152,12 @@ namespace GearUpCards.MonoBehaviours
                 timer -= procTime;
             }
 
-            scannerDuration -= Time.deltaTime;
-            if (scannerDuration <= 0.0f)
+            if (Time.time - this.timeApplied >= scannerDuration)
             {
                 PurgeStatus();
             }
+
+            scanDataUI.transform.position = this.player.transform.position;
         }
 
         private void SpawnScanDataUI()
@@ -155,18 +166,12 @@ namespace GearUpCards.MonoBehaviours
             {
                 scanDataUI = Instantiate(scanDataUIPrefab, this.player.transform.position, Quaternion.identity);
                 scanDataUI.name = "ScanDataUICopy";
-                scanDataUI.transform.SetParent(this.player.transform);
-                scanDataUI.transform.localScale = new Vector3(0.025f, 0.025f, 0.025f) * playerStats.sizeMultiplier * 1.2f;
+
                 scanDataUI.transform.localPosition += new Vector3(0.0f, 0.0f, 50.0f);
+                scanDataUI.GetComponent<Canvas>().sortingLayerName = "MostFront";
 
                 textArray = scanDataUI.GetComponentsInChildren<Text>();
-                scanDataUIOffsets = new List<Vector3>();
-                for (int i = 0; i < textArray.Length; i++)
-                {
-                    textArray[i].transform.localScale = new Vector3(1.0f, 1.0f, 1.0f) * .85f * Mathf.Sqrt(playerStats.sizeMultiplier);
-                    scanDataUIOffsets.Add(textArray[i].rectTransform.localPosition);
-                    textArray[i].rectTransform.localPosition *= (.85f + Mathf.Sqrt(playerStats.sizeMultiplier));
-                }
+                imageArray = scanDataUI.GetComponentsInChildren<Image>();
 
                 this.dataDamage         = textArray[0];
                 this.dataBPS            = textArray[1];
@@ -181,11 +186,15 @@ namespace GearUpCards.MonoBehaviours
         private void UpdateScanDataUI()
         {
             // Prefab Adjustment
-            scanDataUI.transform.localScale = new Vector3(0.025f, 0.025f, 0.025f) * Mathf.Sqrt(playerStats.sizeMultiplier) * .75f;
-            for (int i = 0; i < textArray.Length; i++)
+            scanDataUI.transform.localScale = Vector3.one * 0.04f;
+
+            if (!isFriendly)
             {
-                textArray[i].transform.localScale = new Vector3(1.0f, 1.0f, 1.0f) * .85f * Mathf.Sqrt(playerStats.sizeMultiplier);
-                textArray[i].rectTransform.localPosition = scanDataUIOffsets[i] * (1 - Mathf.Sqrt(playerStats.sizeMultiplier));
+                imageArray[0].color = new Color(1.0f, .25f, .25f, 1.0f);
+            }
+            else
+            {
+                imageArray[0].color = new Color(.25f, 1.0f, .25f, 1.0f);
             }
 
             // Data part
@@ -214,15 +223,17 @@ namespace GearUpCards.MonoBehaviours
             if (duration > this.scannerDuration)    this.scannerDuration = duration;
             this.isFriendly = isFriendly;
             this.statusEnable = true;
+
+            timeApplied = Time.time;
         }
 
         private void PurgeStatus()
         {
-            UnityEngine.Debug.Log($"Purging 'Scanned' [{this.player.playerID}]");
+            // UnityEngine.Debug.Log($"Purging 'Scanned' [{this.player.playerID}]");
 
             Destroy(this);
 
-            UnityEngine.Debug.Log($"Purged 'Scanned' [{this.player.playerID}]");
+            // UnityEngine.Debug.Log($"Purged 'Scanned' [{this.player.playerID}]");
         }
 
         private IEnumerator OnPointEnd(IGameModeHandler gm)
@@ -242,7 +253,7 @@ namespace GearUpCards.MonoBehaviours
         override public void OnOnDestroy()
         {
             // GameModeManager.RemoveHook(GameModeHooks.HookPointEnd, OnPointEnd);
-            /**/Destroy(scanDataUI);
+            Destroy(scanDataUI);
         }
     }
 }

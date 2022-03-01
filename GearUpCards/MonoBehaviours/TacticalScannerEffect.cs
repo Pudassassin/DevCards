@@ -19,13 +19,17 @@ namespace GearUpCards.MonoBehaviours
 {
     internal class TacticalScannerEffect : MonoBehaviour
     {
+        // public float _debugScanInitialScale = 5.0f;
+        // public string _debugScanLayer = "Front";
+        private static GameObject scanVFXPrefab = GearUpCards.VFXBundle.LoadAsset<GameObject>("ScanVFX");
+
         private const float scannerStatusAmpFactor = .20f;
 
-        private const float scannerStatusBaseDuration = 7.0f;
-        private const float scannerStatusStackDuration = 3.0f;
+        private const float scannerStatusBaseDuration = 6.0f;
+        private const float scannerStatusStackDuration = 1.0f;
 
-        private const float scannerBaseRange = 5.0f;
-        private const float scannerStackRange = 1.0f;
+        private const float scannerBaseRange = 8.0f;
+        private const float scannerStackRange = 2.0f;
 
         private const float scannerBaseCooldown = 10.0f;
         private const float scannerStackCooldown = -1.0f;
@@ -90,6 +94,12 @@ namespace GearUpCards.MonoBehaviours
                 // proc_count++;
             }
 
+            if (stackCount <= 0)
+            {
+                empowerCharged = false;
+                scannerReady = false;
+            }
+
         }
 
         internal void RecalculateScannerStats()
@@ -123,27 +133,40 @@ namespace GearUpCards.MonoBehaviours
 
                 if (conditionMet)
                 {
-                    // base.StartCorutine(this.ScannerFX());
+                    // empower do cheeky teleport, I can just grab player.transform.position
 
-                    Vector3 epicenter;
+                    // ScanVFX part
+                    GameObject scanVFX = Instantiate(scanVFXPrefab, this.player.transform.position, Quaternion.identity);
+                    scanVFX.transform.localScale *= 3.5f * (scannerRange / 15.0f);
+                    scanVFX.name = "ScanVFXCopy";
+                    scanVFX.GetComponent<Canvas>().sortingLayerName = "MostFront";
+                    scanVFX.GetComponent<Canvas>().sortingOrder = 1000;
+                    scanVFX.GetComponent<Animator>().speed = 1.5f;
+                    scanVFX.AddComponent<RemoveAfterSeconds>().seconds = 0.40f;
 
-                    if (trigger == BlockTrigger.BlockTriggerType.Empower)
-                    {
-                        // epicenter is at impact point, gotta figure it out somehow
-                        return;
-                    }
-                    else
-                    {
-                        epicenter = player.gameObject.transform.position;
-                    }
-
-                    // block effect
+                    // check players in range and apply status monos
                     TacticalScannerStatus status;
 
-                    // check enemies in range -- apply debuff mono
-                    // check non-enemy in range -- apply buff mono
-                    status = this.player.gameObject.GetOrAddComponent<TacticalScannerStatus>();
-                    status.ApplyStatus(scannerStatusAmp, scannerStatusDuration, true);
+                    foreach (Player target in PlayerManager.instance.players)
+                    {
+                        if ((target.transform.position - this.player.transform.position).magnitude > this.scannerRange)
+                            continue;
+
+                        status = target.gameObject.GetOrAddComponent<TacticalScannerStatus>();
+
+                        if (target.teamID != this.player.teamID)
+                        {
+                            status.ApplyStatus(scannerStatusAmp, scannerStatusDuration, false);
+                        }
+                        else
+                        {
+                            status.ApplyStatus(scannerStatusAmp, scannerStatusDuration, true);
+                        }
+                    }
+
+                    // status = this.player.gameObject.GetOrAddComponent<TacticalScannerStatus>();
+                    // status.ApplyStatus(scannerStatusAmp, scannerStatusDuration, true);
+                    // status.ApplyStatus(scannerStatusAmp, 999999.9f, true);
 
                     if (trigger == BlockTrigger.BlockTriggerType.Empower)
                     {
@@ -157,19 +180,6 @@ namespace GearUpCards.MonoBehaviours
                     }
                 }
             };
-        }
-
-        private List<Player> GetEnemyPlayer()
-        {
-            return (from target in PlayerManager.instance.players
-                    where target.teamID != this.player.teamID
-                    select target).ToList<Player>();
-        }
-        private List<Player> GetFriendlyPlayer()
-        {
-            return (from target in PlayerManager.instance.players
-                    where target.teamID == this.player.teamID
-                    select target).ToList<Player>();
         }
 
         private IEnumerator OnPointStart(IGameModeHandler gm)
@@ -205,19 +215,7 @@ namespace GearUpCards.MonoBehaviours
 
         public void OnDisable()
         {
-            // bool isRespawning = player.data.healthHandler.isRespawning;
-            // // UnityEngine.Debug.Log($"[HOLLOW] from player [{player.playerID}] - is resurresting [{isRespawning}]");
-            // 
-            // if (isRespawning)
-            // {
-            //     // does nothing
-            //     // UnityEngine.Debug.Log($"[HOLLOW] from player [{player.playerID}] - is resurresting!?");
-            // }
-            // else
-            // {
-            //     effectEnabled = false;
-            //     // UnityEngine.Debug.Log($"[HOLLOW] from player [{player.playerID}] - dead ded!?");
-            // }
+
         }
 
         public void OnDestroy()
