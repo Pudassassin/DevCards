@@ -31,7 +31,7 @@ namespace GearUpCards.Cards
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            // (?) characterStats.GetGearData().hollowLifeStack -= 1;
+            // characterStats.GetGearData().hollowLifeStack -= 1; -- no need for this actually
 
             // UnityEngine.Debug.Log($"[{GearUpCards.ModInitials}][Card] {GetTitle()} has been removed to player {player.playerID}.");
         }

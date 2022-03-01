@@ -46,7 +46,7 @@ namespace GearUpCards.MonoBehaviours
 
 				// do damage to victim
 				float chompDamage = healthCullBaseFactor / bps * victim.health;
-				victim.healthHandler.RPCA_SendTakeDamage(new Vector2(chompDamage, 0.0f), Vector2.zero, playerID: shooterGun.player.playerID);
+				victim.healthHandler.RPCA_SendTakeDamage(new Vector2(chompDamage, 0.0f), this.transform.position, playerID: shooterGun.player.playerID);
 				// victim.healthHandler.TakeDamage(new Vector2(chompDamage, 0.0f), Vector2.zero, new Color(1.0f, 0.0f, 0.0f, 0.85f));
 
 				// UnityEngine.Debug.Log($"CHOMP!, dealt [{chompDamage}] to player [{victim.player.playerID}]");

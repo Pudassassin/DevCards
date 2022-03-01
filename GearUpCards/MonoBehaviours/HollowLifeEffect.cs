@@ -22,8 +22,8 @@ namespace GearUpCards.MonoBehaviours
         internal int stackCount = 0;
         internal float healthCapPercentage = 1.0f;
         internal float timer = 0.0f;
-        internal bool effectWarmup = true;
-        internal bool effectEnabled = false;
+        internal bool effectWarmup = false;
+        internal bool effectEnabled = true;
 
         internal Player player;
         internal CharacterStatModifiers stats;

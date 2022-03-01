@@ -50,7 +50,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Bullets deal bonus damage based on enemy's current HP.\nHas reduced effect on rapid-fire guns.";
+            return "Bullets deal bonus damage based on target's HP.\nReduced effect on burst or rapid-fire guns.";
         }
         protected override GameObject GetCardArt()
         {
@@ -74,7 +74,7 @@ namespace GearUpCards.Cards
                 new CardInfoStat()
                 {
                     positive = false,
-                    stat = "Damage",
+                    stat = "DMG",
                     amount = "-25%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
