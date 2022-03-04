@@ -1,11 +1,19 @@
-﻿using BepInEx;
+﻿using System.Collections;
+
+using BepInEx;
 using UnboundLib;
 using UnboundLib.Cards;
-using GearUpCards.Cards;
+using UnboundLib.GameModes;
 using HarmonyLib;
+
 using CardChoiceSpawnUniqueCardPatch.CustomCategories;
+
 using UnityEngine;
+
 using Jotunn;
+
+using GearUpCards.Cards;
+using static GearUpCards.Utils.CardUtils;
 
 namespace GearUpCards
 {
@@ -40,9 +48,35 @@ namespace GearUpCards
         {
             Instance = this;
 
+            // Random idea cards
             CustomCard.BuildCard<HollowLifeCard>();
             CustomCard.BuildCard<ChompyBulletCard>();
             CustomCard.BuildCard<TacticalScannerCard>();
+
+            // Crystal series
+
+            // Passives + consolations
+            CustomCard.BuildCard<GunPartsCard>(GunPartsCard.callback);
+            CustomCard.BuildCard<MedicalPartsCard>(MedicalPartsCard.callback);
+
+            // Hooks
+            GameModeManager.AddHook(GameModeHooks.HookGameStart, GameStart);
+        }
+
+        IEnumerator GameStart(IGameModeHandler gm)
+        {
+            foreach (var player in PlayerManager.instance.players)
+            {
+                if (!ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Contains(Category.typeCrystalMod))
+                {
+                    ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(Category.typeCrystalMod);
+                }
+                if (!ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Contains(Category.typeCrystal))
+                {
+                    ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(Category.typeCrystal);
+                }
+            }
+            yield break;
         }
 
         // Assets loader

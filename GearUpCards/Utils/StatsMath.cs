@@ -4,7 +4,7 @@ using HarmonyLib;
 
 namespace GearUpCards.Utils
 {
-    internal class GearUpCalc
+    internal class StatsMath
     {
         public static float GetGunBPS(Gun gun)
         {

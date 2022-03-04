@@ -1,10 +1,34 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using HarmonyLib;
 
+using CardChoiceSpawnUniqueCardPatch.CustomCategories;
+
+using GearUpCards.Utils;
 
 namespace GearUpCards.Extensions
 {
+    public static class GearUpConstants
+    {
+        public enum ModType
+        {
+            disabled = -2,
+            none = -1,
+
+            crystal = 0,
+
+            crystalNormal = 10,
+            crystalTiberium,
+            crystalPyro,
+            crystalCryo,
+            crystalWild,
+
+            sizeNormalize = 20,
+            sizeShrinker
+        }
+    }
+
     // Add fields to CharacterStatModifiers
     // Using PCE's extension as coding reference
 
@@ -13,10 +37,19 @@ namespace GearUpCards.Extensions
         public int hollowLifeStack;
         public int tacticalScannerStack;
 
+        public GearUpConstants.ModType gunMod;
+        public GearUpConstants.ModType blockMod;
+
+        public GearUpConstants.ModType sizeMod;
+
         public CharacterStatModifiersGearData()
         {
             hollowLifeStack = 0;
             tacticalScannerStack = 0;
+
+            gunMod = GearUpConstants.ModType.none;
+            blockMod = GearUpConstants.ModType.none;
+            sizeMod = GearUpConstants.ModType.none;
         }
     }
 
@@ -47,6 +80,10 @@ namespace GearUpCards.Extensions
         {
             __instance.GetGearData().hollowLifeStack = 0;
             __instance.GetGearData().tacticalScannerStack = 0;
+
+            __instance.GetGearData().gunMod = GearUpConstants.ModType.none;
+            __instance.GetGearData().blockMod = GearUpConstants.ModType.none;
+            __instance.GetGearData().sizeMod = GearUpConstants.ModType.none;
         }
     }
 }

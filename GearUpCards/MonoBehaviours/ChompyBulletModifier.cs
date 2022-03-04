@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GearUpCards.MonoBehaviours
 {
-	public class ChompyBulletEffect : RayHitEffect
+	public class ChompyBulletModifier : RayHitEffect
 	{
 		// value per stack at 1 bullet per second
 		// [!] This card can be dreadful to someone who managed to get *2* or more [Pristine Perserverence]
@@ -84,13 +84,5 @@ namespace GearUpCards.MonoBehaviours
 			// UnityEngine.Debug.Log($"CHOMP! BPS = [{bps}]");
 			return Mathf.Clamp(bps, .75f, 50.0f);
         }
-
-		public void Setup(Player player, Gun gun)
-        {
-			this.shooterPlayer = player;
-			this.shooterGun = gun;
-        }
-
-
     }
 }
