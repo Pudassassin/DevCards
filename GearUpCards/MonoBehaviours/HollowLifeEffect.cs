@@ -14,7 +14,7 @@ namespace GearUpCards.MonoBehaviours
 {
     internal class HollowLifeEffect : MonoBehaviour
     {
-        private const float healthCapFactor = .70f;
+        private const float healthCapFactor = .75f;
 
         private const float healthCullRate = .05f;
         private const float procTime = .10f;
@@ -64,8 +64,7 @@ namespace GearUpCards.MonoBehaviours
             {
                 // Check whether the player's health is above the certain caps, then adjust it accordingly
                 // [?] EXC's [Second Wind] implement it differently and seem to either look for health removal or it tries its best to heal up to said health point
-                // [!!] HDC's [Holy Light] directly compare current health with previous health each Update() calls and 'charge' on positive gains
-                //      leading to it having massive charge at round starts, and will accumulate on each of ebb and flow of health now incurred by [Hollow Life]
+                // [!] HDC's [Holy Light] will accumulate damage charges on each ebb and flow of health now incurred by [Hollow Life]
                 // [!!] This card is dis-synergistic with [Pristine Perserverence] and any issue with it is considered as edge cases
                 stackCount = stats.GetGearData().hollowLifeStack;
                 RecalculateHealthCap();
@@ -147,8 +146,6 @@ namespace GearUpCards.MonoBehaviours
 
         public void OnDestroy()
         {
-            // This effect should persist between rounds, and at 0 stack it should do nothing mechanically
-
             GameModeManager.RemoveHook(GameModeHooks.HookPointStart, OnPointStart);
             GameModeManager.RemoveHook(GameModeHooks.HookBattleStart, OnBattleStart);
             GameModeManager.RemoveHook(GameModeHooks.HookPointEnd, OnPointEnd);

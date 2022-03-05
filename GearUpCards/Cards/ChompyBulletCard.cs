@@ -28,7 +28,7 @@ namespace GearUpCards.Cards
 
             GameObject gameObject = new GameObject("ChompyBulletModifier", new Type[]
             {
-                typeof(ChompyBulletEffect)
+                typeof(ChompyBulletModifier)
             });
             list.Add(new ObjectsToSpawn
             {
@@ -36,8 +36,6 @@ namespace GearUpCards.Cards
             });
 
             gun.objectsToSpawn = list.ToArray();
-
-            // gameObject.GetComponent<ChompyBulletEffect>().Setup(player, gun);
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {

@@ -137,12 +137,12 @@ namespace GearUpCards.MonoBehaviours
 
                     // ScanVFX part
                     GameObject scanVFX = Instantiate(scanVFXPrefab, this.player.transform.position, Quaternion.identity);
-                    scanVFX.transform.localScale *= 3.5f * (scannerRange / 15.0f);
+                    scanVFX.transform.localScale *= 3.2f * (scannerRange / 15.0f);
                     scanVFX.name = "ScanVFXCopy";
                     scanVFX.GetComponent<Canvas>().sortingLayerName = "MostFront";
                     scanVFX.GetComponent<Canvas>().sortingOrder = 1000;
-                    scanVFX.GetComponent<Animator>().speed = 1.5f;
-                    scanVFX.AddComponent<RemoveAfterSeconds>().seconds = 0.40f;
+                    scanVFX.GetComponent<Animator>().speed = 2.5f;
+                    scanVFX.AddComponent<RemoveAfterSeconds>().seconds = 0.30f;
 
                     // check players in range and apply status monos
                     TacticalScannerStatus status;

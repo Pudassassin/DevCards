@@ -143,8 +143,6 @@ namespace GearUpCards.MonoBehaviours
                     {
                         // update ScanDataUI "Health Delta"
                         UpdateScanDataHealthDelta();
-
-                        healthDeltaTotal = 0.0f;
                         proc_count = 0;
                     }
                 }
@@ -198,12 +196,22 @@ namespace GearUpCards.MonoBehaviours
             }
 
             // Data part
-            this.dataDamage.text = $"[{this.playerGun.damage * 55.0f:f2}] < DMG";
+            int bulletBatch;
+            if (this.playerGun.bursts > 1)
+            {
+                bulletBatch = this.playerGun.bursts * this.playerGun.numberOfProjectiles;
+            }
+            else
+            {
+                bulletBatch = this.playerGun.numberOfProjectiles;
+            }
 
-            float bps = GearUpCalc.GetGunBPS(this.playerGun);
+            this.dataDamage.text = $"{bulletBatch}x[{this.playerGun.damage * 55.0f:f2}] < DMG";
+
+            float bps = StatsMath.GetGunBPS(this.playerGun);
             this.dataBPS.text = $"BPS > [{bps:f2}]";
 
-            this.dataReloadSpeed.text = $"RLD > [{GearUpCalc.GetGunAmmoReloadTime(gunAmmo):f2}]";
+            this.dataReloadSpeed.text = $"RLD > [{StatsMath.GetGunAmmoReloadTime(gunAmmo):f2}]";
 
             this.dataBlockCooldown.text = $"BlkCD > [{this.playerBlock.Cooldown():f2}]";
 
@@ -214,7 +222,16 @@ namespace GearUpCards.MonoBehaviours
 
         private void UpdateScanDataHealthDelta()
         {
-            this.dataHealthDelta.text = $"[{this.healthDeltaTotal:f3}]";
+            if (healthDeltaTotal >= 0)
+            {
+                this.dataHealthDelta.text = $"+ [{Mathf.Abs(this.healthDeltaTotal):f3}]";
+            }
+            else
+            {
+                this.dataHealthDelta.text = $"- [{Mathf.Abs(this.healthDeltaTotal):f3}]";
+            }
+
+            healthDeltaTotal = 0.0f;
         }
 
         public void ApplyStatus(float ampFactor, float duration, bool isFriendly)

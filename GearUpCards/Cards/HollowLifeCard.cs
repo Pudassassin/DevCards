@@ -66,7 +66,7 @@ namespace GearUpCards.Cards
                 {
                     positive = false,
                     stat = "HP Cap",
-                    amount = "-30%",
+                    amount = "-25%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };

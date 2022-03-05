@@ -22,7 +22,7 @@ namespace GearUpCards.Extensions
             crystalTiberium,
             crystalPyro,
             crystalCryo,
-            crystalWild,
+            crystalMimic,
 
             sizeNormalize = 20,
             sizeShrinker

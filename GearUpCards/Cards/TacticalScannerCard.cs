@@ -45,7 +45,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Blocking scans nearby players' power,\nenemies take more damage and allies heal more.";
+            return "Blocking scans nearby players' power:\n Scanned enemies take more damage.\nScanned friendlies heal for more.";
         }
         protected override GameObject GetCardArt()
         {
@@ -62,7 +62,7 @@ namespace GearUpCards.Cards
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "AMP",
+                    stat = "Scan AMP",
                     amount = "+20%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
