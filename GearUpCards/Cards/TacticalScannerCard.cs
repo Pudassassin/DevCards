@@ -11,6 +11,7 @@ using UnboundLib.Networking;
 
 using GearUpCards.MonoBehaviours;
 using GearUpCards.Extensions;
+using static GearUpCards.Utils.CardUtils;
 
 namespace GearUpCards.Cards
 {
@@ -96,6 +97,10 @@ namespace GearUpCards.Cards
         public override string GetModName()
         {
             return GearUpCards.ModInitials;
+        }
+        internal static void callback(CardInfo card)
+        {
+            card.gameObject.AddComponent<ExtraName>().text = "Active\nBlock";
         }
     }
 }

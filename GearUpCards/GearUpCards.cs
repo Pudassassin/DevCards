@@ -51,11 +51,12 @@ namespace GearUpCards
             // Random idea cards
             CustomCard.BuildCard<HollowLifeCard>();
             CustomCard.BuildCard<ChompyBulletCard>();
-            CustomCard.BuildCard<TacticalScannerCard>();
+            CustomCard.BuildCard<TacticalScannerCard>(TacticalScannerCard.callback);
+            CustomCard.BuildCard<SizeNormalizerCard>(SizeNormalizerCard.callback);
 
-            // Crystal series
+            // Crystal card series
 
-            // Passives + consolations
+            // Passives + consolations cards
             CustomCard.BuildCard<GunPartsCard>(GunPartsCard.callback);
             CustomCard.BuildCard<MedicalPartsCard>(MedicalPartsCard.callback);
 

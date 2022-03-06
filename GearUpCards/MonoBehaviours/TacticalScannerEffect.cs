@@ -21,7 +21,7 @@ namespace GearUpCards.MonoBehaviours
     {
         // public float _debugScanInitialScale = 5.0f;
         // public string _debugScanLayer = "Front";
-        private static GameObject scanVFXPrefab = GearUpCards.VFXBundle.LoadAsset<GameObject>("ScanVFX");
+        private static GameObject scanVFXPrefab = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_GenericAOE");
 
         private const float scannerStatusAmpFactor = .20f;
 
@@ -137,12 +137,13 @@ namespace GearUpCards.MonoBehaviours
 
                     // ScanVFX part
                     GameObject scanVFX = Instantiate(scanVFXPrefab, this.player.transform.position, Quaternion.identity);
-                    scanVFX.transform.localScale *= 3.2f * (scannerRange / 15.0f);
-                    scanVFX.name = "ScanVFXCopy";
+                    scanVFX.transform.localScale = Vector3.one * scannerRange;
+                    scanVFX.name = "ScanVFX_Copy";
                     scanVFX.GetComponent<Canvas>().sortingLayerName = "MostFront";
                     scanVFX.GetComponent<Canvas>().sortingOrder = 1000;
-                    scanVFX.GetComponent<Animator>().speed = 2.5f;
-                    scanVFX.AddComponent<RemoveAfterSeconds>().seconds = 0.30f;
+                    // scanVFX.GetComponent<Animator>().speed = 2.5f;
+                    scanVFX.AddComponent<RemoveAfterSeconds>().seconds = 0.50f;
+                    scanVFX.GetComponentInChildren<SpriteRenderer>().color = new Color(.50f, .50f, 1.0f, 1.0f);
 
                     // check players in range and apply status monos
                     TacticalScannerStatus status;
@@ -221,14 +222,14 @@ namespace GearUpCards.MonoBehaviours
         public void OnDestroy()
         {
             // This effect should persist between rounds, and at 0 stack it should do nothing mechanically
-            UnityEngine.Debug.Log($"Destroying Scanner  [{this.player.playerID}]");
+            // UnityEngine.Debug.Log($"Destroying Scanner  [{this.player.playerID}]");
 
             GameModeManager.RemoveHook(GameModeHooks.HookPointStart, OnPointStart);
             GameModeManager.RemoveHook(GameModeHooks.HookBattleStart, OnBattleStart);
             GameModeManager.RemoveHook(GameModeHooks.HookPointEnd, OnPointEnd);
 
             this.block.BlockAction = (Action<BlockTrigger.BlockTriggerType>)Delegate.Remove(this.block.BlockAction, this.scannerAction);
-            UnityEngine.Debug.Log($"Scanner destroyed  [{this.player.playerID}]");
+            // UnityEngine.Debug.Log($"Scanner destroyed  [{this.player.playerID}]");
         }
     }
 }

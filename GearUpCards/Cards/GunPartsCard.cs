@@ -24,7 +24,7 @@ namespace GearUpCards.Cards
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
             gun.damage *= 1.50f;
-            gun.attackSpeedMultiplier *= .75f;
+            gun.attackSpeedMultiplier *= .80f;
             gunAmmo.maxAmmo += 3;
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
@@ -62,7 +62,7 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "ATK SPD",
-                    amount = "+33%",
+                    amount = "+25%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
