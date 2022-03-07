@@ -4,6 +4,7 @@ using System.Linq;
 using UnboundLib.GameModes;
 using UnityEngine;
 using static GearUpCards.Utils.CardUtils;
+using CardChoiceSpawnUniqueCardPatch.CustomCategories;
 
 namespace GearUpCards.MonoBehaviours
 {
@@ -28,7 +29,7 @@ namespace GearUpCards.MonoBehaviours
             this.player = this.gameObject.GetComponent<Player>();
             this.stats = this.gameObject.GetComponent<CharacterStatModifiers>();
 
-            GameModeManager.AddHook(GameModeHooks.HookBattleStart, OnBattleStart);
+            GameModeManager.AddHook(GameModeHooks.HookRoundStart, OnRoundStart);
             // GameModeManager.AddHook(GameModeHooks.HookPointEnd, OnPointEnd);
         }
 
@@ -46,16 +47,18 @@ namespace GearUpCards.MonoBehaviours
             }
         }
 
-        private IEnumerator OnBattleStart(IGameModeHandler gm)
+        private IEnumerator OnRoundStart(IGameModeHandler gm)
         {
-            ResolveHandCards();
+            UnityEngine.Debug.Log($"Player[{player.playerID}] RoundStart Call");
+
+            StartCoroutine(ResolveHandCards());
             yield break;
         }
 
-        private IEnumerator OnPointEnd(IGameModeHandler gm)
-        {
-            yield break;
-        }
+        // private IEnumerator OnPointEnd(IGameModeHandler gm)
+        // {
+        //     yield break;
+        // }
 
         public void OnDisable()
         {
@@ -74,7 +77,7 @@ namespace GearUpCards.MonoBehaviours
         }
         public void OnDestroy()
         {
-            GameModeManager.RemoveHook(GameModeHooks.HookPointStart, OnBattleStart);
+            GameModeManager.RemoveHook(GameModeHooks.HookPointStart, OnRoundStart);
             // GameModeManager.RemoveHook(GameModeHooks.HookPointEnd, OnPointEnd);
         }
 
@@ -129,10 +132,51 @@ namespace GearUpCards.MonoBehaviours
             }
         }
 
+        public IEnumerator UpdateCategoryBlacklist(CardCategory categoryToCheck)
+        {
+            // mutally exclusives, desinated unique card, etc.
+            List<HandCardData> cardToCheck = GetPlayerCardsWithCategory(player, categoryToCheck);
+            UnityEngine.Debug.Log($"Player[{player.playerID}] Check blacklist for [{categoryToCheck.name}] >> found [{cardToCheck.Count}]");
+            if (cardToCheck.Count == 0)
+            {
+                ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.RemoveAll
+                (
+                    (category) => category == categoryToCheck
+                );
+            }
+            else
+            {
+                ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(categoryToCheck);
+            }
+
+            yield break;
+        }
+
+        public IEnumerator UpdateCategoryWhitelist(CardCategory categoryToCheck)
+        {
+            // unlocking condition, etc.
+            List<HandCardData> cardToCheck = GetPlayerCardsWithCategory(player, categoryToCheck);
+
+            if (cardToCheck.Count > 0)
+            {
+                ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.RemoveAll
+                (
+                    (category) => category == categoryToCheck
+                );
+            }
+            else
+            {
+                ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(categoryToCheck);
+            }
+
+            yield break;
+        }
+
         internal IEnumerator ResolveHandCards()
         {
             yield return ResolveCardCategory(Category.typeSizeMod, "Medical Parts");
 
+            yield return UpdateCategoryBlacklist(Category.typeSizeMod);
 
             yield break;
         }

@@ -57,16 +57,7 @@ namespace GearUpCards.Cards
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            // black/whitelisting
-            List<HandCardData> cardToCheck = GetPlayerCardsWithCategory(player, Category.typeSizeMod);
-
-            if (cardToCheck.Count <= 0)
-            {
-                ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.RemoveAll((category) => category == Category.typeSizeMod);
-            }
-
-            // temporary
-            // player.data.movement.force /= 1.25f;
+            // black/whitelisting here are too finicky
 
         }
         protected override string GetTitle()
