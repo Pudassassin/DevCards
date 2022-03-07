@@ -32,30 +32,13 @@ namespace GearUpCards.Cards
             CardHandResolveMono resolver = player.gameObject.GetOrAddComponent<CardHandResolveMono>();
             List<HandCardData> conflictedCards = GetPlayerCardsWithCategory(player, Category.typeSizeMod);
 
-            foreach (var item in conflictedCards)
-            {
-                UnityEngine.Debug.Log($"[{item.cardInfo.cardName}] - [{item.index}] - [{item.owner.playerID}]");
-            }
+            // foreach (var item in conflictedCards)
+            // {
+            //     UnityEngine.Debug.Log($"[{item.cardInfo.cardName}] - [{item.index}] - [{item.owner.playerID}]");
+            // }
 
             if (conflictedCards.Count >= 1)
             {
-                var replacementCard = ModdingUtils.Utils.Cards.all.Where(card => card.name == "Medical Parts").ToArray()[0];
-
-                // ModdingUtils.Utils.Cards.instance.ReplaceCard
-                //     (
-                //         player, conflictedCards[conflictedCards.Count - 1].index, replacementCard, "Me", 2.0f, 2.0f, true
-                //     );
-                // 
-                // ModdingUtils.Utils.Cards.instance.AddCardToPlayer
-                //     (
-                //         player, replacementCard, true, "MP", 2.0f, 2.0f
-                //     );
-                // 
-                // ModdingUtils.Utils.Cards.instance.RemoveCardFromPlayer
-                //     (
-                //         player, player.data.currentCards.Count - 1, true
-                //     );
-
                 resolver.TriggerResolve();
                 return;
             }
@@ -65,7 +48,7 @@ namespace GearUpCards.Cards
 
             // stats
             player.data.maxHealth *= 1.5f;
-            player.data.movement.force *= 1.25f;
+            characterStats.movementSpeed *= 1.25f;
             characterStats.GetGearData().sizeMod = GearUpConstants.ModType.sizeNormalize;
 
             // Add Size Normalizer mono
@@ -77,10 +60,14 @@ namespace GearUpCards.Cards
             // black/whitelisting
             List<HandCardData> cardToCheck = GetPlayerCardsWithCategory(player, Category.typeSizeMod);
 
-            if (cardToCheck.Count == 0)
+            if (cardToCheck.Count <= 0)
             {
                 ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.RemoveAll((category) => category == Category.typeSizeMod);
             }
+
+            // temporary
+            // player.data.movement.force /= 1.25f;
+
         }
         protected override string GetTitle()
         {
