@@ -16,15 +16,18 @@ namespace GearUpCards.MonoBehaviours
 {
     internal class SizeNormalizerEffect : MonoBehaviour
     {
-        private const float procTime = 1.0f;
+        private const float procTime = 0.1f;
 
         internal Player player;
         internal CharacterStatModifiers stats;
 
-        internal float totalSizeUnmodded = -1.0f;
+        internal float totalScaleBefore;
         internal float timer = 0.0f;
         internal bool effectEnabled;
         internal bool effectApplied;
+
+        internal Vector3 scaleVectorBefore;
+        internal Vector3 scaleVectorLock;
 
 
         /* DEBUG */
@@ -38,6 +41,10 @@ namespace GearUpCards.MonoBehaviours
 
             effectEnabled = true;
             effectApplied = false;
+
+            totalScaleBefore = -1.0f;
+            scaleVectorBefore = player.gameObject.transform.localScale;
+            scaleVectorLock = Vector3.one * 1.2f;
 
             GameModeManager.AddHook(GameModeHooks.HookRoundStart, OnRoundStart);
             GameModeManager.AddHook(GameModeHooks.HookRoundEnd, OnRoundEnd);
@@ -56,36 +63,50 @@ namespace GearUpCards.MonoBehaviours
             {
                 if (effectEnabled && !effectApplied)
                 {
-                    if (this.totalSizeUnmodded < 0.0f)
+                    float targetScale;
+                    if (this.totalScaleBefore < 0.0f)
                     {
-                        this.totalSizeUnmodded = this.stats.sizeMultiplier;
+                        this.totalScaleBefore = this.player.gameObject.transform.localScale.z;
                     }
-                    if (this.stats.sizeMultiplier >= 1.25f)
+                    if (this.stats.sizeMultiplier >= 1.2f)
                     {
-                        this.stats.sizeMultiplier = 1.75f - (0.5f * Mathf.Pow(0.9f, this.totalSizeUnmodded));
+                        targetScale = 1.65f - (0.5f * Mathf.Pow(0.9f, this.totalScaleBefore));
                     }
                     else
                     {
-                        this.stats.sizeMultiplier = 0.25f + Mathf.Pow(1.1f, this.totalSizeUnmodded);
+                        targetScale = 0.1f + Mathf.Pow(1.1f, this.totalScaleBefore);
                     }
+
+                    // targetScale /= Mathf.Pow(this.player.data.maxHealth / 100f * 0.6f, 0.2f);
+                    scaleVectorLock = player.gameObject.transform.localScale * targetScale / this.totalScaleBefore;
+
+                    player.gameObject.transform.localScale = scaleVectorLock;
                     effectApplied = true;
-                    UnityEngine.Debug.Log($"[SizeNorm] adjusting... [{player.playerID}]");
+
+                    UnityEngine.Debug.Log($"[SizeNorm] adjusting... [{player.playerID}] [{totalScaleBefore}] >> [{this.stats.sizeMultiplier}]");
+                }
+
+                if (effectEnabled)
+                {
+                    player.gameObject.transform.localScale = scaleVectorLock;
                 }
                 
                 if (!effectEnabled)
                 {
-                    this.stats.sizeMultiplier = totalSizeUnmodded;
+                    this.stats.sizeMultiplier = totalScaleBefore;
                     effectApplied = false;
                 }
 
                 timer -= procTime;
                 // proc_count++;
             }
+
+
         }
 
         private IEnumerator OnRoundStart(IGameModeHandler gm)
         {
-            this.totalSizeUnmodded = this.stats.sizeMultiplier;
+            this.totalScaleBefore = this.stats.sizeMultiplier;
 
             if (this.stats.GetGearData().sizeMod == GearUpConstants.ModType.sizeNormalize)
             {
@@ -97,7 +118,7 @@ namespace GearUpCards.MonoBehaviours
 
         private IEnumerator OnRoundEnd(IGameModeHandler gm)
         {
-            this.stats.sizeMultiplier = this.totalSizeUnmodded;
+            this.stats.sizeMultiplier = this.totalScaleBefore;
 
             effectEnabled = false;
         
