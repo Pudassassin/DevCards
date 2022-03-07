@@ -141,8 +141,14 @@ namespace GearUpCards.MonoBehaviours
                     scanVFX.name = "ScanVFXCopy";
                     scanVFX.GetComponent<Canvas>().sortingLayerName = "MostFront";
                     scanVFX.GetComponent<Canvas>().sortingOrder = 1000;
+<<<<<<< Updated upstream
                     scanVFX.GetComponent<Animator>().speed = 2.5f;
                     scanVFX.AddComponent<RemoveAfterSeconds>().seconds = 0.30f;
+=======
+                    // scanVFX.GetComponent<Animator>().speed = 2.5f;
+                    scanVFX.AddComponent<RemoveAfterSeconds>().seconds = 0.50f;
+                    scanVFX.GetComponentInChildren<SpriteRenderer>().color = new Color(.50f, 1.0f, 0.5f, 1.0f);
+>>>>>>> Stashed changes
 
                     // check players in range and apply status monos
                     TacticalScannerStatus status;
