@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using HarmonyLib;
+using UnityEngine;
 
 namespace GearUpCards.Utils
 {
@@ -36,6 +37,12 @@ namespace GearUpCards.Utils
 		public static float GetGunAmmoReloadTime(GunAmmo gunAmmo)
         {
 			return (gunAmmo.reloadTime + gunAmmo.reloadTimeAdd) * gunAmmo.reloadTimeMultiplier;
+        }
+
+		public static bool ApproxEqual(float numA, float numB, float precision)
+        {
+			float diff = numA - numB;
+			return Mathf.Abs(diff) <= precision;
         }
     }
 }
