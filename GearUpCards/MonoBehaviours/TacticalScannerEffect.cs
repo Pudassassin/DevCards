@@ -142,7 +142,7 @@ namespace GearUpCards.MonoBehaviours
                     scanVFX.GetComponent<Canvas>().sortingLayerName = "MostFront";
                     scanVFX.GetComponent<Canvas>().sortingOrder = 10000;
 
-                    scanVFX.GetComponent<Animator>().speed = 2.0f;
+                    scanVFX.GetComponentInChildren<Animator>().speed = 2.0f;
                     scanVFX.AddComponent<RemoveAfterSeconds>().seconds = 0.50f;
                     scanVFX.GetComponentInChildren<SpriteRenderer>().color = new Color(.50f, 1.0f, 0.5f, 1.0f);
 

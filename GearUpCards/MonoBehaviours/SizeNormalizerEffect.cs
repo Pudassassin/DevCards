@@ -115,7 +115,10 @@ namespace GearUpCards.MonoBehaviours
 
         private IEnumerator OnRoundEnd(IGameModeHandler gm)
         {
-            this.player.gameObject.transform.localScale = this.scaleVectorBefore;
+            if (this.isActiveAndEnabled)
+            {
+                this.player.gameObject.transform.localScale = this.scaleVectorBefore;
+            }
 
             effectEnabled = false;
         
@@ -147,6 +150,8 @@ namespace GearUpCards.MonoBehaviours
         public void Refresh()
         {
             //return size to normal if it is ever be add mid-battle
+            this.player.gameObject.transform.localScale = this.scaleVectorBefore;
+
             effectEnabled = true;
             effectApplied = false;
 
