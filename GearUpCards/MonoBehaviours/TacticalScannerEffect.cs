@@ -136,14 +136,15 @@ namespace GearUpCards.MonoBehaviours
                     // empower do cheeky teleport, I can just grab player.transform.position
 
                     // ScanVFX part
-                    GameObject scanVFX = Instantiate(scanVFXPrefab, this.player.transform.position, Quaternion.identity);
+                    GameObject scanVFX = Instantiate(scanVFXPrefab, this.player.transform.position + new Vector3(0.0f, 0.0f, 100.0f), Quaternion.identity);
                     scanVFX.transform.localScale = Vector3.one * scannerRange;
                     scanVFX.name = "ScanVFX_Copy";
                     scanVFX.GetComponent<Canvas>().sortingLayerName = "MostFront";
-                    scanVFX.GetComponent<Canvas>().sortingOrder = 1000;
-                    // scanVFX.GetComponent<Animator>().speed = 2.5f;
+                    scanVFX.GetComponent<Canvas>().sortingOrder = 10000;
+
+                    scanVFX.GetComponent<Animator>().speed = 2.0f;
                     scanVFX.AddComponent<RemoveAfterSeconds>().seconds = 0.50f;
-                    scanVFX.GetComponentInChildren<SpriteRenderer>().color = new Color(.50f, .50f, 1.0f, 1.0f);
+                    scanVFX.GetComponentInChildren<SpriteRenderer>().color = new Color(.50f, 1.0f, 0.5f, 1.0f);
 
                     // check players in range and apply status monos
                     TacticalScannerStatus status;
