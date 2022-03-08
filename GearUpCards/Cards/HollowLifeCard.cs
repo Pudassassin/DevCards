@@ -21,7 +21,7 @@ namespace GearUpCards.Cards
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            data.maxHealth *= 2.0f;
+            data.maxHealth *= 2.5f;
             characterStats.sizeMultiplier *= .95f;
 
             characterStats.GetGearData().hollowLifeStack += 1;
@@ -41,7 +41,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Double your total Max HP,\nbut you can no longer heal to full health.\n(Stack multiplicatively)";
+            return "Puffs up your total Max HP,\nbut you can no longer heal to full health.\n(Stack multiplicatively)";
         }
         protected override GameObject GetCardArt()
         {
@@ -59,7 +59,7 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "Max HP",
-                    amount = "x2",
+                    amount = "x2.5",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
