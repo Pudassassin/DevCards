@@ -26,18 +26,11 @@ namespace GearUpCards.MonoBehaviours
 
         internal float totalScaleBefore;
         internal float totalScaleAfter;
+        internal float targetScale;
 
         internal float timer = 0.0f;
         internal bool effectEnabled;
         internal bool effectApplied;
-
-        // internal Vector3 scaleVectorBefore;
-        // internal Vector3 scaleVectorLock;
-
-
-        /* DEBUG */
-        // internal int proc_count = 0;
-
 
         public void Awake()
         {
@@ -46,13 +39,8 @@ namespace GearUpCards.MonoBehaviours
 
             Refresh();
 
-            // totalScaleBefore = this.player.gameObject.transform.localScale.z;
-            // scaleVectorBefore = player.gameObject.transform.localScale;
-            // scaleVectorLock = Vector3.one * 1.2f; // default scale locking
-
-            // GameModeManager.AddHook(GameModeHooks.HookPickEnd, OnBattleStart);
             GameModeManager.AddHook(GameModeHooks.HookBattleStart, OnBattleStart);
-            GameModeManager.AddHook(GameModeHooks.HookPointEnd, OnRoundEnd);
+            GameModeManager.AddHook(GameModeHooks.HookRoundEnd, OnRoundEnd);
         }
 
         public void Start()
@@ -60,7 +48,9 @@ namespace GearUpCards.MonoBehaviours
 
         }
 
-        // issue with [Pristine Perserverence] and/or [Brawler] when its resize overrules?
+        // [*] [Brawler] and [Pristine Perserverence] will make player size temporary bigger than what [Size Norm.] supposed to keep due to the MAX HP increases
+        // [!] severely reduce [Overpower] knockback force due to being locked down to default size (still do proper damage)
+
         public void Update()
         {
             timer += Time.deltaTime;
@@ -79,46 +69,34 @@ namespace GearUpCards.MonoBehaviours
 
                 if (effectEnabled && !effectApplied)
                 {
-                    float targetScale;
-
-                    if (totalScaleBefore >= 1.0f)
+                    if (totalScaleBefore >= 1.2f)
                     {
-                        targetScale = 1.45f - (0.5f * Mathf.Pow(0.9f, this.totalScaleBefore));
+                        targetScale = 1.65f - (0.5f * Mathf.Pow(0.9f, this.totalScaleBefore));
                     }
                     else
                     {
-                        targetScale = -0.1f + Mathf.Pow(1.1f, this.totalScaleBefore);
+                        targetScale = 0.1f + Mathf.Pow(1.1f, this.totalScaleBefore);
                     }
 
                     totalScaleAfter = prevSizeModifier * targetScale / totalScaleBefore;
 
-                    // compatibility with [W I D E], [Lanky] or other scaling mods
-                    // scaleVectorLock = player.gameObject.transform.localScale * targetScale / this.totalScaleBefore;
-
-
-                    //player.gameObject.transform.localScale = scaleVectorLock;
-
+                    this.player.gameObject.GetOrAddComponent<SizeNormalizerStatus>().SetSize(targetScale / totalScaleBefore);
                     effectApplied = true;
 
-                    //UnityEngine.Debug.Log($"[SizeNorm] adjusting... [{player.playerID}] [{totalScaleBefore}] >> [{targetScale}]");
-                    UnityEngine.Debug.Log($"[SizeNorm] adjusting... [{player.playerID}] [{totalScaleBefore}] >> [{targetScale}] >> [{stats.sizeMultiplier}]");
+                    // UnityEngine.Debug.Log($"[SizeNorm] adjusting... [{player.playerID}] [{totalScaleBefore}] >> [{targetScale}] == [{totalScaleAfter}] >> [{stats.sizeMultiplier}]");
                 }
 
                 if (effectEnabled && effectApplied)
                 {
-                    this.stats.sizeMultiplier = totalScaleAfter;
-
-                    // player.gameObject.transform.localScale = scaleVectorLock;
+                    // this.player.gameObject.GetOrAddComponent<SizeNormalizerStatus>().SetSize(targetScale / totalScaleBefore);
                 }
-                
+
                 if (!effectEnabled && !effectApplied)
                 {
-                    this.stats.sizeMultiplier = prevSizeModifier;
+                    this.player.gameObject.GetOrAddComponent<SizeNormalizerStatus>().SetSize(1.0f);
                     effectApplied = true;
                 }
-
                 timer -= procTime;
-                // proc_count++;
             }
 
 
@@ -127,22 +105,12 @@ namespace GearUpCards.MonoBehaviours
         private IEnumerator OnBattleStart(IGameModeHandler gm)
         {
             Refresh();
-            // if (this.stats.GetGearData().sizeMod == GearUpConstants.ModType.sizeNormalize && effectEnabled)
-            // {
-            //     Refresh();
-            // }
 
             yield break;
         }
 
         private IEnumerator OnRoundEnd(IGameModeHandler gm)
         {
-            // if (this.isActiveAndEnabled)
-            // {
-            //     // this.player.gameObject.transform.localScale = this.scaleVectorBefore;
-            //     this.stats.sizeMultiplier = prevSizeModifier;
-            // }
-            // 
             effectEnabled = false;
             effectApplied = false;
 
@@ -161,8 +129,6 @@ namespace GearUpCards.MonoBehaviours
             }
             else
             {
-                effectEnabled = false;
-                effectApplied = false;
                 // UnityEngine.Debug.Log($"[HOLLOW] from player [{player.playerID}] - dead ded!?");
             }
         }
@@ -180,15 +146,24 @@ namespace GearUpCards.MonoBehaviours
             }
             effectApplied = false;
 
-            //return size to normal if it is ever be add mid-battle
-            // this.player.gameObject.transform.localScale = this.scaleVectorBefore;
-
             prevMaxHealth = player.data.maxHealth;
             prevSizeModifier = this.stats.sizeMultiplier;
             totalScaleBefore = Mathf.Pow(this.player.data.maxHealth / 100f * 1.2f, 0.2f) * prevSizeModifier;
+        }
+    }
 
-            // scaleVectorBefore = player.gameObject.transform.localScale;
-            // scaleVectorLock = Vector3.one * 1.2f; // default scale locking
+    class SizeNormalizerStatus : ReversibleEffect
+    {
+        public override void OnAwake()
+        {
+            this.SetLivesToEffect(999);
+            base.OnAwake();
+        }
+
+        public void SetSize(float size)
+        {
+            characterStatModifiersModifier.sizeMultiplier_mult = size;
+            ApplyModifiers();
         }
     }
 }
