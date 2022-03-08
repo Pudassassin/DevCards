@@ -39,7 +39,7 @@ namespace GearUpCards.Utils
 			return (gunAmmo.reloadTime + gunAmmo.reloadTimeAdd) * gunAmmo.reloadTimeMultiplier;
         }
 
-		public static bool ApproxEqual(float numA, float numB, float precision)
+		public static bool ApproxEqual(float numA, float numB, float precision = 10e-3f)
         {
 			float diff = numA - numB;
 			return Mathf.Abs(diff) <= precision;
