@@ -22,15 +22,15 @@ namespace GearUpCards.Cards
             cardInfo.allowMultiple = false;
             cardInfo.categories = new CardCategory[]
             {
-                Category.typeGunMod,
-                Category.typeCrystalGear,
-                Category.tagNoRemove
+                GearCategory.typeGunMod,
+                GearCategory.typeCrystalGear,
+                GearCategory.tagNoRemove
             };
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
             // Resolve card conflict on edge cases
-            List<HandCardData> cardToCheck = GetPlayerCardsWithCategory(player, Category.typeGunMod);
+            List<HandCardData> cardToCheck = GetPlayerCardsWithCategory(player, GearCategory.typeGunMod);
 
             if (cardToCheck.Count > 1) 
             {
@@ -44,13 +44,13 @@ namespace GearUpCards.Cards
             }
 
             // black/whitelisting
-            ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(Category.typeGunMod);
-            ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.RemoveAll((category) => category == Category.typeCrystal);
+            ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.typeGunMod);
+            ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.RemoveAll((category) => category == GearCategory.typeCrystal);
 
-            cardToCheck = GetPlayerCardsWithCategory(player, Category.typeCrystalMod);
+            cardToCheck = GetPlayerCardsWithCategory(player, GearCategory.typeCrystalMod);
             if (cardToCheck.Count == 0)
             {
-                ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.RemoveAll((category) => category == Category.typeCrystalMod);
+                ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.RemoveAll((category) => category == GearCategory.typeCrystalMod);
             }
 
             // stats upfront
@@ -80,16 +80,16 @@ namespace GearUpCards.Cards
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
             // black/whitelisting
-            List<HandCardData> cardToCheck = GetPlayerCardsWithCategory(player, Category.typeGunMod);
+            List<HandCardData> cardToCheck = GetPlayerCardsWithCategory(player, GearCategory.typeGunMod);
             if (cardToCheck.Count == 0)
             {
-                ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.RemoveAll((category) => category == Category.typeGunMod);
+                ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.RemoveAll((category) => category == GearCategory.typeGunMod);
             }
 
-            cardToCheck = GetPlayerCardsWithCategory(player, Category.typeCrystalGear);
+            cardToCheck = GetPlayerCardsWithCategory(player, GearCategory.typeCrystalGear);
             if (cardToCheck.Count == 0)
             {
-                ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(Category.typeCrystal);
+                ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.typeCrystal);
             }
 
 

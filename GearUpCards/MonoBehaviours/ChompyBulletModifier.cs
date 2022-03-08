@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GearUpCards.Utils;
+using System;
 using UnityEngine;
 
 namespace GearUpCards.MonoBehaviours
@@ -7,7 +8,7 @@ namespace GearUpCards.MonoBehaviours
 	{
 		// value per stack at 1 bullet per second
 		// [!] This card can be dreadful to someone who managed to get *2* or more [Pristine Perserverence]
-		private const float healthCullBaseFactor = 0.1f;
+		private const float healthCullBaseFactor = 0.15f;
 		private Gun shooterGun;
 		private Player shooterPlayer;
 
@@ -42,10 +43,10 @@ namespace GearUpCards.MonoBehaviours
 				CharacterData victim = hit.transform.gameObject.GetComponent<CharacterData>();
 
 				// calculate shooter's bullet fired per second
-				float bps = this.CalculateBulletPerSecond();
+				float bps = StatsMath.GetGunBPS(shooterGun);
 
 				// do damage to victim
-				float chompDamage = healthCullBaseFactor / bps * victim.health;
+				float chompDamage = healthCullBaseFactor / Mathf.Clamp(bps * 0.5f, .75f, 50.0f) * victim.health;
 				victim.healthHandler.RPCA_SendTakeDamage(new Vector2(chompDamage, 0.0f), this.transform.position, playerID: shooterGun.player.playerID);
 				// victim.healthHandler.TakeDamage(new Vector2(chompDamage, 0.0f), Vector2.zero, new Color(1.0f, 0.0f, 0.0f, 0.85f));
 
@@ -60,29 +61,5 @@ namespace GearUpCards.MonoBehaviours
 			UnityEngine.Object.Destroy(this);
 		}
 
-		private float CalculateBulletPerSecond()
-        {
-			// UnityEngine.Debug.Log($"CHOMP! BPS CHECK");
-
-			float attackTime = this.shooterGun.attackSpeed * shooterGun.attackSpeedMultiplier;
-			int projectileCount = this.shooterGun.numberOfProjectiles;
-
-			float burstTime = this.shooterGun.timeBetweenBullets;
-			int burstCount = this.shooterGun.bursts;
-
-			float bps = 1.0f;
-			if (burstCount > 1)
-            {
-				attackTime += (burstCount - 1) * burstTime;
-				bps = burstCount * projectileCount / attackTime;
-            }
-			else
-            {
-			    bps = projectileCount / attackTime;
-			}
-
-			// UnityEngine.Debug.Log($"CHOMP! BPS = [{bps}]");
-			return Mathf.Clamp(bps, .75f, 50.0f);
-        }
     }
 }

@@ -14,6 +14,8 @@ using Jotunn;
 
 using GearUpCards.Cards;
 using static GearUpCards.Utils.CardUtils;
+using UnboundLib.Utils;
+using System.Linq;
 
 namespace GearUpCards
 {
@@ -32,7 +34,7 @@ namespace GearUpCards
     {
         private const string ModId = "com.pudassassin.rounds.GearUpCards";
         private const string ModName = "GearUpCards";
-        public const string Version = "0.0.48";
+        public const string Version = "0.0.56";
 
         public const string ModInitials = "GearUP";
 
@@ -62,19 +64,36 @@ namespace GearUpCards
 
             // Hooks
             GameModeManager.AddHook(GameModeHooks.HookGameStart, GameStart);
+
+            // make cards mutually exclusive
+            this.ExecuteAfterSeconds(0.4f, () =>
+            {
+                if (CardManager.cards.Values.Any(card => card.cardInfo.cardName == "Size Difference"))
+                {
+                    CustomCardCategories.instance.MakeCardsExclusive(
+                        CardManager.cards.Values.First(card => card.cardInfo.cardName == "Size Difference").cardInfo,
+                        CardManager.cards.Values.First(card => card.cardInfo.cardName == "Size Normalizer").cardInfo);
+                }
+                if (CardManager.cards.Values.Any(card => card.cardInfo.cardName == "Size Matters"))
+                {
+                    CustomCardCategories.instance.MakeCardsExclusive(
+                        CardManager.cards.Values.First(card => card.cardInfo.cardName == "Size Matters").cardInfo,
+                        CardManager.cards.Values.First(card => card.cardInfo.cardName == "Size Normalizer").cardInfo);
+                }
+            });
         }
 
         IEnumerator GameStart(IGameModeHandler gm)
         {
             foreach (var player in PlayerManager.instance.players)
             {
-                if (!ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Contains(Category.typeCrystalMod))
+                if (!ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Contains(GearCategory.typeCrystalMod))
                 {
-                    ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(Category.typeCrystalMod);
+                    ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.typeCrystalMod);
                 }
-                if (!ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Contains(Category.typeCrystal))
+                if (!ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Contains(GearCategory.typeCrystal))
                 {
-                    ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(Category.typeCrystal);
+                    ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.typeCrystal);
                 }
             }
             yield break;
