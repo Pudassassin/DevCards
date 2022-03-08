@@ -174,9 +174,9 @@ namespace GearUpCards.MonoBehaviours
 
         internal IEnumerator ResolveHandCards()
         {
-            yield return ResolveCardCategory(Category.typeSizeMod, "Medical Parts");
+            yield return ResolveCardCategory(GearCategory.typeSizeMod, "Medical Parts");
 
-            yield return UpdateCategoryBlacklist(Category.typeSizeMod);
+            yield return UpdateCategoryBlacklist(GearCategory.typeSizeMod);
 
             yield break;
         }

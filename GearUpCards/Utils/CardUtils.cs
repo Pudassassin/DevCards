@@ -15,7 +15,7 @@ namespace GearUpCards.Utils
 {
     public class CardUtils
     {
-        public static class Category
+        public static class GearCategory
         {
             public static CardCategory typeGunMod = CustomCardCategories.instance.CardCategory("GearUp_GunMod");
             public static CardCategory typeBlockMod = CustomCardCategories.instance.CardCategory("GearUp_BlockMod");
