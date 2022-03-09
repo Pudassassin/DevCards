@@ -21,32 +21,25 @@ namespace GearUpCards.MonoBehaviours
         internal Player player;
         internal CharacterStatModifiers stats;
 
+        internal float prevSizeModifier;
+        internal float prevMaxHealth;
+
         internal float totalScaleBefore;
+        internal float totalScaleAfter;
+        internal float targetScale;
+
         internal float timer = 0.0f;
         internal bool effectEnabled;
         internal bool effectApplied;
-
-        internal Vector3 scaleVectorBefore;
-        internal Vector3 scaleVectorLock;
-
-
-        /* DEBUG */
-        // internal int proc_count = 0;
-
 
         public void Awake()
         {
             this.player = this.gameObject.GetComponent<Player>();
             this.stats = this.gameObject.GetComponent<CharacterStatModifiers>();
 
-            effectEnabled = true;
-            effectApplied = false;
+            Refresh();
 
-            totalScaleBefore = this.player.gameObject.transform.localScale.z;
-            scaleVectorBefore = player.gameObject.transform.localScale;
-            scaleVectorLock = Vector3.one * 1.2f; // default scale locking
-
-            GameModeManager.AddHook(GameModeHooks.HookRoundStart, OnRoundStart);
+            GameModeManager.AddHook(GameModeHooks.HookBattleStart, OnBattleStart);
             GameModeManager.AddHook(GameModeHooks.HookRoundEnd, OnRoundEnd);
         }
 
@@ -55,16 +48,27 @@ namespace GearUpCards.MonoBehaviours
 
         }
 
+        // [*] [Brawler] and [Pristine Perserverence] will make player size temporary bigger than what [Size Norm.] supposed to keep due to the MAX HP increases
+        // [!] severely reduce [Overpower] knockback force due to being locked down to default size (still do proper damage)
+
         public void Update()
         {
             timer += Time.deltaTime;
 
             if (timer > procTime)
             {
+                if (effectEnabled)
+                {
+                    if (!StatsMath.ApproxEqual(this.player.data.maxHealth, prevMaxHealth))
+                    {
+                        effectApplied = false;
+                        prevMaxHealth = this.player.data.maxHealth;
+                        totalScaleBefore = Mathf.Pow(this.player.data.maxHealth / 100f * 1.2f, 0.2f) * prevSizeModifier;
+                    }
+                }
+
                 if (effectEnabled && !effectApplied)
                 {
-                    float targetScale;
-
                     if (totalScaleBefore >= 1.2f)
                     {
                         targetScale = 1.65f - (0.5f * Mathf.Pow(0.9f, this.totalScaleBefore));
@@ -74,54 +78,42 @@ namespace GearUpCards.MonoBehaviours
                         targetScale = 0.1f + Mathf.Pow(1.1f, this.totalScaleBefore);
                     }
 
-                    // targetScale /= Mathf.Pow(this.player.data.maxHealth / 100f * 0.6f, 0.2f);
+                    totalScaleAfter = prevSizeModifier * targetScale / totalScaleBefore;
 
-                    // compatibility with [W I D E], [Lanky] or other scaling mods
-                    scaleVectorLock = player.gameObject.transform.localScale * targetScale / this.totalScaleBefore;
-
-                    player.gameObject.transform.localScale = scaleVectorLock;
+                    this.player.gameObject.GetOrAddComponent<SizeNormalizerStatus>().SetSize(targetScale / totalScaleBefore);
                     effectApplied = true;
 
-                    UnityEngine.Debug.Log($"[SizeNorm] adjusting... [{player.playerID}] [{totalScaleBefore}] >> [{targetScale}]");
+                    // UnityEngine.Debug.Log($"[SizeNorm] adjusting... [{player.playerID}] [{totalScaleBefore}] >> [{targetScale}] == [{totalScaleAfter}] >> [{stats.sizeMultiplier}]");
                 }
 
-                if (effectEnabled)
+                if (effectEnabled && effectApplied)
                 {
-                    player.gameObject.transform.localScale = scaleVectorLock;
-                }
-                
-                if (!effectEnabled)
-                {
-                    this.stats.sizeMultiplier = totalScaleBefore;
-                    effectApplied = false;
+                    // this.player.gameObject.GetOrAddComponent<SizeNormalizerStatus>().SetSize(targetScale / totalScaleBefore);
                 }
 
+                if (!effectEnabled && !effectApplied)
+                {
+                    this.player.gameObject.GetOrAddComponent<SizeNormalizerStatus>().SetSize(1.0f);
+                    effectApplied = true;
+                }
                 timer -= procTime;
-                // proc_count++;
             }
 
 
         }
 
-        private IEnumerator OnRoundStart(IGameModeHandler gm)
+        private IEnumerator OnBattleStart(IGameModeHandler gm)
         {
-            if (this.stats.GetGearData().sizeMod == GearUpConstants.ModType.sizeNormalize && effectEnabled)
-            {
-                Refresh();
-            }
+            Refresh();
 
             yield break;
         }
 
         private IEnumerator OnRoundEnd(IGameModeHandler gm)
         {
-            if (this.isActiveAndEnabled)
-            {
-                this.player.gameObject.transform.localScale = this.scaleVectorBefore;
-            }
-
             effectEnabled = false;
-        
+            effectApplied = false;
+
             yield break;
         }
 
@@ -137,27 +129,40 @@ namespace GearUpCards.MonoBehaviours
             }
             else
             {
-                effectEnabled = false;
                 // UnityEngine.Debug.Log($"[HOLLOW] from player [{player.playerID}] - dead ded!?");
             }
         }
         public void OnDestroy()
         {
-            GameModeManager.RemoveHook(GameModeHooks.HookPointStart, OnRoundStart);
-            GameModeManager.RemoveHook(GameModeHooks.HookPointEnd, OnRoundEnd);
+            GameModeManager.RemoveHook(GameModeHooks.HookBattleStart, OnBattleStart);
+            GameModeManager.RemoveHook(GameModeHooks.HookRoundEnd, OnRoundEnd);
         }
 
         public void Refresh()
         {
-            //return size to normal if it is ever be add mid-battle
-            this.player.gameObject.transform.localScale = this.scaleVectorBefore;
-
-            effectEnabled = true;
+            if (this.stats.GetGearData().sizeMod == GearUpConstants.ModType.sizeNormalize)
+            {
+                effectEnabled = true;
+            }
             effectApplied = false;
 
-            totalScaleBefore = this.player.gameObject.transform.localScale.z;
-            scaleVectorBefore = player.gameObject.transform.localScale;
-            scaleVectorLock = Vector3.one * 1.2f; // default scale locking
+            prevMaxHealth = player.data.maxHealth;
+            prevSizeModifier = this.stats.sizeMultiplier;
+            totalScaleBefore = Mathf.Pow(this.player.data.maxHealth / 100f * 1.2f, 0.2f) * prevSizeModifier;
+        }
+    }
+
+    class SizeNormalizerStatus : ReversibleEffect
+    {
+        public override void OnAwake()
+        {
+            this.SetLivesToEffect(999);
+        }
+
+        public void SetSize(float size)
+        {
+            characterStatModifiersModifier.sizeMultiplier_mult = size;
+            ApplyModifiers();
         }
     }
 }
