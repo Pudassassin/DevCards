@@ -22,15 +22,15 @@ namespace GearUpCards.Cards
             cardInfo.allowMultiple = false;
             cardInfo.categories = new CardCategory[]
             {
-                Category.typeSizeMod,
-                Category.tagNoRemove
+                GearCategory.typeSizeMod,
+                GearCategory.tagNoRemove
             };
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
             // Resolve card conflicts
             CardHandResolveMono resolver = player.gameObject.GetOrAddComponent<CardHandResolveMono>();
-            List<HandCardData> conflictedCards = GetPlayerCardsWithCategory(player, Category.typeSizeMod);
+            List<HandCardData> conflictedCards = GetPlayerCardsWithCategory(player, GearCategory.typeSizeMod);
 
             // foreach (var item in conflictedCards)
             // {
@@ -44,7 +44,7 @@ namespace GearUpCards.Cards
             }
 
             // black/whitelisting
-            ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(Category.typeSizeMod);
+            ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.typeSizeMod);
 
             // stats
             player.data.maxHealth *= 1.5f;

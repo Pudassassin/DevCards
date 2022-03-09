@@ -24,20 +24,13 @@ namespace GearUpCards.MonoBehaviours
 				return HasToReturn.canContinue;
             }
 
-			// UnityEngine.Debug.Log($"CHOMP! #2");
-
 			if (hit.transform.gameObject.tag.Contains("Player"))
             {
-				// UnityEngine.Debug.Log($"CHOMP! #3");
-
 				// get/update the shooter gun stats
-				// UnityEngine.Debug.Log($"CHOMP! #3.1");
 				ProjectileHit projectileHit = this.gameObject.GetComponentInParent<ProjectileHit>();
 
-				// UnityEngine.Debug.Log($"CHOMP! #3.2");
 				shooterPlayer = projectileHit.ownPlayer;
 
-				// UnityEngine.Debug.Log($"CHOMP! #3.3");
 				shooterGun = projectileHit.ownWeapon.GetComponent<Gun>();
 
 				CharacterData victim = hit.transform.gameObject.GetComponent<CharacterData>();
@@ -46,11 +39,10 @@ namespace GearUpCards.MonoBehaviours
 				float bps = StatsMath.GetGunBPS(shooterGun);
 
 				// do damage to victim
-				float chompDamage = healthCullBaseFactor / Mathf.Clamp(bps * 0.5f, .75f, 50.0f) * victim.health;
+				float chompDamage = healthCullBaseFactor / Mathf.Clamp(bps + 0.5f, .75f, 50.0f) * victim.health;
 				victim.healthHandler.RPCA_SendTakeDamage(new Vector2(chompDamage, 0.0f), this.transform.position, playerID: shooterGun.player.playerID);
 				// victim.healthHandler.TakeDamage(new Vector2(chompDamage, 0.0f), Vector2.zero, new Color(1.0f, 0.0f, 0.0f, 0.85f));
 
-				// UnityEngine.Debug.Log($"CHOMP!, dealt [{chompDamage}] to player [{victim.player.playerID}]");
 			}
 
 			return HasToReturn.canContinue;

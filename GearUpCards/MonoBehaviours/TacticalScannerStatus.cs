@@ -102,12 +102,12 @@ namespace GearUpCards.MonoBehaviours
 
             if (isFriendly && healthDelta > 0)
             {
-                if (flagPristineGain >= 3.5f) healthDelta /= flagPristineGain;
+                if (flagPristineGain >= 2.5f) healthDelta /= flagPristineGain;
                 scannerAmpAmount += healthDelta;
             }
             else if (!isFriendly && healthDelta < 0)
             {
-                if (flagPristineLoss >= 3.5f) healthDelta /= flagPristineLoss;
+                if (flagPristineLoss >= 2.5f) healthDelta /= flagPristineLoss;
                 scannerAmpAmount += -healthDelta;
             }
 

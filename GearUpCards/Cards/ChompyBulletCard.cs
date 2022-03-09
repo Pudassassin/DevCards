@@ -66,7 +66,7 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "HP Culling",
-                    amount = "+10%",
+                    amount = "+15%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
