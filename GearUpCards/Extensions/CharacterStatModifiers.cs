@@ -25,7 +25,10 @@ namespace GearUpCards.Extensions
             crystalMimic,
 
             sizeNormalize = 20,
-            sizeShrinker
+            sizeShrinker,
+
+            spellAntiBullet = 30,
+            spellTimeDilution
         }
     }
 
@@ -37,19 +40,26 @@ namespace GearUpCards.Extensions
         public int hollowLifeStack;
         public int tacticalScannerStack;
 
+        public int magickFragmentStack;
+
         public GearUpConstants.ModType gunMod;
         public GearUpConstants.ModType blockMod;
 
         public GearUpConstants.ModType sizeMod;
+        public GearUpConstants.ModType uniqueMagick;
 
         public CharacterStatModifiersGearData()
         {
             hollowLifeStack = 0;
             tacticalScannerStack = 0;
 
+            magickFragmentStack = 0;
+
             gunMod = GearUpConstants.ModType.none;
             blockMod = GearUpConstants.ModType.none;
+
             sizeMod = GearUpConstants.ModType.none;
+            uniqueMagick = GearUpConstants.ModType.none;
         }
     }
 
@@ -81,9 +91,13 @@ namespace GearUpCards.Extensions
             __instance.GetGearData().hollowLifeStack = 0;
             __instance.GetGearData().tacticalScannerStack = 0;
 
+            __instance.GetGearData().magickFragmentStack = 0;
+
             __instance.GetGearData().gunMod = GearUpConstants.ModType.none;
             __instance.GetGearData().blockMod = GearUpConstants.ModType.none;
+
             __instance.GetGearData().sizeMod = GearUpConstants.ModType.none;
+            __instance.GetGearData().uniqueMagick = GearUpConstants.ModType.none;
         }
     }
 }

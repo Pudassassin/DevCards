@@ -175,8 +175,10 @@ namespace GearUpCards.MonoBehaviours
         internal IEnumerator ResolveHandCards()
         {
             yield return ResolveCardCategory(GearCategory.typeSizeMod, "Medical Parts");
+            yield return ResolveCardCategory(GearCategory.typeUniqueMagick, "Magick Fragments");
 
             yield return UpdateCategoryBlacklist(GearCategory.typeSizeMod);
+            yield return UpdateCategoryBlacklist(GearCategory.typeUniqueMagick);
 
             yield break;
         }

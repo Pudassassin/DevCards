@@ -26,6 +26,8 @@ namespace GearUpCards.Utils
 
             public static CardCategory typeSizeMod = CustomCardCategories.instance.CardCategory("GearUp_SizeMod");
 
+            public static CardCategory typeUniqueMagick = CustomCardCategories.instance.CardCategory("GearUp_UniqueMagick");
+
             public static CardCategory tagNoRemove = CustomCardCategories.instance.CardCategory("NoRemove");
         }
 
