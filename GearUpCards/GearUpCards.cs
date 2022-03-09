@@ -16,6 +16,7 @@ using GearUpCards.Cards;
 using static GearUpCards.Utils.CardUtils;
 using UnboundLib.Utils;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace GearUpCards
 {
@@ -34,7 +35,7 @@ namespace GearUpCards
     {
         private const string ModId = "com.pudassassin.rounds.GearUpCards";
         private const string ModName = "GearUpCards";
-        public const string Version = "0.0.57";
+        public const string Version = "0.0.58";
 
         public const string ModInitials = "GearUP";
 
@@ -70,19 +71,31 @@ namespace GearUpCards
             GameModeManager.AddHook(GameModeHooks.HookGameStart, GameStart);
 
             // make cards mutually exclusive
-            this.ExecuteAfterSeconds(0.4f, () =>
+            this.ExecuteAfterSeconds(1.5f, () =>
             {
                 if (CardManager.cards.Values.Any(card => card.cardInfo.cardName == "Size Difference"))
                 {
-                    CustomCardCategories.instance.MakeCardsExclusive(
-                        CardManager.cards.Values.First(card => card.cardInfo.cardName == "Size Difference").cardInfo,
-                        CardManager.cards.Values.First(card => card.cardInfo.cardName == "Size Normalizer").cardInfo);
+                    CardInfo otherCard = CardManager.cards.Values.First(card => card.cardInfo.cardName == "Size Difference").cardInfo;
+
+                    // CustomCardCategories.instance.MakeCardsExclusive(
+                    //     otherCard,
+                    //     CardManager.cards.Values.First(card => card.cardInfo.cardName == "Size Normalizer").cardInfo);
+
+                    List<CardCategory> newList = otherCard.categories.ToList();
+                    newList.Add(GearCategory.typeSizeMod);
+                    otherCard.categories = newList.ToArray();
                 }
                 if (CardManager.cards.Values.Any(card => card.cardInfo.cardName == "Size Matters"))
                 {
-                    CustomCardCategories.instance.MakeCardsExclusive(
-                        CardManager.cards.Values.First(card => card.cardInfo.cardName == "Size Matters").cardInfo,
-                        CardManager.cards.Values.First(card => card.cardInfo.cardName == "Size Normalizer").cardInfo);
+                    CardInfo otherCard = CardManager.cards.Values.First(card => card.cardInfo.cardName == "Size Matters").cardInfo;
+
+                    // CustomCardCategories.instance.MakeCardsExclusive(
+                    //     otherCard,
+                    //     CardManager.cards.Values.First(card => card.cardInfo.cardName == "Size Normalizer").cardInfo);
+
+                    List<CardCategory> newList = otherCard.categories.ToList();
+                    newList.Add(GearCategory.typeSizeMod);
+                    otherCard.categories = newList.ToArray();
                 }
             });
         }
