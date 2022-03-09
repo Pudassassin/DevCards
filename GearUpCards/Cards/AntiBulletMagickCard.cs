@@ -51,6 +51,7 @@ namespace GearUpCards.Cards
             characterStats.GetGearData().uniqueMagick = GearUpConstants.ModType.spellAntiBullet;
 
             // Add effect mono
+            player.gameObject.GetOrAddComponent<AntiBulletMagickEffect>();
             
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)

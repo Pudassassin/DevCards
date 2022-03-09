@@ -25,16 +25,18 @@ namespace GearUpCards.MonoBehaviours
         private const string bulletGameObjectName = "Bullet_Base(Clone)";
         private const float spellCooldownBase = 15.0f;
         private const float spellForceReloadTimeAdd = 3.0f;
-        private const float spellRange = 5.0f;
+        private const float spellRange = 7.0f;
 
         private const float procTime = .10f;
 
         internal Action<BlockTrigger.BlockTriggerType> spellAction;
 
         internal int magickFragmentCount;
-        internal float spellCooldown;
+        internal float spellCooldown = 15.0f;
         internal bool spellReady = false;
         internal bool empowerCharged = false;
+
+        internal Vector3 prevPosition;
 
         internal float timeLastUsed = 0.0f;
 
@@ -71,20 +73,21 @@ namespace GearUpCards.MonoBehaviours
 
             if (timer >= procTime)
             {
+                prevPosition = this.player.transform.position;
                 if (this.stats.GetGearData().uniqueMagick == GearUpConstants.ModType.spellAntiBullet)
                 {
+                    RecalculateEffectStats();
                     CheckReady();
+                }
+                else
+                {
+                    empowerCharged = false;
+                    spellReady = false;
                 }
 
                 timer -= procTime;
                 // proc_count++;
             }
-            else
-            {
-                empowerCharged = false;
-                spellReady = false;
-            }
-
         }
 
         internal void CheckReady()
@@ -113,15 +116,15 @@ namespace GearUpCards.MonoBehaviours
                     // empower do cheeky teleport, I can just grab player.transform.position
 
                     // ScanVFX part
-                    GameObject scanVFX = Instantiate(spellVFXPrefab, this.player.transform.position + new Vector3(0.0f, 0.0f, 100.0f), Quaternion.identity);
-                    scanVFX.transform.localScale = Vector3.one * spellRange;
-                    scanVFX.name = "AntiBulletVFX_Copy";
-                    scanVFX.GetComponent<Canvas>().sortingLayerName = "MostFront";
-                    scanVFX.GetComponent<Canvas>().sortingOrder = 10000;
+                    GameObject VFX = Instantiate(spellVFXPrefab, this.player.transform.position + new Vector3(0.0f, 0.0f, 100.0f), Quaternion.identity);
+                    VFX.transform.localScale = Vector3.one * spellRange;
+                    VFX.name = "AntiBulletVFX_Copy";
+                    VFX.GetComponent<Canvas>().sortingLayerName = "MostFront";
+                    VFX.GetComponent<Canvas>().sortingOrder = 10000;
 
-                    scanVFX.GetComponentInChildren<Animator>().speed = 2.0f;
-                    scanVFX.AddComponent<RemoveAfterSeconds>().seconds = 0.50f;
-                    scanVFX.GetComponentInChildren<SpriteRenderer>().color = new Color(1.0f, 0.5f, 0.0f, 1.0f);
+                    VFX.GetComponentInChildren<Animator>().speed = 2.0f;
+                    VFX.AddComponent<RemoveAfterSeconds>().seconds = 0.50f;
+                    VFX.GetComponentInChildren<SpriteRenderer>().color = new Color(1.0f, 0.5f, 0.0f, 1.0f);
 
                     // check players in range and apply status monos
                     TacticalScannerStatus status;
@@ -143,7 +146,15 @@ namespace GearUpCards.MonoBehaviours
 
                     foreach (Player target in PlayerManager.instance.players)
                     {
-                        distance = (target.transform.position - this.player.transform.position).magnitude;
+                        if (target.playerID == this.player.playerID && trigger == BlockTrigger.BlockTriggerType.Empower)
+                        {
+                            distance = (this.prevPosition - this.player.transform.position).magnitude;
+                        }
+                        else
+                        {
+                            distance = (target.transform.position - this.player.transform.position).magnitude;
+                        }
+
                         if (distance > spellRange)
                             continue;
 
@@ -184,13 +195,13 @@ namespace GearUpCards.MonoBehaviours
         {
             Traverse.Create(gunAmmo).Field("currentAmmo").SetValue((int)0);
             Traverse.Create(gunAmmo).Field("freeReloadCounter").SetValue((float)0.0f);
-            Traverse.Create(gunAmmo).InvokeMethod("SetActiveBullets");
+            gunAmmo.InvokeMethod("SetActiveBullets", false);
 
-            float reloadTime = (float)Traverse.Create(gunAmmo).InvokeMethod("ReloadTime") + spellForceReloadTimeAdd;
+            float reloadTime = (float)gunAmmo.InvokeMethod("ReloadTime") + spellForceReloadTimeAdd;
             Traverse.Create(gunAmmo).Field("reloadCounter").SetValue((float) reloadTime);
             gun.isReloading = true;
             int maxAmmo = gunAmmo.maxAmmo;
-            Traverse.Create(gun.player.data.stats).InvokeMethod("OnOutOfAmmp", maxAmmo);
+            gun.player.data.stats.InvokeMethod("OnOutOfAmmp", maxAmmo);
         }
 
         private IEnumerator OnPointStart(IGameModeHandler gm)
