@@ -157,7 +157,6 @@ namespace GearUpCards.MonoBehaviours
         public override void OnAwake()
         {
             this.SetLivesToEffect(999);
-            base.OnAwake();
         }
 
         public void SetSize(float size)
