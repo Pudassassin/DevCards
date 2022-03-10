@@ -91,7 +91,7 @@ namespace GearUpCards.MonoBehaviours
 
         override public void OnUpdate()
         {
-            timer += Time.deltaTime;
+            timer += TimeHandler.deltaTime;
 
             float healthDelta = player.data.health - previousHealth;
             previousHealth = player.data.health;

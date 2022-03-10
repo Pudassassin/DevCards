@@ -20,14 +20,17 @@ namespace GearUpCards.MonoBehaviours
 {
     internal class AntiBulletMagickEffect : MonoBehaviour
     {
-        private static GameObject spellVFXPrefab = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_GenericAOE");
+        // public float _debugScale = 2.0f;
+
+        private static GameObject spellVFXPrefab = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_AntiBulletMagick");
 
         private const string bulletGameObjectName = "Bullet_Base(Clone)";
         private const float spellCooldownBase = 15.0f;
         private const float spellForceReloadTimeAdd = 3.0f;
         private const float spellRange = 7.0f;
+        private const float spellDuration = 1.0f;
 
-        private const float procTime = .10f;
+        private const float procTime = .025f;
 
         internal Action<BlockTrigger.BlockTriggerType> spellAction;
 
@@ -37,8 +40,10 @@ namespace GearUpCards.MonoBehaviours
         internal bool empowerCharged = false;
 
         internal Vector3 prevPosition;
+        internal Vector3 castPosition;
 
         internal float timeLastUsed = 0.0f;
+        internal float timeLastActivated = 0.0f;
 
         internal float timer = 0.0f;
         internal bool effectWarmUp = false;
@@ -69,7 +74,7 @@ namespace GearUpCards.MonoBehaviours
 
         public void Update()
         {
-            timer += Time.deltaTime;
+            timer += TimeHandler.deltaTime;
 
             if (timer >= procTime)
             {
@@ -85,6 +90,11 @@ namespace GearUpCards.MonoBehaviours
                     spellReady = false;
                 }
 
+                if (Time.time < timeLastUsed + spellDuration)
+                {
+                    DeleteBullet();
+                }
+
                 timer -= procTime;
                 // proc_count++;
             }
@@ -96,7 +106,7 @@ namespace GearUpCards.MonoBehaviours
             {
                 return;
             }
-            else if (Time.time >= timeLastUsed + spellCooldown)
+            else if (Time.time >= timeLastActivated + spellCooldown)
             {
                 spellReady = true;
             }
@@ -122,27 +132,14 @@ namespace GearUpCards.MonoBehaviours
                     VFX.GetComponent<Canvas>().sortingLayerName = "MostFront";
                     VFX.GetComponent<Canvas>().sortingOrder = 10000;
 
-                    VFX.GetComponentInChildren<Animator>().speed = 2.0f;
-                    VFX.AddComponent<RemoveAfterSeconds>().seconds = 0.50f;
-                    VFX.GetComponentInChildren<SpriteRenderer>().color = new Color(1.0f, 0.5f, 0.0f, 1.0f);
+                    VFX.AddComponent<RemoveAfterSeconds>().seconds = 1.25f;
 
                     // check players in range and apply status monos
                     TacticalScannerStatus status;
                     float distance;
 
-                    List<GameObject> bulletToDelete = GameObject.FindGameObjectsWithTag("Bullet").ToList();
-                    foreach (GameObject bullet in bulletToDelete)
-                    {
-                        if (!bullet.name.Equals(bulletGameObjectName))
-                            continue;
-
-                        distance = (bullet.transform.position - player.transform.position).magnitude;
-
-                        if (distance > spellRange)
-                            continue;
-
-                        Destroy(bullet);
-                    }
+                    castPosition = this.player.transform.position;
+                    DeleteBullet();
 
                     foreach (Player target in PlayerManager.instance.players)
                     {
@@ -172,10 +169,12 @@ namespace GearUpCards.MonoBehaviours
                     if (trigger == BlockTrigger.BlockTriggerType.Empower)
                     {
                         empowerCharged = false;
+                        timeLastActivated = Time.time;
                     }
                     else
                     {
                         timeLastUsed = Time.time;
+                        timeLastActivated = Time.time;
                         spellReady = false;
                         empowerCharged = true;
                     }
@@ -189,6 +188,24 @@ namespace GearUpCards.MonoBehaviours
             spellCooldown = spellCooldownBase - (magickFragmentCount * 1.5f);
 
             spellCooldown = Mathf.Clamp(spellCooldown, 7.0f, 30.0f);
+        }
+
+        internal void DeleteBullet()
+        {
+            float distance;
+            List<GameObject> bulletToDelete = GameObject.FindGameObjectsWithTag("Bullet").ToList();
+            foreach (GameObject bullet in bulletToDelete)
+            {
+                if (!bullet.name.Equals(bulletGameObjectName))
+                    continue;
+
+                distance = (bullet.transform.position - castPosition).magnitude;
+
+                if (distance > spellRange)
+                    continue;
+
+                Destroy(bullet);
+            }
         }
 
         internal void ApplyForceReload(Gun gun, GunAmmo gunAmmo)

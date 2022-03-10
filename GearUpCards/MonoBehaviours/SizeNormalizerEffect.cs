@@ -53,7 +53,7 @@ namespace GearUpCards.MonoBehaviours
 
         public void Update()
         {
-            timer += Time.deltaTime;
+            timer += TimeHandler.deltaTime;
 
             if (timer > procTime)
             {
