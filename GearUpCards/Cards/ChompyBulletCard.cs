@@ -11,6 +11,8 @@ namespace GearUpCards.Cards
 {
     class ChompyBulletCard : CustomCard
     {
+        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_ChompyBullet");
+
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
             
@@ -48,11 +50,11 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Bullets deal bonus damage based on target's HP.\nReduced effect on burst or rapid-fire guns.";
+            return "Bullets deal bonus damage based on target's current health.\nReduced effect on burst or rapid-fire guns.";
         }
         protected override GameObject GetCardArt()
         {
-            return null;
+            return cardArt;
         }
         protected override CardInfo.Rarity GetRarity()
         {

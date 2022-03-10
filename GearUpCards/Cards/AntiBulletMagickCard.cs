@@ -17,6 +17,8 @@ namespace GearUpCards.Cards
 {
     class AntiBulletMagickCard : CustomCard
     {
+        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_AntiBulletMagick");
+
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
             cardInfo.allowMultiple = false;
@@ -69,7 +71,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            return null;
+            return cardArt;
         }
         protected override CardInfo.Rarity GetRarity()
         {
@@ -111,7 +113,7 @@ namespace GearUpCards.Cards
         }
         protected override CardThemeColor.CardThemeColorType GetTheme()
         {
-            return CardThemeColor.CardThemeColorType.DefensiveBlue;
+            return CardThemeColor.CardThemeColorType.MagicPink;
         }
         public override string GetModName()
         {
