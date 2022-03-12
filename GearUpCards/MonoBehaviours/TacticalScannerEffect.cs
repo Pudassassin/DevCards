@@ -138,7 +138,7 @@ namespace GearUpCards.MonoBehaviours
                                     (trigger == BlockTrigger.BlockTriggerType.Default && scannerReady) ||
                                     (trigger == BlockTrigger.BlockTriggerType.ShieldCharge && scannerReady);
 
-                if (conditionMet)
+                if (conditionMet && !effectWarmUp)
                 {
                     // empower do cheeky teleport, I can just grab player.transform.position
 

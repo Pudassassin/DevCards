@@ -16,7 +16,7 @@ namespace GearUpCards.Cards
 
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            
+            gun.attackSpeed = 1.33f;
         }
 
         // "attackSpeed" is technically a gunfire cooldown between shots >> Less is more rapid firing
@@ -25,14 +25,14 @@ namespace GearUpCards.Cards
         {
             gun.damage *= .75f;
 
-            if (gun.attackSpeedMultiplier > 1.0f)
-            {
-                gun.attackSpeedMultiplier -= .25f;
-            }
-            else
-            {
-                gun.attackSpeedMultiplier *= .75f;
-            }
+            // if (gun.attackSpeedMultiplier > 1.0f)
+            // {
+            //     gun.attackSpeedMultiplier -= .25f;
+            // }
+            // else
+            // {
+            //     gun.attackSpeedMultiplier *= .75f;
+            // }
 
             gunAmmo.reloadTimeMultiplier += .25f;
 

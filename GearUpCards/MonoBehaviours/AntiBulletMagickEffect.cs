@@ -130,7 +130,7 @@ namespace GearUpCards.MonoBehaviours
                                     (trigger == BlockTrigger.BlockTriggerType.Default && spellReady) ||
                                     (trigger == BlockTrigger.BlockTriggerType.ShieldCharge && spellReady);
 
-                if (conditionMet)
+                if (conditionMet && !effectWarmUp)
                 {
                     // empower do cheeky teleport, I can just grab player.transform.position
 
@@ -163,14 +163,15 @@ namespace GearUpCards.MonoBehaviours
                         if (distance > spellRange)
                             continue;
 
-                        UnityEngine.Debug.Log($"[AntiBullet] Reading player[{target.playerID}]");
+                        // UnityEngine.Debug.Log($"[AntiBullet] Reading player[{target.playerID}]");
 
                         Gun targetGun = target.gameObject.GetComponent<WeaponHandler>().gun;
                         GunAmmo targetGunAmmo = target.gameObject.GetComponent<WeaponHandler>().gun.GetComponentInChildren<GunAmmo>();
 
-                        UnityEngine.Debug.Log($"[AntiBullet] Applying ForceReload to player[{target.playerID}]");
+                        // UnityEngine.Debug.Log($"[AntiBullet] Applying ForceReload to player[{target.playerID}]");
                         ApplyForceReload(targetGun, targetGunAmmo);
-                        UnityEngine.Debug.Log($"[AntiBullet] Forced-Reload player[{target.playerID}]");
+
+                        // UnityEngine.Debug.Log($"[AntiBullet] Forced-Reload player[{target.playerID}]");
 
                     }
 

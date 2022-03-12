@@ -11,8 +11,6 @@ namespace GearUpCards.Utils
         {
             if (gun == null) return 0.0f;
 
-			// UnityEngine.Debug.Log($"BPS CHECK");
-
 			float attackTime = gun.attackSpeed * gun.attackSpeedMultiplier;
 			int projectileCount = gun.numberOfProjectiles;
 
@@ -30,8 +28,24 @@ namespace GearUpCards.Utils
 				bps = projectileCount / attackTime;
 			}
 
-			// UnityEngine.Debug.Log($"BPS = [{bps}]");
 			return bps;
+		}
+
+		public static float GetGunAPS(Gun gun)
+		{
+			if (gun == null) return 0.0f;
+
+			float attackTime = gun.attackSpeed * gun.attackSpeedMultiplier;
+
+			float burstTime = gun.timeBetweenBullets;
+			int burstCount = gun.bursts;
+
+			if (burstCount > 1)
+			{
+				attackTime += (burstCount - 1) * burstTime;
+			}
+
+			return 1.0f / attackTime;
 		}
 
 		public static float GetGunAmmoReloadTime(GunAmmo gunAmmo)

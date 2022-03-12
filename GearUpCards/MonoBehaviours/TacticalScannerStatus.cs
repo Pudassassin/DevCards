@@ -208,8 +208,11 @@ namespace GearUpCards.MonoBehaviours
 
             this.dataDamage.text = $"{bulletBatch}x[{this.playerGun.damage * 55.0f:f2}] < DMG";
 
-            float bps = StatsMath.GetGunBPS(this.playerGun);
-            this.dataBPS.text = $"BPS > [{bps:f2}]";
+            // float bps = StatsMath.GetGunBPS(this.playerGun);
+            // this.dataBPS.text = $"BPS > [{bps:f2}]";
+
+            float aps = StatsMath.GetGunAPS(this.playerGun);
+            this.dataBPS.text = $"ATK/s > [{aps:f2}]";
 
             this.dataReloadSpeed.text = $"RLD > [{StatsMath.GetGunAmmoReloadTime(gunAmmo):f2}]";
 

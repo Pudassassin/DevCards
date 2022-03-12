@@ -130,7 +130,7 @@ namespace GearUpCards.MonoBehaviours
 
         internal string FormatCooldown(float cooldown)
         {
-            if (cooldown > 10.0f) return $"{cooldown:f0}";
+            if (cooldown >= 9.9f) return $"{cooldown:f0}";
             else return $"{cooldown:f1}";
         }
 
@@ -209,6 +209,7 @@ namespace GearUpCards.MonoBehaviours
             else
             {
                 effectEnabled = false;
+                cooldownUI.SetActive(false);
                 // UnityEngine.Debug.Log($"[HOLLOW] from player [{player.playerID}] - dead ded!?");
             }
         }

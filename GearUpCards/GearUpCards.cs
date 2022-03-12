@@ -18,6 +18,8 @@ using UnboundLib.Utils;
 using System.Linq;
 using System.Collections.Generic;
 
+using GearUpCards.MonoBehaviours;
+
 namespace GearUpCards
 {
     // These are the mods required for our mod to work
@@ -35,7 +37,7 @@ namespace GearUpCards
     {
         private const string ModId = "com.pudassassin.rounds.GearUpCards";
         private const string ModName = "GearUpCards";
-        public const string Version = "0.0.69";
+        public const string Version = "0.0.71";
 
         public const string ModInitials = "GearUP";
 
@@ -108,10 +110,13 @@ namespace GearUpCards
                 {
                     ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.typeCrystalMod);
                 }
+
                 if (!ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Contains(GearCategory.typeCrystal))
                 {
                     ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.typeCrystal);
                 }
+
+                player.gameObject.GetOrAddComponent<CardHandResolveMono>();
             }
             yield break;
         }
