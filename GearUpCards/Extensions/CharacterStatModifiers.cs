@@ -27,8 +27,8 @@ namespace GearUpCards.Extensions
             sizeNormalize = 20,
             sizeShrinker,
 
-            spellAntiBullet = 30,
-            spellTimeDilution
+            magickAntiBullet = 30,
+            magickTimeDilution
         }
     }
 
@@ -47,6 +47,8 @@ namespace GearUpCards.Extensions
 
         public GearUpConstants.ModType sizeMod;
         public GearUpConstants.ModType uniqueMagick;
+
+        public float t_uniqueMagickCooldown;
 
         public CharacterStatModifiersGearData()
         {

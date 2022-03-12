@@ -17,6 +17,8 @@ namespace GearUpCards.Cards
 {
     class MedicalPartsCard : CustomCard
     {
+        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_MedicalParts");
+
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
             
@@ -40,7 +42,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            return null;
+            return cardArt;
         }
         protected override CardInfo.Rarity GetRarity()
         {

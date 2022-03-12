@@ -10,11 +10,14 @@ using UnityEngine;
 
 using GearUpCards.MonoBehaviours;
 using GearUpCards.Extensions;
+using static GearUpCards.Utils.CardUtils;
 
 namespace GearUpCards.Cards
 {
     class HollowLifeCard : CustomCard
     {
+        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_HollowLife");
+
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
             
@@ -45,7 +48,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            return null;
+            return cardArt;
         }
         protected override CardInfo.Rarity GetRarity()
         {
@@ -78,6 +81,10 @@ namespace GearUpCards.Cards
         public override string GetModName()
         {
             return GearUpCards.ModInitials;
+        }
+        internal static void callback(CardInfo card)
+        {
+            card.gameObject.AddComponent<ExtraName>().text = "Passive\nHealth";
         }
     }
 }

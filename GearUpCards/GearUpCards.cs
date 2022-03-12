@@ -35,7 +35,7 @@ namespace GearUpCards
     {
         private const string ModId = "com.pudassassin.rounds.GearUpCards";
         private const string ModName = "GearUpCards";
-        public const string Version = "0.0.64";
+        public const string Version = "0.0.69";
 
         public const string ModInitials = "GearUP";
 
@@ -52,8 +52,8 @@ namespace GearUpCards
             Instance = this;
 
             // Random idea cards
-            CustomCard.BuildCard<HollowLifeCard>();
-            CustomCard.BuildCard<ChompyBulletCard>();
+            CustomCard.BuildCard<HollowLifeCard>(HollowLifeCard.callback);
+            CustomCard.BuildCard<ChompyBulletCard>(ChompyBulletCard.callback);
             CustomCard.BuildCard<TacticalScannerCard>(TacticalScannerCard.callback);
             CustomCard.BuildCard<SizeNormalizerCard>(SizeNormalizerCard.callback);
 
@@ -67,7 +67,7 @@ namespace GearUpCards
             CustomCard.BuildCard<MedicalPartsCard>(MedicalPartsCard.callback);
             CustomCard.BuildCard<MagickFragmentsCard>(MagickFragmentsCard.callback);
 
-            // Hooks
+            // Pre-game hooks
             GameModeManager.AddHook(GameModeHooks.HookGameStart, GameStart);
 
             // make cards mutually exclusive

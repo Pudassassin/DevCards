@@ -17,6 +17,8 @@ namespace GearUpCards.Cards
 {
     class SizeNormalizerCard : CustomCard
     {
+        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_SizeNormalizer");
+
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
             cardInfo.allowMultiple = false;
@@ -53,7 +55,7 @@ namespace GearUpCards.Cards
 
             // Add Size Normalizer mono
             SizeNormalizerEffect effect = player.gameObject.GetOrAddComponent<SizeNormalizerEffect>();
-            effect.Refresh();
+            // effect.Refresh();
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -71,7 +73,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            return null;
+            return cardArt;
         }
         protected override CardInfo.Rarity GetRarity()
         {
@@ -120,7 +122,7 @@ namespace GearUpCards.Cards
         }
         protected override CardThemeColor.CardThemeColorType GetTheme()
         {
-            return CardThemeColor.CardThemeColorType.DestructiveRed;
+            return CardThemeColor.CardThemeColorType.TechWhite;
         }
         public override string GetModName()
         {

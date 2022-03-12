@@ -6,7 +6,7 @@ namespace GearUpCards.MonoBehaviours
 {
 	public class ChompyBulletModifier : RayHitEffect
 	{
-		// value per stack at 1 bullet per second
+		// value per stack at around default bullet per second >>> each bullet at [3.0] BPS deal this much value
 		// [!] This card can be dreadful to someone who managed to get *2* or more [Pristine Perserverence]
 		private const float healthCullBaseFactor = 0.15f;
 		private Gun shooterGun;
@@ -38,8 +38,8 @@ namespace GearUpCards.MonoBehaviours
 				// calculate shooter's bullet fired per second
 				float bps = StatsMath.GetGunBPS(shooterGun);
 
-				// do damage to victim
-				float chompDamage = healthCullBaseFactor / Mathf.Clamp(bps + 0.5f, .75f, 50.0f) * victim.health;
+				// do damage to victim ()
+				float chompDamage = healthCullBaseFactor / Mathf.Clamp(bps/2.0f - 0.5f, 1.0f, 50.0f) * victim.health;
 				victim.healthHandler.RPCA_SendTakeDamage(new Vector2(chompDamage, 0.0f), this.transform.position, playerID: shooterGun.player.playerID);
 				// victim.healthHandler.TakeDamage(new Vector2(chompDamage, 0.0f), Vector2.zero, new Color(1.0f, 0.0f, 0.0f, 0.85f));
 

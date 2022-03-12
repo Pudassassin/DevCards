@@ -79,7 +79,7 @@ namespace GearUpCards.MonoBehaviours
             if (timer >= procTime)
             {
                 prevPosition = this.player.transform.position;
-                if (this.stats.GetGearData().uniqueMagick == GearUpConstants.ModType.spellAntiBullet)
+                if (this.stats.GetGearData().uniqueMagick == GearUpConstants.ModType.magickAntiBullet)
                 {
                     RecalculateEffectStats();
                     CheckReady();
@@ -90,7 +90,7 @@ namespace GearUpCards.MonoBehaviours
                     spellReady = false;
                 }
 
-                if (Time.time < timeLastUsed + spellDuration)
+                if (Time.time < timeLastActivated + spellDuration)
                 {
                     DeleteBullet();
                 }
@@ -98,6 +98,8 @@ namespace GearUpCards.MonoBehaviours
                 timer -= procTime;
                 // proc_count++;
             }
+
+            this.stats.GetGearData().t_uniqueMagickCooldown = GetCooldown();
         }
 
         internal void CheckReady()
@@ -106,10 +108,17 @@ namespace GearUpCards.MonoBehaviours
             {
                 return;
             }
-            else if (Time.time >= timeLastActivated + spellCooldown)
+            else if (Time.time >= timeLastUsed + spellCooldown)
             {
                 spellReady = true;
             }
+        }
+
+        public float GetCooldown()
+        {
+            float cooldown = timeLastUsed + spellCooldown - Time.time;
+            if (spellReady) return -1.0f;
+            else return cooldown;
         }
 
         // a work around the delegate limits, cheeky!
@@ -134,8 +143,7 @@ namespace GearUpCards.MonoBehaviours
 
                     VFX.AddComponent<RemoveAfterSeconds>().seconds = 1.25f;
 
-                    // check players in range and apply status monos
-                    TacticalScannerStatus status;
+                    // check players in range and apply status
                     float distance;
 
                     castPosition = this.player.transform.position;

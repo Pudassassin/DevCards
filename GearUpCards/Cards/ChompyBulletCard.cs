@@ -6,6 +6,7 @@ using GearUpCards.MonoBehaviours;
 using UnboundLib;
 using UnboundLib.Cards;
 using UnityEngine;
+using static GearUpCards.Utils.CardUtils;
 
 namespace GearUpCards.Cards
 {
@@ -17,10 +18,22 @@ namespace GearUpCards.Cards
         {
             
         }
+
+        // "attackSpeed" is technically a gunfire cooldown between shots >> Less is more rapid firing
+        // 'attackSpeedMultiplier' works as intended >> More is more rapid firing
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
             gun.damage *= .75f;
-            gun.attackSpeedMultiplier *= .75f;
+
+            if (gun.attackSpeedMultiplier > 1.0f)
+            {
+                gun.attackSpeedMultiplier -= .25f;
+            }
+            else
+            {
+                gun.attackSpeedMultiplier *= .75f;
+            }
+
             gunAmmo.reloadTimeMultiplier += .25f;
 
             gun.projectileColor = new Color(1f, 0.0f, 0.0f, 1f);
@@ -50,7 +63,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Bullets deal bonus damage based on target's current health.\nReduced effect on burst or rapid-fire guns.";
+            return "Bullets deal bonus damage based on\n target's current health.\nEffect varies with gun's firerate.";
         }
         protected override GameObject GetCardArt()
         {
@@ -102,6 +115,10 @@ namespace GearUpCards.Cards
         public override string GetModName()
         {
             return GearUpCards.ModInitials;
+        }
+        internal static void callback(CardInfo card)
+        {
+            card.gameObject.AddComponent<ExtraName>().text = "Passive\nBullet";
         }
     }
 }

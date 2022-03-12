@@ -50,12 +50,15 @@ namespace GearUpCards.Cards
 
             // stats
             block.cdAdd += 1.5f;
-            characterStats.GetGearData().uniqueMagick = GearUpConstants.ModType.spellAntiBullet;
+            characterStats.GetGearData().uniqueMagick = GearUpConstants.ModType.magickAntiBullet;
 
             // Add effect mono
             player.gameObject.GetOrAddComponent<AntiBulletMagickEffect>();
-            
+
+            CooldownUIMono cooldownUI = player.gameObject.GetOrAddComponent<CooldownUIMono>();
+            // cooldownUI.FetchAbilities();
         }
+
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
             // black/whitelisting here are too finicky

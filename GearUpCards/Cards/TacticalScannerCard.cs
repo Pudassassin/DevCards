@@ -17,6 +17,8 @@ namespace GearUpCards.Cards
 {
     class TacticalScannerCard : CustomCard
     {
+        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_TacticalScanner");
+
         private class ScannerSpawner : MonoBehaviour
         {
             void Start()
@@ -34,6 +36,9 @@ namespace GearUpCards.Cards
             block.cdAdd += 0.5f;
             player.gameObject.GetOrAddComponent<TacticalScannerEffect>();
             characterStats.GetGearData().tacticalScannerStack += 1;
+
+            CooldownUIMono cooldownUI = player.gameObject.GetOrAddComponent<CooldownUIMono>();
+            // cooldownUI.FetchAbilities();
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -50,7 +55,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            return null;
+            return cardArt;
         }
         protected override CardInfo.Rarity GetRarity()
         {
