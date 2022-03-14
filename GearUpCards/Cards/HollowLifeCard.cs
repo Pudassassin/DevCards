@@ -44,7 +44,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Puffs up your total Max HP,\nbut you can no longer heal to full health.\n(Stack multiplicatively)";
+            return "Puffs up your total Max HP; you cannot heal as effective and to full health.\n(Stack multiplicatively)";
         }
         protected override GameObject GetCardArt()
         {
@@ -70,6 +70,13 @@ namespace GearUpCards.Cards
                     positive = false,
                     stat = "HP Cap",
                     amount = "-25%",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                },
+                new CardInfoStat()
+                {
+                    positive = false,
+                    stat = "Heal Effects",
+                    amount = "-10%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };

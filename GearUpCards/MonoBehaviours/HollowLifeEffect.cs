@@ -15,15 +15,23 @@ namespace GearUpCards.MonoBehaviours
     internal class HollowLifeEffect : MonoBehaviour
     {
         private const float healthCapFactor = .75f;
+        private const float healingFactor = .90f;
 
         private const float healthCullRate = .05f;
         private const float procTime = .10f;
 
         internal int stackCount = 0;
         internal float healthCapPercentage = 1.0f;
+        internal float healingEffectPercentage = 1.0f;
+
+        internal float previousHealth;
+        internal float previousMaxHealth;
+
         internal float timer = 0.0f;
         internal bool effectWarmup = false;
         internal bool effectEnabled = true;
+
+        internal float healingTotal;
 
         internal Player player;
         internal CharacterStatModifiers stats;
@@ -36,6 +44,9 @@ namespace GearUpCards.MonoBehaviours
         {
             this.player = this.gameObject.GetComponent<Player>();
             this.stats = this.gameObject.GetComponent<CharacterStatModifiers>();
+
+            previousHealth = this.player.data.health;
+            previousMaxHealth = this.player.data.maxHealth;
 
             GameModeManager.AddHook(GameModeHooks.HookPointStart, OnPointStart);
             GameModeManager.AddHook(GameModeHooks.HookBattleStart, OnBattleStart);
@@ -60,6 +71,33 @@ namespace GearUpCards.MonoBehaviours
         {
             timer += TimeHandler.deltaTime;
 
+            if (effectWarmup && stackCount > 0)
+            {
+                // resolving with [Pristine Perserverence] at point start
+                player.data.health = player.data.maxHealth * .80f;
+            }
+
+            if (effectEnabled && stackCount > 0)
+            {
+                // catching all the healing gained
+                float healthDelta = player.data.health - previousHealth;
+                previousHealth = player.data.health;
+
+                float flagPristineGain = (player.data.maxHealth) / previousMaxHealth;
+
+                if (healthDelta > 0)
+                {
+                    // allowing health gains via Max HP increases
+                    if (flagPristineGain >= 2.5f)
+                    {
+                        healthDelta = 0.0f;
+                    }
+                    healingTotal += healthDelta;
+                }
+
+                previousMaxHealth = player.data.maxHealth;
+            }
+
             if (timer > procTime)
             {
                 // Check whether the player's health is above the certain caps, then adjust it accordingly
@@ -67,7 +105,7 @@ namespace GearUpCards.MonoBehaviours
                 // [!] HDC's [Holy Light] will accumulate damage charges on each ebb and flow of health now incurred by [Hollow Life]
                 // [!!] This card is dis-synergistic with [Pristine Perserverence] and any issue with it is considered as edge cases
                 stackCount = stats.GetGearData().hollowLifeStack;
-                RecalculateHealthCap();
+                CalculateEffects();
 
                 // if (proc_count >= 10)
                 // {
@@ -82,18 +120,18 @@ namespace GearUpCards.MonoBehaviours
                         float healthCullPercentage = Mathf.Clamp(player.data.HealthPercentage - healthCapPercentage, 0.0f, healthCullRate * stackCount);
                         player.data.health -= player.data.maxHealth * healthCullPercentage;
                     }
+                    else if (healingTotal > 0.0f)
+                    {
+                        player.data.health -= healingTotal * (1 - healingEffectPercentage);
+                    }
+
+                    healingTotal = 0.0f;
 
                     // UnityEngine.Debug.Log($"[HOLLOW] culled player [{player.playerID}] HP");
                 }
 
                 timer -= procTime;
                 // proc_count++;
-            }
-
-            if (effectWarmup && stackCount > 0)
-            {
-                // resolving with [Pristine Perserverence] at point start
-                player.data.health = player.data.maxHealth * .80f;
             }
         }
 
@@ -110,8 +148,9 @@ namespace GearUpCards.MonoBehaviours
             effectWarmup = false;
             effectEnabled = true;
 
+            previousHealth = this.player.data.health;
             stackCount = stats.GetGearData().hollowLifeStack;
-            RecalculateHealthCap();
+            CalculateEffects();
 
             // UnityEngine.Debug.Log($"[HOLLOW] from player [{player.playerID}] - Battle Start");
 
@@ -151,9 +190,10 @@ namespace GearUpCards.MonoBehaviours
             GameModeManager.RemoveHook(GameModeHooks.HookPointEnd, OnPointEnd);
         }
 
-        public void RecalculateHealthCap()
+        public void CalculateEffects()
         {
             this.healthCapPercentage = Mathf.Pow(healthCapFactor, stackCount);
+            this.healingEffectPercentage = Mathf.Pow(healingFactor, stackCount);
         }
     }
 }
