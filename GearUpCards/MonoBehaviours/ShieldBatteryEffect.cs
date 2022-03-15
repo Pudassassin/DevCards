@@ -17,13 +17,14 @@ using GearUpCards.Extensions;
 using GearUpCards.Utils;
 
 using HarmonyLib;
+using UnboundLib.Utils;
 
 namespace GearUpCards.MonoBehaviours
 {
     internal class ShieldBatteryEffect : MonoBehaviour
     {
         private static string empowerPrefabName = "A_Empower";
-        private static GameObject empowerPrefab = GameObject.Find(empowerPrefabName);
+        private static GameObject empowerPrefab = null;
         // public float _debugScanInitialScale = 5.0f;
         // public string _debugScanLayer = "Front";
 
@@ -55,6 +56,11 @@ namespace GearUpCards.MonoBehaviours
 
         public void Awake()
         {
+            if (empowerPrefab == null)
+            {
+                ReadEmpowerPrefab();
+            }
+
             this.player = this.gameObject.GetComponent<Player>();
             this.gun = this.gameObject.GetComponent<WeaponHandler>().gun;
             this.block = this.gameObject.GetComponent<Block>();
@@ -89,16 +95,44 @@ namespace GearUpCards.MonoBehaviours
 
         }
 
-        private void CheckShieldBatteryEmpowerObject()
+        private void ReadEmpowerPrefab()
         {
-            // give +1 instance of [Empower] on player while having [Shield Battery]
+            CardInfo cardInfo = CardManager.cards.Values.First(card => card.cardInfo.cardName == "EMPOWER").cardInfo;
+            CharacterStatModifiers stats = cardInfo.gameObject.GetComponent<CharacterStatModifiers>();
+            empowerPrefab = stats.AddObjectToPlayer;
+        }
+
+        private void AddShieldBatteryEmpower()
+        {
+            // give a baseline instance of [Empower] on player while having [Shield Battery]
             string batteryEmpowerName = $"{empowerPrefabName}_GearUp({this.player.playerID})";
 
-            GameObject batteryEmpower = this.player.transform.Find(batteryEmpowerName).gameObject;
-            if (batteryEmpower == null)
+            // UnityEngine.Debug.Log(empowerPrefab);
+
+            GameObject batteryEmpower;
+
+            Transform transform = this.player.transform.Find(batteryEmpowerName);
+            // UnityEngine.Debug.Log(transform);
+
+            if (transform == null)
             {
                 batteryEmpower = Instantiate(empowerPrefab, this.player.transform);
                 batteryEmpower.name = batteryEmpowerName;
+
+                // UnityEngine.Debug.Log(batteryEmpower);
+            }
+        }
+
+        private void RemoveShieldBatteryEmpower()
+        {
+            // removing baseline instance of [Empower]
+            string batteryEmpowerName = $"{empowerPrefabName}_GearUp({this.player.playerID})";
+
+            Transform transform = this.player.transform.Find(batteryEmpowerName);
+
+            if (transform != null)
+            {
+                Destroy(transform.gameObject);
             }
         }
 
@@ -115,7 +149,7 @@ namespace GearUpCards.MonoBehaviours
             if (batteryStackCount > 0)
             {
                 bulletSpeedMul = 1.0f;
-                damageMul = batteryDamageFactor;
+                damageMul = 1.0f;
             }
             else
             {
@@ -123,13 +157,10 @@ namespace GearUpCards.MonoBehaviours
                 damageMul = empowerDamageFactor;
             }
 
-            if (empowerStackCount > 0)
+            foreach (Empower item in empowerList)
             {
-                foreach (Empower item in empowerList)
-                {
-                    Traverse.Create(item).Field("dmgMultiplier").SetValue((float)damageMul);
-                    Traverse.Create(item).Field("speedMultiplier").SetValue((float)bulletSpeedMul);
-                }
+                Traverse.Create(item).Field("dmgMultiplier").SetValue((float)damageMul);
+                Traverse.Create(item).Field("speedMultiplier").SetValue((float)bulletSpeedMul);
             }
         }
 
@@ -183,7 +214,17 @@ namespace GearUpCards.MonoBehaviours
             effectWarmUp = true;
 
             empowerAmmo = 0;
-            CheckShieldBatteryEmpowerObject();
+
+            RecalculateEffectStats();
+
+            if (batteryStackCount <= 0)
+            {
+                RemoveShieldBatteryEmpower();
+            }
+            else
+            { 
+                AddShieldBatteryEmpower();
+            }
 
             yield break;
         }

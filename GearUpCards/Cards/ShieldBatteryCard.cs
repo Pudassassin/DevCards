@@ -26,7 +26,7 @@ namespace GearUpCards.Cards
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
             block.additionalBlocks += 1;
-            block.cdAdd += 1.0f;
+            block.cdAdd += 1.5f;
 
             characterStats.GetGearData().shieldBatteryStack += 1;
             player.gameObject.GetOrAddComponent<ShieldBatteryEffect>();
@@ -41,7 +41,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Allows you to charge more Empower shots on block. [Empower] now gains +1 empowered shot but no longer provide bullet speed and has reduced damage boosts.";
+            return "[Empower] now gains +1 Empower\nshot instead of bullet speed\nand damage boosts.";
         }
         protected override GameObject GetCardArt()
         {
@@ -58,22 +58,22 @@ namespace GearUpCards.Cards
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "Block Echo",
-                    amount = "+1",
+                    stat = "Echo",
+                    amount = "+1 Block",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "Empower Shot",
-                    amount = "+1",
+                    stat = "Shot",
+                    amount = "+1 Empower",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "Block CD",
-                    amount = "+1s",
+                    amount = "+1.5s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
