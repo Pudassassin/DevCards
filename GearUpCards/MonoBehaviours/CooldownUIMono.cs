@@ -219,6 +219,8 @@ namespace GearUpCards.MonoBehaviours
             GameModeManager.RemoveHook(GameModeHooks.HookPointStart, OnPointStart);
             GameModeManager.RemoveHook(GameModeHooks.HookBattleStart, OnBattleStart);
             GameModeManager.RemoveHook(GameModeHooks.HookPointEnd, OnPointEnd);
+
+            Destroy(cooldownUI);
         }
 
     }
