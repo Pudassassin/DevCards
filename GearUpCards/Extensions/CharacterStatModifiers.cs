@@ -39,6 +39,7 @@ namespace GearUpCards.Extensions
     {
         public int hollowLifeStack;
         public int tacticalScannerStack;
+        public int shieldBatteryStack;
 
         public int magickFragmentStack;
 
@@ -54,6 +55,7 @@ namespace GearUpCards.Extensions
         {
             hollowLifeStack = 0;
             tacticalScannerStack = 0;
+            shieldBatteryStack = 0;
 
             magickFragmentStack = 0;
 
@@ -92,6 +94,7 @@ namespace GearUpCards.Extensions
         {
             __instance.GetGearData().hollowLifeStack = 0;
             __instance.GetGearData().tacticalScannerStack = 0;
+            __instance.GetGearData().shieldBatteryStack = 0;
 
             __instance.GetGearData().magickFragmentStack = 0;
 

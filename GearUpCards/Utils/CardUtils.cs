@@ -59,12 +59,17 @@ namespace GearUpCards.Utils
 
         public static List<HandCardData> GetPlayerCardsWithName(Player player, string targetCardName)
         {
+            targetCardName = targetCardName.ToUpper();
+            string checkCardName;
+
             List<HandCardData> candidates = new List<HandCardData>();
             List<CardInfo> playerCards = player.data.currentCards;
 
             for (int i = 0; i < playerCards.Count; i++)
             {
-                if (playerCards[i].cardName.Equals(targetCardName))
+                checkCardName = playerCards[i].cardName.ToUpper();
+
+                if (checkCardName.Equals(targetCardName))
                 {
                     candidates.Add(new HandCardData(playerCards[i], player, i));
                 }

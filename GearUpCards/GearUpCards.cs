@@ -37,7 +37,7 @@ namespace GearUpCards
     {
         private const string ModId = "com.pudassassin.rounds.GearUpCards";
         private const string ModName = "GearUpCards";
-        public const string Version = "0.1.0"; //build #72
+        public const string Version = "0.1.5"; //build #77
 
         public const string ModInitials = "GearUP";
 
@@ -58,6 +58,7 @@ namespace GearUpCards
             CustomCard.BuildCard<ChompyBulletCard>(ChompyBulletCard.callback);
             CustomCard.BuildCard<TacticalScannerCard>(TacticalScannerCard.callback);
             CustomCard.BuildCard<SizeNormalizerCard>(SizeNormalizerCard.callback);
+            CustomCard.BuildCard<ShieldBatteryCard>(ShieldBatteryCard.callback);
 
             // Unique Magick series (powerful on-block "spell" abilities)
             CustomCard.BuildCard<AntiBulletMagickCard>(AntiBulletMagickCard.callback);
