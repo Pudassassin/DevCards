@@ -35,6 +35,7 @@ namespace GearUpCards.MonoBehaviours
         private const float scannerStackCooldown = -1.0f;
 
         private const float procTime = .10f;
+        private const float warmupTime = 4.0f;
 
         internal Action<BlockTrigger.BlockTriggerType> scannerAction;
 
@@ -47,7 +48,7 @@ namespace GearUpCards.MonoBehaviours
         internal bool scannerReady = false;
         internal bool empowerCharged = false;
 
-        internal float timeLastUsed = 0.0f;
+        internal float timeLastBlocked = 0.0f;
 
         internal float timer = 0.0f;
         internal bool effectWarmUp = false;
@@ -112,11 +113,16 @@ namespace GearUpCards.MonoBehaviours
 
         internal void CheckReady()
         {
-            if (scannerReady || effectWarmUp)
+            if (effectWarmUp)
+            {
+                timeLastBlocked = 0.0f;
+                scannerReady = true;
+            }
+            else if (scannerReady)
             {
                 return;
             }
-            else if (Time.time >= timeLastUsed + scannerCooldown)
+            else if (Time.time >= timeLastBlocked + scannerCooldown)
             {
                 scannerReady = true;
             }
@@ -124,7 +130,7 @@ namespace GearUpCards.MonoBehaviours
 
         public float GetCooldown()
         {
-            float cooldown = timeLastUsed + scannerCooldown - Time.time;
+            float cooldown = timeLastBlocked + scannerCooldown - Time.time;
             if (scannerReady) return -1.0f;
             else return cooldown;
         }
@@ -181,7 +187,7 @@ namespace GearUpCards.MonoBehaviours
                     }
                     else
                     {
-                        timeLastUsed = Time.time;
+                        timeLastBlocked = Time.time;
                         scannerReady = false;
                         empowerCharged = true;
                     }
@@ -192,6 +198,7 @@ namespace GearUpCards.MonoBehaviours
         private IEnumerator OnPointStart(IGameModeHandler gm)
         {
             effectWarmUp = true;
+            timeLastBlocked = Time.time - scannerCooldown + warmupTime;
             yield break;
         }
 

@@ -37,7 +37,7 @@ namespace GearUpCards
     {
         private const string ModId = "com.pudassassin.rounds.GearUpCards";
         private const string ModName = "GearUpCards";
-        public const string Version = "0.1.5"; //build #77
+        public const string Version = "0.1.8"; //build #80 / public patch #1
 
         public const string ModInitials = "GearUP";
 
@@ -72,6 +72,7 @@ namespace GearUpCards
 
             // Pre-game hooks
             GameModeManager.AddHook(GameModeHooks.HookGameStart, GameStart);
+            GameModeManager.AddHook(GameModeHooks.HookRoundStart, CardPickEnd);
 
             // make cards mutually exclusive
             this.ExecuteAfterSeconds(1.5f, () =>
@@ -117,10 +118,27 @@ namespace GearUpCards
                     ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.typeCrystal);
                 }
 
-                player.gameObject.GetOrAddComponent<CardHandResolveMono>();
+                // player.gameObject.GetOrAddComponent<CardHandResolveMono>();
             }
             yield break;
         }
+
+        IEnumerator CardPickEnd(IGameModeHandler gm)
+        {
+            UnityEngine.Debug.Log($"[GearUp Main] CardPickEnd Call");
+
+            yield return new WaitForSecondsRealtime(.5f);
+
+            foreach (var player in PlayerManager.instance.players)
+            {
+                UnityEngine.Debug.Log($"[GearUp Main] Resolving player[{player.playerID}]");
+                StartCoroutine(CardHandResolveMono.ResolveHandCards(player));
+                yield return new WaitForSecondsRealtime(.2f);
+            }
+
+            yield break;
+        }
+
 
         // Assets loader
         public static readonly AssetBundle VFXBundle = Jotunn.Utils.AssetUtils.LoadAssetBundleFromResources("gearup_asset", typeof(GearUpCards).Assembly);

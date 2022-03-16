@@ -31,19 +31,19 @@ namespace GearUpCards.Cards
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
             // Resolve card conflicts
-            CardHandResolveMono resolver = player.gameObject.GetOrAddComponent<CardHandResolveMono>();
-            List<HandCardData> conflictedCards = GetPlayerCardsWithCategory(player, GearCategory.typeUniqueMagick);
-
-            // foreach (var item in conflictedCards)
+            // CardHandResolveMono resolver = player.gameObject.GetOrAddComponent<CardHandResolveMono>();
+            // List<HandCardData> conflictedCards = GetPlayerCardsWithCategory(player, GearCategory.typeUniqueMagick);
+            // 
+            // // foreach (var item in conflictedCards)
+            // // {
+            // //     UnityEngine.Debug.Log($"[{item.cardInfo.cardName}] - [{item.index}] - [{item.owner.playerID}]");
+            // // }
+            // 
+            // if (conflictedCards.Count >= 1)
             // {
-            //     UnityEngine.Debug.Log($"[{item.cardInfo.cardName}] - [{item.index}] - [{item.owner.playerID}]");
+            //     resolver.TriggerResolve();
+            //     return;
             // }
-
-            if (conflictedCards.Count >= 1)
-            {
-                resolver.TriggerResolve();
-                return;
-            }
 
             // black/whitelisting
             ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.typeUniqueMagick);

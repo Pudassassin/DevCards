@@ -95,7 +95,7 @@ namespace GearUpCards.MonoBehaviours
 
         }
 
-        private void ReadEmpowerPrefab()
+        private static void ReadEmpowerPrefab()
         {
             CardInfo cardInfo = CardManager.cards.Values.First(card => card.cardInfo.cardName == "EMPOWER").cardInfo;
             CharacterStatModifiers stats = cardInfo.gameObject.GetComponent<CharacterStatModifiers>();

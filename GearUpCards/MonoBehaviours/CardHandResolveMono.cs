@@ -10,89 +10,102 @@ namespace GearUpCards.MonoBehaviours
 {
     internal class CardHandResolveMono : MonoBehaviour
     {
-        private const float procTime = 1.0f;
-        private const float resolveDelay = 0.5f;
-
-        internal Player player;
-        internal CharacterStatModifiers stats;
-
-        internal float timer = 0.0f;
-        internal float timeResolveCalled = 0.0f;
-        internal bool manualResolve = false;
+        // private const float procTime = 1.0f;
+        // private const float resolveDelay = 0.5f;
+        
+        // internal Player player;
+        // internal CharacterStatModifiers stats;
+        
+        // internal float timer = 0.0f;
+        // internal float timeResolveCalled = 0.0f;
+        // internal bool manualResolve = false;
 
         /* DEBUG */
         // internal int proc_count = 0;
 
 
-        public void Awake()
-        {
-            this.player = this.gameObject.GetComponent<Player>();
-            this.stats = this.gameObject.GetComponent<CharacterStatModifiers>();
+        // public void Awake()
+        // {
+        //     this.player = this.gameObject.GetComponent<Player>();
+        //     this.stats = this.gameObject.GetComponent<CharacterStatModifiers>();
+        // 
+        //     GameModeManager.AddHook(GameModeHooks.HookRoundStart, OnRoundStart);
+        //     // GameModeManager.AddHook(GameModeHooks.HookPointEnd, OnPointEnd);
+        // }
 
-            GameModeManager.AddHook(GameModeHooks.HookRoundStart, OnRoundStart);
-            // GameModeManager.AddHook(GameModeHooks.HookPointEnd, OnPointEnd);
-        }
+        // public void Start()
+        // {
+        // 
+        // }
 
-        public void Start()
-        {
-
-        }
-
-        public void Update()
-        {
-            if (manualResolve && Time.time > timeResolveCalled + resolveDelay)
-            {
-                StartCoroutine(ResolveHandCards());
-                manualResolve = false;
-            }
-        }
-
-        private IEnumerator OnRoundStart(IGameModeHandler gm)
-        {
-            UnityEngine.Debug.Log($"Player[{player.playerID}] RoundStart Call");
-
-            StartCoroutine(ResolveHandCards());
-            yield break;
-        }
+        // public void Update()
+        // {
+        //     if (manualResolve && Time.time > timeResolveCalled + resolveDelay)
+        //     {
+        //         StartCoroutine(ResolveHandCards());
+        //         manualResolve = false;
+        //     }
+        // }
 
         // private IEnumerator OnPointEnd(IGameModeHandler gm)
         // {
         //     yield break;
         // }
 
-        public void OnDisable()
-        {
-            bool isRespawning = player.data.healthHandler.isRespawning;
-            // UnityEngine.Debug.Log($"[HOLLOW] from player [{player.playerID}] - is resurresting [{isRespawning}]");
+        // public void OnDisable()
+        // {
+        //     bool isRespawning = player.data.healthHandler.isRespawning;
+        //     // UnityEngine.Debug.Log($"[HOLLOW] from player [{player.playerID}] - is resurresting [{isRespawning}]");
+        // 
+        //     if (isRespawning)
+        //     {
+        //         // does nothing
+        //         // UnityEngine.Debug.Log($"[HOLLOW] from player [{player.playerID}] - is resurresting!?");
+        //     }
+        //     else
+        //     {
+        //         // UnityEngine.Debug.Log($"[HOLLOW] from player [{player.playerID}] - dead ded!?");
+        //     }
+        // }
 
-            if (isRespawning)
-            {
-                // does nothing
-                // UnityEngine.Debug.Log($"[HOLLOW] from player [{player.playerID}] - is resurresting!?");
-            }
-            else
-            {
-                // UnityEngine.Debug.Log($"[HOLLOW] from player [{player.playerID}] - dead ded!?");
-            }
-        }
-        public void OnDestroy()
+        // public void OnDestroy()
+        // {
+        //     GameModeManager.RemoveHook(GameModeHooks.HookPointStart, OnRoundStart);
+        //     // GameModeManager.RemoveHook(GameModeHooks.HookPointEnd, OnPointEnd);
+        // }
+
+        // public void Refresh()
+        // {
+        //     this.Awake();
+        // }
+
+        // public void TriggerResolve()
+        // {
+        //     manualResolve = true;
+        //     timeResolveCalled = Time.time;
+        // }
+
+        // private IEnumerator OnRoundStart(IGameModeHandler gm)
+        // {
+        //     UnityEngine.Debug.Log($"Player[{player.playerID}] RoundStart Call");
+        // 
+        //     yield return new WaitForSecondsRealtime(.2f);
+        //     StartCoroutine(ResolveHandCards());
+        //     yield break;
+        // }
+
+        public static IEnumerator ResolveHandCards(Player player)
         {
-            GameModeManager.RemoveHook(GameModeHooks.HookPointStart, OnRoundStart);
-            // GameModeManager.RemoveHook(GameModeHooks.HookPointEnd, OnPointEnd);
+            yield return ResolveCardCategory(player, GearCategory.typeSizeMod, "Medical Parts");
+            yield return ResolveCardCategory(player, GearCategory.typeUniqueMagick, "Magick Fragments");
+
+            yield return UpdateCategoryBlacklist(player, GearCategory.typeSizeMod);
+            yield return UpdateCategoryBlacklist(player, GearCategory.typeUniqueMagick);
+
+            yield break;
         }
 
-        public void Refresh()
-        {
-            this.Awake();
-        }
-
-        public void TriggerResolve()
-        {
-            manualResolve = true;
-            timeResolveCalled = Time.time;
-        }
-
-        public IEnumerator ResolveCardCategory(CardCategory category, string cardNameToAdd)
+        public static IEnumerator ResolveCardCategory(Player player, CardCategory category, string cardNameToAdd)
         {
             // Resolve card conflicts
             List<HandCardData> conflictedCards = GetPlayerCardsWithCategory(player, category);
@@ -132,7 +145,7 @@ namespace GearUpCards.MonoBehaviours
             }
         }
 
-        public IEnumerator UpdateCategoryBlacklist(CardCategory categoryToCheck)
+        public static IEnumerator UpdateCategoryBlacklist(Player player, CardCategory categoryToCheck)
         {
             // mutally exclusives, desinated unique card, etc.
             List<HandCardData> cardToCheck = GetPlayerCardsWithCategory(player, categoryToCheck);
@@ -152,7 +165,7 @@ namespace GearUpCards.MonoBehaviours
             yield break;
         }
 
-        public IEnumerator UpdateCategoryWhitelist(CardCategory categoryToCheck)
+        public static IEnumerator UpdateCategoryWhitelist(Player player, CardCategory categoryToCheck)
         {
             // unlocking condition, etc.
             List<HandCardData> cardToCheck = GetPlayerCardsWithCategory(player, categoryToCheck);
@@ -168,17 +181,6 @@ namespace GearUpCards.MonoBehaviours
             {
                 ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(categoryToCheck);
             }
-
-            yield break;
-        }
-
-        internal IEnumerator ResolveHandCards()
-        {
-            yield return ResolveCardCategory(GearCategory.typeSizeMod, "Medical Parts");
-            yield return ResolveCardCategory(GearCategory.typeUniqueMagick, "Magick Fragments");
-
-            yield return UpdateCategoryBlacklist(GearCategory.typeSizeMod);
-            yield return UpdateCategoryBlacklist(GearCategory.typeUniqueMagick);
 
             yield break;
         }

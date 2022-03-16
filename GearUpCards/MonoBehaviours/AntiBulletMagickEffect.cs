@@ -31,6 +31,7 @@ namespace GearUpCards.MonoBehaviours
         private const float spellDuration = 1.0f;
 
         private const float procTime = .025f;
+        private const float warmupTime = 4.0f;
 
         internal Action<BlockTrigger.BlockTriggerType> spellAction;
 
@@ -42,7 +43,7 @@ namespace GearUpCards.MonoBehaviours
         internal Vector3 prevPosition;
         internal Vector3 castPosition;
 
-        internal float timeLastUsed = 0.0f;
+        internal float timeLastBlocked = 0.0f;
         internal float timeLastActivated = 0.0f;
 
         internal float timer = 0.0f;
@@ -104,11 +105,11 @@ namespace GearUpCards.MonoBehaviours
 
         internal void CheckReady()
         {
-            if (spellReady || effectWarmUp)
+            if (spellReady)
             {
                 return;
             }
-            else if (Time.time >= timeLastUsed + spellCooldown)
+            else if (Time.time >= timeLastBlocked + spellCooldown)
             {
                 spellReady = true;
             }
@@ -116,7 +117,7 @@ namespace GearUpCards.MonoBehaviours
 
         public float GetCooldown()
         {
-            float cooldown = timeLastUsed + spellCooldown - Time.time;
+            float cooldown = timeLastBlocked + spellCooldown - Time.time;
             if (spellReady) return -1.0f;
             else return cooldown;
         }
@@ -130,7 +131,7 @@ namespace GearUpCards.MonoBehaviours
                                     (trigger == BlockTrigger.BlockTriggerType.Default && spellReady) ||
                                     (trigger == BlockTrigger.BlockTriggerType.ShieldCharge && spellReady);
 
-                if (conditionMet && !effectWarmUp)
+                if (conditionMet)
                 {
                     // empower do cheeky teleport, I can just grab player.transform.position
 
@@ -182,7 +183,7 @@ namespace GearUpCards.MonoBehaviours
                     }
                     else
                     {
-                        timeLastUsed = Time.time;
+                        timeLastBlocked = Time.time;
                         timeLastActivated = Time.time;
                         spellReady = false;
                         empowerCharged = true;
@@ -233,6 +234,7 @@ namespace GearUpCards.MonoBehaviours
         private IEnumerator OnPointStart(IGameModeHandler gm)
         {
             effectWarmUp = true;
+            timeLastBlocked = Time.time - spellCooldown + warmupTime;
             yield break;
         }
 
