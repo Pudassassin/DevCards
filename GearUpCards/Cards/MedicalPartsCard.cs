@@ -38,7 +38,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "You dismantled the excess medical equipment and improve your survivability with it...";
+            return "Some hearty doodads to help you survive longer.";
         }
         protected override GameObject GetCardArt()
         {
@@ -78,7 +78,7 @@ namespace GearUpCards.Cards
         }
         internal static void callback(CardInfo card)
         {
-            card.gameObject.AddComponent<ExtraName>().text = "Passive";
+            card.gameObject.AddComponent<ExtraName>().text = "Health\nMaterial";
         }
     }
 }

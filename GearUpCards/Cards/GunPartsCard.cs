@@ -39,7 +39,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "You dismantled the spare gun and use its parts to upgrade your current one...";
+            return "Attachments and enhancements to up your gun games.";
         }
         protected override GameObject GetCardArt()
         {
@@ -86,7 +86,7 @@ namespace GearUpCards.Cards
         }
         internal static void callback(CardInfo card)
         {
-            card.gameObject.AddComponent<ExtraName>().text = "Passive";
+            card.gameObject.AddComponent<ExtraName>().text = "Gun\nMaterial";
         }
     }
 }

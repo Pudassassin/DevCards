@@ -130,7 +130,7 @@ namespace GearUpCards.Cards
         }
         internal static void callback(CardInfo card)
         {
-            card.gameObject.AddComponent<ExtraName>().text = "Size Mod";
+            card.gameObject.AddComponent<ExtraName>().text = "[Size]\nMod";
         }
     }
 }

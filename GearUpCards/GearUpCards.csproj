@@ -6,7 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Cards\ShardSlinger.cs" />
     <Compile Remove="Cards\Template.cs" />
+    <Compile Remove="MonoBehaviours\CrystalShardModifier.cs" />
+    <Compile Remove="MonoBehaviours\ObliterationModifier.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,6 +20,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Assets\gearup_asset" />
     <EmbeddedResource Include="Assets\gearup_cardarts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Cards\ShardSlinger.cs" />
+    <None Include="MonoBehaviours\CrystalShardModifier.cs" />
+    <None Include="MonoBehaviours\ObliterationModifier.cs" />
   </ItemGroup>
 
   <ItemGroup>

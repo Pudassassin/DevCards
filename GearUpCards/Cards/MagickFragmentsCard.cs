@@ -46,7 +46,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "You meddling with magick trying to cast more spells, disregarding safety and precautions...";
+            return "This mysterious glyph hasten your spellcasting, but at what cost?";
         }
         protected override GameObject GetCardArt()
         {
@@ -93,7 +93,7 @@ namespace GearUpCards.Cards
         }
         internal static void callback(CardInfo card)
         {
-            card.gameObject.AddComponent<ExtraName>().text = "Passive";
+            card.gameObject.AddComponent<ExtraName>().text = "Spell\nMaterial";
         }
     }
 }
