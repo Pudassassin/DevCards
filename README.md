@@ -124,7 +124,7 @@ Spell Passive - *Material*
 There will be more cards planned to expand in each category, this first beta release serves as a pavement and test run on my first ever modding experience, ever.
 
 ## Patch Notes
-#### Public Beta 1-1 \[v0.1.9] (test pending)
+#### Public Beta 1-1 \[v0.1.9]
 - Patched the logic behind the monobehavior that manages and prevents card conflicts, to execute from the main mod class instead of from each players!
 - \[Shield Battery] sneak peak
 

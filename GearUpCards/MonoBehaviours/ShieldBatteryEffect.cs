@@ -175,7 +175,7 @@ namespace GearUpCards.MonoBehaviours
             {
                 bool conditionMet = (trigger == BlockTrigger.BlockTriggerType.Default);
 
-                if (conditionMet && !effectWarmUp && batteryStackCount > 0)
+                if (conditionMet && batteryStackCount > 0)
                 {
                     // Charge up the empower ammo
                     empowerAmmo = empowerMaxAmmo;
