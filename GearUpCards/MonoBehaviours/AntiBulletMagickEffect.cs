@@ -31,7 +31,7 @@ namespace GearUpCards.MonoBehaviours
         private const float spellDuration = 1.0f;
 
         private const float procTime = .025f;
-        private const float warmupTime = 4.0f;
+        private const float warmupTime = 3.0f;
 
         internal Action<BlockTrigger.BlockTriggerType> spellAction;
 

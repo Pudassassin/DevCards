@@ -17,6 +17,7 @@ using ModdingUtils.MonoBehaviours;
 using GearUpCards;
 using GearUpCards.Extensions;
 using GearUpCards.Utils;
+using TMPro;
 
 namespace GearUpCards.MonoBehaviours
 {
@@ -93,23 +94,26 @@ namespace GearUpCards.MonoBehaviours
         {
             timer += TimeHandler.deltaTime;
 
+            // Legacy codes
+            // moving over to relay AMPs to patches
+
             float healthDelta = player.data.health - previousHealth;
             previousHealth = player.data.health;
             healthDeltaTotal += healthDelta;
-
-            float flagPristineLoss = (previousMaxHealth) / player.data.maxHealth;
-            float flagPristineGain = (player.data.maxHealth) / previousMaxHealth;
-
-            if (isFriendly && healthDelta > 0)
-            {
-                if (flagPristineGain >= 2.5f) healthDelta /= flagPristineGain;
-                scannerAmpAmount += healthDelta;
-            }
-            else if (!isFriendly && healthDelta < 0)
-            {
-                if (flagPristineLoss >= 2.5f) healthDelta /= flagPristineLoss;
-                scannerAmpAmount += -healthDelta;
-            }
+            // 
+            // float flagPristineLoss = (previousMaxHealth) / player.data.maxHealth;
+            // float flagPristineGain = (player.data.maxHealth) / previousMaxHealth;
+            // 
+            // if (isFriendly && healthDelta > 0)
+            // {
+            //     if (flagPristineGain >= 2.5f) healthDelta /= flagPristineGain;
+            //     scannerAmpAmount += healthDelta;
+            // }
+            // else if (!isFriendly && healthDelta < 0)
+            // {
+            //     if (flagPristineLoss >= 2.5f) healthDelta /= flagPristineLoss;
+            //     scannerAmpAmount += -healthDelta;
+            // }
 
             if (timer >= procTime)
             {
@@ -118,23 +122,24 @@ namespace GearUpCards.MonoBehaviours
                 if (statusEnable)
                 {
                     // Resolve AMP
-                    if (scannerAmpAmount > 0.0f)
-                    {
-                        if (isFriendly)
-                        {
-                            player.data.healthHandler.Heal(scannerAmpAmount * scannerAmpFactor);
-                        }
-                        else
-                        {
-                            player.data.healthHandler.RPCA_SendTakeDamage(new Vector2(scannerAmpAmount * scannerAmpFactor, 0.0f), player.transform.position);
-                        }
 
-                        scannerAmpAmount = scannerAmpAmount * scannerAmpFactor * -1.0f;
-                    }
-                    else
-                    {
-                        scannerAmpAmount = 0.0f;
-                    }
+                    // if (scannerAmpAmount > 0.0f)
+                    // {
+                    //     if (isFriendly)
+                    //     {
+                    //         player.data.healthHandler.Heal(scannerAmpAmount * scannerAmpFactor);
+                    //     }
+                    //     else
+                    //     {
+                    //         player.data.healthHandler.RPCA_SendTakeDamage(new Vector2(scannerAmpAmount * scannerAmpFactor, 0.0f), player.transform.position);
+                    //     }
+                    // 
+                    //     scannerAmpAmount = scannerAmpAmount * scannerAmpFactor * -1.0f;
+                    // }
+                    // else
+                    // {
+                    //     scannerAmpAmount = 0.0f;
+                    // }
 
                     // update ScanDataUI
                     UpdateScanDataUI();
@@ -156,6 +161,24 @@ namespace GearUpCards.MonoBehaviours
             }
 
             scanDataUI.transform.position = this.player.transform.position;
+        }
+
+        public float GetHealMultiplier()
+        {
+            if (isFriendly)
+            {
+                return 1.0f + scannerAmpFactor;
+            }
+            else return 1.0f;
+        }
+
+        public float GetDamageMultiplier()
+        {
+            if (!isFriendly)
+            {
+                return 1.0f + scannerAmpFactor;
+            }
+            else return 1.0f;
         }
 
         private void SpawnScanDataUI()

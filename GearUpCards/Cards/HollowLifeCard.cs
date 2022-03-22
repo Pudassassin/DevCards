@@ -52,7 +52,7 @@ namespace GearUpCards.Cards
         }
         protected override CardInfo.Rarity GetRarity()
         {
-            return CardInfo.Rarity.Uncommon;
+            return CardInfo.Rarity.Rare;
         }
         protected override CardInfoStat[] GetStats()
         {
@@ -76,7 +76,7 @@ namespace GearUpCards.Cards
                 {
                     positive = false,
                     stat = "Heal Effects",
-                    amount = "-10%",
+                    amount = "-15%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };

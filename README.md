@@ -1,5 +1,5 @@
-# GearUP Cards [0.1.8] 
-Public Release 0-1-1, build #80
+# GearUP Cards [0.1.13] 
+Public Release 0-1-2, build #85
 
 Adding in game-changing mechanics into the modded ROUNDS fray! Bought to you by Pudassassin
 
@@ -23,6 +23,21 @@ Unique Magick - *Spell caster*
 ***You can only have one Unique Magick in posession!***
 - The extras you obtain are converted to \[Magick Fragments] or potentially lost!
 
+#### \[Hollow Life]
+Health Passive
+
+- *Puffs up your total Max HP; you no longer heal as effective and to full health.
+(Stack multiplicatively)*
+
+  - \[+] x3 Max HP
+  - \[--] -25% Health Cap
+  - \[--] -15% Healing Effects
+
+1. Affected all sources of health gain: Heal, Life Steal, Regeneration.
+2. Any health gained above the cap incurred by this card is quickly removed.
+
+**Tip: Look for the cards that benefit from having larger Max HP, or lower current HP.*
+
 ### Uncommon Cards
 #### \[Chompy Bullet]
 Bullet Passive
@@ -36,21 +51,6 @@ Bullet Passive
 
 1. The value shown is the potential bonus damage per shot of the default gun with one stack of this card [~ 3 bullet per second]
 2. The more bullets you fire per second, the weaker this card's effect becomes (higher ATK SPD, projectile counts and/or burst counts)
-
-#### \[Hollow Life]
-Health Passive
-
-- *Puffs up your total Max HP; you no longer heal as effective and to full health.
-(Stack multiplicatively)*
-
-  - \[+] x3 Max HP
-  - \[--] -25% Health Cap
-  - \[--] -10% Healing Effects
-
-1. Affected all sources of health gain: Heal, Life Steal, Regeneration.
-2. Any health gained above the cap incurred by this card is quickly removed.
-
-**Tip: Look for the cards that benefit from having larger Max HP, or lower current HP.*
 
 #### \[Tactical Scanner]
 Block Active - *Gear equipments*
@@ -124,9 +124,21 @@ Spell Passive - *Material*
 There will be more cards planned to expand in each category, this first beta release serves as a pavement and test run on my first ever modding experience, ever.
 
 ## Patch Notes
+#### Public Beta 1-2 \[v0.1.13]
+- Under the hood reworks of healing and damage multipliers.
+
+- **\[Tactical Scanner]** now properly modify **healings** and **damages** taken and ignore all **direct health changes**.
+
+- **\[Hollow Life]** changes:
+  - rarity changed to **Rare**
+  - Max HP gains changed from **x2.5** to **3x**
+  - now giving **-15% healing effects**; reducing healing and regeneration
+
+- Reduced the delay caused by card conflict resolver at the start of each round.
+
 #### Public Beta 1-1 \[v0.1.9]
 - Patched the logic behind the monobehavior that manages and prevents card conflicts, to execute from the main mod class instead of from each players!
-- \[Shield Battery] sneak peak
+- **\[Shield Battery]** sneak peak
 
 #### Public Beta 1-0 \[v0.1.0]
 - It all begins. Starting out with 5 wacky cards and 3 minor all-around passive cards

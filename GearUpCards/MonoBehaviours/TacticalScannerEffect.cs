@@ -35,7 +35,7 @@ namespace GearUpCards.MonoBehaviours
         private const float scannerStackCooldown = -1.0f;
 
         private const float procTime = .10f;
-        private const float warmupTime = 4.0f;
+        private const float warmupTime = 3.0f;
 
         internal Action<BlockTrigger.BlockTriggerType> scannerAction;
 
@@ -217,15 +217,20 @@ namespace GearUpCards.MonoBehaviours
             scannerReady = false;
             empowerCharged = false;
 
-            GameObject gameObject = GameObject.Find("ScanDataUICopy");
-            while (gameObject != null)
-            {
-                Destroy(gameObject);
-                gameObject = GameObject.Find("ScanDataUICopy");
-            }
-
             yield break;
         }
+        
+        // private static IEnumerator OnPointEndStatic(IGameModeHandler gm)
+        // {
+        //     GameObject gameObject = GameObject.Find("ScanDataUICopy");
+        //     while (gameObject != null)
+        //     {
+        //         Destroy(gameObject);
+        //         gameObject = GameObject.Find("ScanDataUICopy");
+        //     }
+        // 
+        //     yield break;
+        // }
 
         public void OnDisable()
         {

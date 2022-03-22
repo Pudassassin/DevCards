@@ -15,7 +15,7 @@ namespace GearUpCards.MonoBehaviours
     internal class HollowLifeEffect : MonoBehaviour
     {
         private const float healthCapFactor = .75f;
-        private const float healingFactor = .90f;
+        private const float healingFactor = .85f;
 
         private const float healthCullRate = .05f;
         private const float procTime = .10f;
@@ -77,33 +77,35 @@ namespace GearUpCards.MonoBehaviours
                 player.data.health = player.data.maxHealth * .80f;
             }
 
-            if (effectEnabled && stackCount > 0)
-            {
-                // catching all the healing gained
-                float healthDelta = player.data.health - previousHealth;
-                previousHealth = player.data.health;
+            // Relaying heal multiplier to patches
 
-                float flagPristineGain = (player.data.maxHealth) / previousMaxHealth;
-
-                if (healthDelta > 0)
-                {
-                    // allowing health gains via Max HP increases
-                    if (flagPristineGain >= 2.5f)
-                    {
-                        healthDelta = 0.0f;
-                    }
-                    healingTotal += healthDelta;
-                }
-
-                previousMaxHealth = player.data.maxHealth;
-            }
+            // if (effectEnabled && stackCount > 0)
+            // {
+            //     // catching all the healing gained
+            //     float healthDelta = player.data.health - previousHealth;
+            //     previousHealth = player.data.health;
+            // 
+            //     float flagPristineGain = (player.data.maxHealth) / previousMaxHealth;
+            // 
+            //     if (healthDelta > 0)
+            //     {
+            //         // allowing health gains via Max HP increases
+            //         if (flagPristineGain >= 2.5f)
+            //         {
+            //             healthDelta = 0.0f;
+            //         }
+            //         healingTotal += healthDelta;
+            //     }
+            // 
+            //     previousMaxHealth = player.data.maxHealth;
+            // }
 
             if (timer > procTime)
             {
                 // Check whether the player's health is above the certain caps, then adjust it accordingly
                 // [?] EXC's [Second Wind] implement it differently and seem to either look for health removal or it tries its best to heal up to said health point
                 // [!] HDC's [Holy Light] will accumulate damage charges on each ebb and flow of health now incurred by [Hollow Life]
-                // [!!] This card is dis-synergistic with [Pristine Perserverence] and any issue with it is considered as edge cases
+                // [!!] This card is dis-synergistic with [Pristine Perserverance] and any issue with it is considered as edge cases
                 stackCount = stats.GetGearData().hollowLifeStack;
                 CalculateEffects();
 
@@ -120,12 +122,12 @@ namespace GearUpCards.MonoBehaviours
                         float healthCullPercentage = Mathf.Clamp(player.data.HealthPercentage - healthCapPercentage, 0.0f, healthCullRate * stackCount);
                         player.data.health -= player.data.maxHealth * healthCullPercentage;
                     }
-                    else if (healingTotal > 0.0f)
-                    {
-                        player.data.health -= healingTotal * (1 - healingEffectPercentage);
-                    }
-
-                    healingTotal = 0.0f;
+                    // else if (healingTotal > 0.0f)
+                    // {
+                    //     player.data.health -= healingTotal * (1 - healingEffectPercentage);
+                    // }
+                    // 
+                    // healingTotal = 0.0f;
 
                     // UnityEngine.Debug.Log($"[HOLLOW] culled player [{player.playerID}] HP");
                 }
@@ -133,6 +135,17 @@ namespace GearUpCards.MonoBehaviours
                 timer -= procTime;
                 // proc_count++;
             }
+        }
+
+        public void CalculateEffects()
+        {
+            this.healthCapPercentage = Mathf.Pow(healthCapFactor, stackCount);
+            this.healingEffectPercentage = Mathf.Pow(healingFactor, stackCount);
+        }
+
+        public float GetHealMultiplier()
+        {
+            return healingEffectPercentage;
         }
 
         private IEnumerator OnPointStart(IGameModeHandler gm)
@@ -188,12 +201,6 @@ namespace GearUpCards.MonoBehaviours
             GameModeManager.RemoveHook(GameModeHooks.HookPointStart, OnPointStart);
             GameModeManager.RemoveHook(GameModeHooks.HookBattleStart, OnBattleStart);
             GameModeManager.RemoveHook(GameModeHooks.HookPointEnd, OnPointEnd);
-        }
-
-        public void CalculateEffects()
-        {
-            this.healthCapPercentage = Mathf.Pow(healthCapFactor, stackCount);
-            this.healingEffectPercentage = Mathf.Pow(healingFactor, stackCount);
         }
     }
 }

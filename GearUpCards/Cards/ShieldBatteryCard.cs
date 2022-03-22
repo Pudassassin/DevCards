@@ -21,12 +21,12 @@ namespace GearUpCards.Cards
 
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            gun.attackSpeed = 2.0f;
+            gun.attackSpeed = 1 / 0.75f;
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
             block.additionalBlocks += 1;
-            block.cdAdd += 1.5f;
+            block.cdAdd += 1.25f;
 
             characterStats.GetGearData().shieldBatteryStack += 1;
             player.gameObject.GetOrAddComponent<ShieldBatteryEffect>();
@@ -73,14 +73,14 @@ namespace GearUpCards.Cards
                 {
                     positive = false,
                     stat = "Block CD",
-                    amount = "+1.5s",
+                    amount = "+1.25s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "ATK SPD",
-                    amount = "-50%",
+                    amount = "-25%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };

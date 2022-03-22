@@ -37,7 +37,7 @@ namespace GearUpCards
     {
         private const string ModId = "com.pudassassin.rounds.GearUpCards";
         private const string ModName = "GearUpCards";
-        public const string Version = "0.1.9"; //build #81 / Release 0-1-1
+        public const string Version = "0.1.13"; //build #85 / Release 0-1-2
 
         public const string ModInitials = "GearUP";
 
@@ -104,6 +104,8 @@ namespace GearUpCards
             });
         }
 
+        // initial card blacklist/whitelist at game start
+
         IEnumerator GameStart(IGameModeHandler gm)
         {
             foreach (var player in PlayerManager.instance.players)
@@ -125,15 +127,15 @@ namespace GearUpCards
 
         IEnumerator CardPickEnd(IGameModeHandler gm)
         {
-            UnityEngine.Debug.Log($"[GearUp Main] CardPickEnd Call");
+            // UnityEngine.Debug.Log($"[GearUp Main] CardPickEnd Call");
 
-            yield return new WaitForSecondsRealtime(.5f);
+            yield return new WaitForSecondsRealtime(.25f);
 
             foreach (var player in PlayerManager.instance.players)
             {
                 UnityEngine.Debug.Log($"[GearUp Main] Resolving player[{player.playerID}]");
                 StartCoroutine(CardHandResolveMono.ResolveHandCards(player));
-                yield return new WaitForSecondsRealtime(.2f);
+                yield return new WaitForSecondsRealtime(.1f);
             }
 
             yield break;

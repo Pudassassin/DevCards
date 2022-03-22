@@ -51,7 +51,7 @@ namespace GearUpCards.MonoBehaviours
             this.stats = this.gameObject.GetComponent<CharacterStatModifiers>();
 
             GameModeManager.AddHook(GameModeHooks.HookPointStart, OnPointStart);
-            GameModeManager.AddHook(GameModeHooks.HookBattleStart, OnBattleStart);
+            // GameModeManager.AddHook(GameModeHooks.HookBattleStart, OnBattleStart);
             GameModeManager.AddHook(GameModeHooks.HookPointEnd, OnPointEnd);
         }
 
@@ -169,23 +169,23 @@ namespace GearUpCards.MonoBehaviours
 
         private IEnumerator OnPointStart(IGameModeHandler gm)
         {
-            effectWarmup = true;
-            effectEnabled = false;
+            //effectWarmup = true;
+            effectEnabled = true;
 
             FetchAbilities();
 
             yield break;
         }
 
-        private IEnumerator OnBattleStart(IGameModeHandler gm)
-        {
-            effectWarmup = false;
-            effectEnabled = true;
-
-            // UnityEngine.Debug.Log($"[HOLLOW] from player [{player.playerID}] - Battle Start");
-
-            yield break;
-        }
+        // private IEnumerator OnBattleStart(IGameModeHandler gm)
+        // {
+        //     effectWarmup = false;
+        //     effectEnabled = true;
+        // 
+        //     // UnityEngine.Debug.Log($"[HOLLOW] from player [{player.playerID}] - Battle Start");
+        // 
+        //     yield break;
+        // }
 
         private IEnumerator OnPointEnd(IGameModeHandler gm)
         {
@@ -217,7 +217,7 @@ namespace GearUpCards.MonoBehaviours
         public void OnDestroy()
         {
             GameModeManager.RemoveHook(GameModeHooks.HookPointStart, OnPointStart);
-            GameModeManager.RemoveHook(GameModeHooks.HookBattleStart, OnBattleStart);
+            // GameModeManager.RemoveHook(GameModeHooks.HookBattleStart, OnBattleStart);
             GameModeManager.RemoveHook(GameModeHooks.HookPointEnd, OnPointEnd);
 
             Destroy(cooldownUI);

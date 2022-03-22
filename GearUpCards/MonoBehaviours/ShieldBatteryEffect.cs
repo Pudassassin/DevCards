@@ -36,6 +36,7 @@ namespace GearUpCards.MonoBehaviours
 
         internal Action<BlockTrigger.BlockTriggerType> blockAction;
         internal Action attackAction;
+        internal Action<GameObject> shootAction;
 
         private int batteryStackCount = 0;
         private int empowerStackCount = 0;
@@ -45,12 +46,15 @@ namespace GearUpCards.MonoBehaviours
 
         private List<Empower> empowerList = new List<Empower>();
 
+        private bool burstMode = false;
+
         internal float timer = 0.0f;
         internal bool effectWarmUp = false;
         // internal int proc_count = 0;
 
         internal Player player;
         internal Gun gun;
+        internal GunAmmo gunAmmo;
         internal Block block;
         internal CharacterStatModifiers stats;
 
@@ -63,6 +67,7 @@ namespace GearUpCards.MonoBehaviours
 
             this.player = this.gameObject.GetComponent<Player>();
             this.gun = this.gameObject.GetComponent<WeaponHandler>().gun;
+            this.gunAmmo = this.gun.GetComponentInChildren<GunAmmo>();
             this.block = this.gameObject.GetComponent<Block>();
             this.stats = this.gameObject.GetComponent<CharacterStatModifiers>();
 
@@ -79,6 +84,9 @@ namespace GearUpCards.MonoBehaviours
 
             this.attackAction = new Action(this.GetDoAttackAction(this.player, this.gun));
             this.gun.AddAttackAction(this.attackAction);
+
+            this.shootAction = new Action<GameObject>(this.GetDoShootAction(this.player, this.gun));
+            this.gun.ShootPojectileAction = (Action<GameObject>)Delegate.Combine(this.gun.ShootPojectileAction, this.shootAction);
         }
 
         public void Update()
@@ -141,8 +149,31 @@ namespace GearUpCards.MonoBehaviours
             batteryStackCount = stats.GetGearData().shieldBatteryStack;
             empowerStackCount = CardUtils.GetPlayerCardsWithName(this.player, "EMPOWER").Count;
 
-            empowerMaxAmmo = batteryStackCount + empowerStackCount;
+            empowerMaxAmmo = batteryStackCount + empowerStackCount + 1;
             empowerList = player.gameObject.GetComponentsInChildren<Empower>().ToList();
+
+            int bulletBatch;
+            if (this.gun.bursts > 1)
+            {
+                bulletBatch = this.gun.bursts * this.gun.numberOfProjectiles;
+            }
+            else
+            {
+                bulletBatch = this.gun.numberOfProjectiles;
+            }
+
+            float vollayPerClip = (float)this.gunAmmo.maxAmmo / (float)(bulletBatch);
+            vollayPerClip = Mathf.CeilToInt(vollayPerClip);
+            if (empowerMaxAmmo > vollayPerClip)
+            {
+                burstMode = true;
+                // empowerMaxAmmo -= 1;
+            }
+            else
+            {
+                burstMode = false;
+                // empowerMaxAmmo += 1;
+            }
 
             float bulletSpeedMul;
             float damageMul;
@@ -188,7 +219,34 @@ namespace GearUpCards.MonoBehaviours
             return delegate ()
             {
                 // check empower ammo
-                if (empowerAmmo > 0)
+                if (empowerAmmo > 0 && !burstMode)
+                {
+                    // reset Empower state
+                    try
+                    {
+                        foreach (Empower item in empowerList)
+                        {
+                            Traverse.Create(item).Field("empowered").SetValue((bool)true);
+                            Traverse.Create(item).Field("isOn").SetValue((bool)true);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        UnityEngine.Debug.LogError($"[Shield Battery] AttackAction failed! [{player.playerID}]");
+                    }
+
+                    // deduce empower ammo
+                    empowerAmmo -= 1;
+                }
+            };
+        }
+
+        public Action<GameObject> GetDoShootAction(Player player, Gun gun)
+        {
+            return delegate (GameObject bulletFired)
+            {
+                // check empower ammo
+                if (empowerAmmo > 0 && burstMode)
                 {
                     // reset Empower state
                     try
@@ -200,7 +258,7 @@ namespace GearUpCards.MonoBehaviours
                     }
                     catch (Exception)
                     {
-                        UnityEngine.Debug.LogError($"Shield Battery failed! [{player.playerID}]");
+                        UnityEngine.Debug.LogError($"[Shield Battery] ShootAction failed! [{player.playerID}]");
                     }
 
                     // deduce empower ammo
