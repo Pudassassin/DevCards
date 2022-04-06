@@ -5,76 +5,76 @@ using UnityEngine;
 
 namespace GearUpCards.MonoBehaviours
 {
-	public class ObliterationModifier : RayHitEffect
-	{
-		private float healthCullFactor = 0.80f;
-		private float obliterationRadius = 2.5f;
+    public class ObliterationModifier : RayHitEffect
+    {
+        private float healthCullFactor = 0.80f;
+        private float obliterationRadius = 2.5f;
 
-		// private Gun shooterGun;
-		// private Player shooterPlayer;
+        // private Gun shooterGun;
+        // private Player shooterPlayer;
 
-		public override HasToReturn DoHitEffect(HitInfo hit)
-		{
-			if (hit.transform == null)
-			{
-				return HasToReturn.canContinue;
-			}
-			// if (hit.transform.gameObject.tag.Contains("Bullet"))
-			// {
-			// 	return HasToReturn.canContinue;
-			// }
-
-			bool hitPLayer = false;
-			if (hit.transform.gameObject.tag.Contains("Player"))
+        public override HasToReturn DoHitEffect(HitInfo hit)
+        {
+            if (hit.transform == null)
             {
-				// do damage to victim ()
-				GameObject victim = hit.transform.gameObject;
+                return HasToReturn.canContinue;
+            }
+            // if (hit.transform.gameObject.tag.Contains("Bullet"))
+            // {
+            //     return HasToReturn.canContinue;
+            // }
 
-				ObliterationStatus status = victim.AddComponent<ObliterationStatus>();
-				status.CullMaxHealth(healthCullFactor);
+            bool hitPLayer = false;
+            if (hit.transform.gameObject.tag.Contains("Player"))
+            {
+                // do damage to victim ()
+                GameObject victim = hit.transform.gameObject;
 
-				hitPLayer = true;
-				// return HasToReturn.canContinue;
-			}
+                ObliterationStatus status = victim.AddComponent<ObliterationStatus>();
+                status.CullMaxHealth(healthCullFactor);
+
+                hitPLayer = true;
+                // return HasToReturn.canContinue;
+            }
 
             // map object obliteration!
             if (!hitPLayer)
             {
-				MapUtils.RPCA_DestroyMapObject(hit.transform.gameObject);
-				MapUtils.RPCA_DestroyMapObjectsAtArea(gameObject.transform.position, obliterationRadius);
+                MapUtils.RPCA_DestroyMapObject(hit.transform.gameObject);
+                MapUtils.RPCA_DestroyMapObjectsAtArea(gameObject.transform.position, obliterationRadius);
             }
 
-			return HasToReturn.canContinue;
-		}
+            return HasToReturn.canContinue;
+        }
 
 
     }
 
-	public class ObliterationStatus : ReversibleEffect
+    public class ObliterationStatus : ReversibleEffect
     {
-		private float healthScale = 1.0f;
+        private float healthScale = 1.0f;
 
-		public override void OnAwake()
-		{
-			this.SetLivesToEffect(999);
-		}
+        public override void OnAwake()
+        {
+            this.SetLivesToEffect(999);
+        }
 
-		public void CullMaxHealth(float percentage)
-		{
-			healthScale *= percentage;
+        public void CullMaxHealth(float percentage)
+        {
+            healthScale *= percentage;
 
-			characterDataModifier.health_mult = percentage;
-			characterDataModifier.maxHealth_mult = healthScale;
+            characterDataModifier.health_mult = percentage;
+            characterDataModifier.maxHealth_mult = healthScale;
 
             try
             {
-				ApplyModifiers();
-			}
+                ApplyModifiers();
+            }
             catch (Exception exception)
             {
-				Miscs.LogWarn("[GearUp] ObliterationStatus: caught an exception!");
-				Miscs.LogWarn(exception);
+                Miscs.LogWarn("[GearUp] ObliterationStatus: caught an exception!");
+                Miscs.LogWarn(exception);
             }
-		}
-	}
+        }
+    }
 }
