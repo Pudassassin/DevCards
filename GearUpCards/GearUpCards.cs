@@ -37,7 +37,7 @@ namespace GearUpCards
     {
         private const string ModId = "com.pudassassin.rounds.GearUpCards";
         private const string ModName = "GearUpCards";
-        public const string Version = "0.1.14"; //build #86 / Release 0-1-2
+        public const string Version = "0.1.15"; //build #87 / Release 0-1-2
 
         public const string ModInitials = "GearUP";
 
@@ -78,7 +78,8 @@ namespace GearUpCards
             // Adding hooks
             GameModeManager.AddHook(GameModeHooks.HookGameStart, GameStart);
             GameModeManager.AddHook(GameModeHooks.HookRoundStart, CardPickEnd);
-            GameModeManager.AddHook(GameModeHooks.HookPointStart, PointStart);
+            GameModeManager.AddHook(GameModeHooks.HookPointEnd, PointEnd);
+            // GameModeManager.AddHook(GameModeHooks.HookPointStart, PointStart);
 
             // make cards mutually exclusive
             this.ExecuteAfterSeconds(1.5f, () =>
@@ -147,13 +148,19 @@ namespace GearUpCards
             yield break;
         }
 
-        IEnumerator PointStart(IGameModeHandler gm)
+        IEnumerator PointEnd(IGameModeHandler gm)
         {
             MapUtils.ClearMapObjectsList();
 
             yield break;
         }
 
+        // IEnumerator PointStart(IGameModeHandler gm)
+        // {
+        //     MapUtils.ClearMapObjectsList();
+        // 
+        //     yield break;
+        // }
 
         // Assets loader
         public static readonly AssetBundle VFXBundle = Jotunn.Utils.AssetUtils.LoadAssetBundleFromResources("gearup_asset", typeof(GearUpCards).Assembly);

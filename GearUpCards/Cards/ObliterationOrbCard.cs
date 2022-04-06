@@ -50,7 +50,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Blocking casts a spell orb that remove a portion of the map at impact point. Affected player loses a chunk of their max HP until round ends.\n!WIP WIP WIP!";
+            return "Blocking fires an orb that destroys part of the map and remove affected players' max HP until battle ends.";
         }
         protected override GameObject GetCardArt()
         {
@@ -64,34 +64,27 @@ namespace GearUpCards.Cards
         {
             return new CardInfoStat[]
             {
-                // new CardInfoStat()
-                // {
-                //     positive = true,
-                //     stat = "HP Culling",
-                //     amount = "+15%",
-                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                // },
-                // new CardInfoStat()
-                // {
-                //     positive = false,
-                //     stat = "DMG",
-                //     amount = "-25%",
-                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                // },
-                // new CardInfoStat()
-                // {
-                //     positive = false,
-                //     stat = "ATK SPD",
-                //     amount = "-25%",
-                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                // },
-                // new CardInfoStat()
-                // {
-                //     positive = false,
-                //     stat = "Reload SPD",
-                //     amount = "-25%",
-                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                // }
+                new CardInfoStat()
+                {
+                    positive = true,
+                    stat = "Max HP Culling",
+                    amount = "+20%",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                },
+                new CardInfoStat()
+                {
+                    positive = false,
+                    stat = "Block CD",
+                    amount = "!WIP",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                },
+                new CardInfoStat()
+                {
+                    positive = false,
+                    stat = "Spell CD",
+                    amount = "!WIP",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                }
             };
         }
         protected override CardThemeColor.CardThemeColorType GetTheme()

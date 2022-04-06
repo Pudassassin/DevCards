@@ -156,18 +156,13 @@ namespace GearUpCards.Utils
                 return false;
             }
 
-            if (!mapScene.IsValid())
-            {
-                Miscs.Log("[GearUp] RPCA_DestroyMapObject: Map scene not loaded!");
-                return false;
-            }
-            else if (!mapScene.name.Equals(gameObject.scene.name))
+            bool checkSucess = RPCA_UpdateMapObjectsList();
+
+            if (!mapScene.name.Equals(gameObject.scene.name))
             {
                 Miscs.Log("[GearUp] RPCA_DestroyMapObject: Not a map game object!");
                 return false;
             }
-
-            bool checkSucess = RPCA_UpdateMapObjectsList();
             
             if (checkSucess)
             {
@@ -199,6 +194,40 @@ namespace GearUpCards.Utils
         }
 
         // check and destroy all map objects within the area
+        public static bool RPCA_DestroyMapObjectsAtArea(Vector3 groundZero, float radius)
+        {
+            bool checkSucess = RPCA_UpdateMapObjectsList();
+
+            if (checkSucess)
+            {
+                float distance;
+                foreach (MapObject item in mapObjects)
+                {
+                    if (item.gameObject == null)
+                    {
+                        continue;
+                    }
+                    else if (!item.gameObject.activeInHierarchy)
+                    {
+                        // Miscs.Log($"[GearUp] RPCA_DestroyMapObject: skipping inactive [{item.gameObject.name}]");
+                        continue;
+                    }
+
+                    distance = (item.gameObject.transform.position - groundZero).magnitude;
+                    if (distance <= radius)
+                    {
+                        Miscs.Log($"[GearUp] RPCA_DestroyMapObject: destroying [{item.gameObject.name}]");
+                        Destroy(item.gameObject);
+                        item.gameObject = null;
+
+                        // continue;
+                    }
+                }
+
+                return true;
+            }
+            else return false;
+        }
 
         // clear the obsolete list on point end (to be called at main class mostly)
         public static void ClearMapObjectsList()

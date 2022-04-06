@@ -7,7 +7,8 @@ namespace GearUpCards.MonoBehaviours
 {
 	public class ObliterationModifier : RayHitEffect
 	{
-		private const float healthCullBaseFactor = 0.90f;
+		private float healthCullFactor = 0.80f;
+		private float obliterationRadius = 1.5f;
 
 		// private Gun shooterGun;
 		// private Player shooterPlayer;
@@ -30,7 +31,7 @@ namespace GearUpCards.MonoBehaviours
 				GameObject victim = hit.transform.gameObject;
 
 				ObliterationStatus status = victim.AddComponent<ObliterationStatus>();
-				status.CullMaxHealth(healthCullBaseFactor);
+				status.CullMaxHealth(healthCullFactor);
 
 				hitPLayer = true;
 				// return HasToReturn.canContinue;
@@ -40,7 +41,7 @@ namespace GearUpCards.MonoBehaviours
             if (!hitPLayer)
             {
 				MapUtils.RPCA_DestroyMapObject(hit.transform.gameObject);
-				// AoE map destruction
+				MapUtils.RPCA_DestroyMapObjectsAtArea(gameObject.transform.position, obliterationRadius);
             }
 
 			return HasToReturn.canContinue;
@@ -64,7 +65,16 @@ namespace GearUpCards.MonoBehaviours
 
 			characterDataModifier.health_mult = percentage;
 			characterDataModifier.maxHealth_mult = healthScale;
-			ApplyModifiers();
+
+            try
+            {
+				ApplyModifiers();
+			}
+            catch (Exception exception)
+            {
+				Miscs.LogWarn("[GearUp] ObliterationStatus: caught an exception!");
+				Miscs.LogWarn(exception);
+            }
 		}
 	}
 }
