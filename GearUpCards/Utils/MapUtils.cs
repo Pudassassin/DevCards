@@ -201,6 +201,9 @@ namespace GearUpCards.Utils
             if (checkSucess)
             {
                 float distance;
+                Vector3 targetPos;
+                Miscs.Log($"[GearUp] Area Map Destroy Ground Zero: [{groundZero}]");
+
                 foreach (MapObject item in mapObjects)
                 {
                     if (item.gameObject == null)
@@ -213,7 +216,10 @@ namespace GearUpCards.Utils
                         continue;
                     }
 
-                    distance = (item.gameObject.transform.position - groundZero).magnitude;
+                    targetPos = Vector3.Scale(item.gameObject.transform.position, new Vector3(1.0f, 1.0f, 0.0f));
+                    distance = (targetPos - groundZero).magnitude;
+                    Miscs.Log($"Object: [{item.gameObject.name}] Pos: [{item.gameObject.transform.position}] Distance: [{distance}]");
+
                     if (distance <= radius)
                     {
                         Miscs.Log($"[GearUp] RPCA_DestroyMapObject: destroying [{item.gameObject.name}]");

@@ -8,7 +8,7 @@ namespace GearUpCards.MonoBehaviours
 	public class ObliterationModifier : RayHitEffect
 	{
 		private float healthCullFactor = 0.80f;
-		private float obliterationRadius = 1.5f;
+		private float obliterationRadius = 2.5f;
 
 		// private Gun shooterGun;
 		// private Player shooterPlayer;
