@@ -18,7 +18,7 @@ using UnboundLib.Utils;
 using System.Linq;
 using System.Collections.Generic;
 
-using GearUpCards.MonoBehaviours;
+using GearUpCards.Utils;
 
 namespace GearUpCards
 {
@@ -37,7 +37,7 @@ namespace GearUpCards
     {
         private const string ModId = "com.pudassassin.rounds.GearUpCards";
         private const string ModName = "GearUpCards";
-        public const string Version = "0.1.13"; //build #85 / Release 0-1-2
+        public const string Version = "0.1.14"; //build #86 / Release 0-1-2
 
         public const string ModInitials = "GearUP";
 
@@ -58,10 +58,15 @@ namespace GearUpCards
             CustomCard.BuildCard<ChompyBulletCard>(ChompyBulletCard.callback);
             CustomCard.BuildCard<TacticalScannerCard>(TacticalScannerCard.callback);
             CustomCard.BuildCard<SizeNormalizerCard>(SizeNormalizerCard.callback);
+
+            // Prototype cards
             CustomCard.BuildCard<ShieldBatteryCard>(ShieldBatteryCard.callback);
 
             // Unique Magick series (powerful on-block "spell" abilities)
             CustomCard.BuildCard<AntiBulletMagickCard>(AntiBulletMagickCard.callback);
+
+            // Orb Spells
+            CustomCard.BuildCard<ObliterationOrbCard>(ObliterationOrbCard.callback);
 
             // Crystal card series
 
@@ -70,9 +75,10 @@ namespace GearUpCards
             CustomCard.BuildCard<MedicalPartsCard>(MedicalPartsCard.callback);
             CustomCard.BuildCard<MagickFragmentsCard>(MagickFragmentsCard.callback);
 
-            // Pre-game hooks
+            // Adding hooks
             GameModeManager.AddHook(GameModeHooks.HookGameStart, GameStart);
             GameModeManager.AddHook(GameModeHooks.HookRoundStart, CardPickEnd);
+            GameModeManager.AddHook(GameModeHooks.HookPointStart, PointStart);
 
             // make cards mutually exclusive
             this.ExecuteAfterSeconds(1.5f, () =>
@@ -133,10 +139,17 @@ namespace GearUpCards
 
             foreach (var player in PlayerManager.instance.players)
             {
-                UnityEngine.Debug.Log($"[GearUp Main] Resolving player[{player.playerID}]");
-                StartCoroutine(CardHandResolveMono.ResolveHandCards(player));
+                // UnityEngine.Debug.Log($"[GearUp Main] Resolving player[{player.playerID}]");
+                StartCoroutine(PlayerCardResolver.Resolve(player));
                 yield return new WaitForSecondsRealtime(.1f);
             }
+
+            yield break;
+        }
+
+        IEnumerator PointStart(IGameModeHandler gm)
+        {
+            MapUtils.ClearMapObjectsList();
 
             yield break;
         }
