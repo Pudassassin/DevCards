@@ -1,14 +1,17 @@
-﻿using System.Collections.Generic;
-using UnboundLib;
+﻿using System.Linq;
+using System.Reflection;
+using System.Collections;
+using System.Collections.Generic;
+
 using UnityEngine;
-using System.Linq;
+
+using UnboundLib;
 using UnboundLib.GameModes;
 using Photon.Pun;
-using System.Reflection;
 using ModdingUtils.MonoBehaviours;
 
 using GearUpCards.Extensions;
-using System.Collections;
+using GearUpCards.Utils;
 
 namespace GearUpCards.MonoBehaviours
 {
@@ -24,20 +27,22 @@ namespace GearUpCards.MonoBehaviours
         internal float healthCapPercentage = 1.0f;
         internal float healingEffectPercentage = 1.0f;
 
-        internal float previousHealth;
-        internal float previousMaxHealth;
+        internal float tempHealthCapPercentage = 1.0f;
+        internal bool tempHealthCapFlag = false;
+
+        internal float previousHealth = -1.0f;
+        internal float previousMaxHealth = -1.0f;
 
         internal float timer = 0.0f;
         internal bool effectWarmup = false;
         internal bool effectEnabled = true;
-
-        internal float healingTotal;
+        internal bool wasDeactivated = false;
 
         internal Player player;
         internal CharacterStatModifiers stats;
 
         /* DEBUG */
-        // internal int proc_count = 0;
+        internal int proc_count = 0;
 
 
         public void Awake()
@@ -64,6 +69,7 @@ namespace GearUpCards.MonoBehaviours
             {
                 // hard cap to prevent [Pristine Perserverence] to become active and mess things up
                 player.data.health = player.data.maxHealth * .80f;
+                previousHealth = player.data.health;
             }
         }
 
@@ -74,31 +80,23 @@ namespace GearUpCards.MonoBehaviours
             if (effectWarmup && stackCount > 0)
             {
                 // resolving with [Pristine Perserverence] at point start
-                player.data.health = player.data.maxHealth * .80f;
+                this.player.data.health = this.player.data.maxHealth * healthCapPercentage;
             }
 
-            // Relaying heal multiplier to patches
+            // if the script was active and was deactivated before (excluding reviving), presuming this as gamemode respawning cases
+            if (!effectWarmup && wasDeactivated)
+            {
+                OnRespawn();
+                wasDeactivated = false;
+            }
 
-            // if (effectEnabled && stackCount > 0)
-            // {
-            //     // catching all the healing gained
-            //     float healthDelta = player.data.health - previousHealth;
-            //     previousHealth = player.data.health;
-            // 
-            //     float flagPristineGain = (player.data.maxHealth) / previousMaxHealth;
-            // 
-            //     if (healthDelta > 0)
-            //     {
-            //         // allowing health gains via Max HP increases
-            //         if (flagPristineGain >= 2.5f)
-            //         {
-            //             healthDelta = 0.0f;
-            //         }
-            //         healingTotal += healthDelta;
-            //     }
-            // 
-            //     previousMaxHealth = player.data.maxHealth;
-            // }
+            // handle Max HP changes and scalings
+            if (!StatsMath.ApproxEqual(player.data.maxHealth, previousMaxHealth, 0.1f))
+            {
+                player.data.health = previousHealth * player.data.maxHealth / previousMaxHealth;
+            }
+            previousHealth = player.data.health;
+            previousMaxHealth = player.data.maxHealth;
 
             if (timer > procTime)
             {
@@ -111,25 +109,19 @@ namespace GearUpCards.MonoBehaviours
 
                 // if (proc_count >= 10)
                 // {
-                //     UnityEngine.Debug.Log($"[HOLLOW] running on player [{player.playerID}] with [{stackCount}] stacks");
+                //     // Miscs.Log($"[GearUp] HollowLife [{player.playerID}] HP Cap: [{stackCount}] x [{tempHealthCapPercentage}] = [{healthCapPercentage}]");
+                // 
                 //     proc_count = 0;
                 // }
 
-                if (effectEnabled && stackCount > 0)
+                if ((effectEnabled && stackCount > 0 ) ||
+                    tempHealthCapFlag)
                 {
                     if (player.data.HealthPercentage > healthCapPercentage)
                     {
-                        float healthCullPercentage = Mathf.Clamp(player.data.HealthPercentage - healthCapPercentage, 0.0f, healthCullRate * stackCount);
+                        float healthCullPercentage = Mathf.Clamp(player.data.HealthPercentage - healthCapPercentage, 0.0f, healthCullRate * (stackCount + 1));
                         player.data.health -= player.data.maxHealth * healthCullPercentage;
                     }
-                    // else if (healingTotal > 0.0f)
-                    // {
-                    //     player.data.health -= healingTotal * (1 - healingEffectPercentage);
-                    // }
-                    // 
-                    // healingTotal = 0.0f;
-
-                    // UnityEngine.Debug.Log($"[HOLLOW] culled player [{player.playerID}] HP");
                 }
 
                 timer -= procTime;
@@ -141,15 +133,39 @@ namespace GearUpCards.MonoBehaviours
         {
             this.healthCapPercentage = Mathf.Pow(healthCapFactor, stackCount);
             this.healingEffectPercentage = Mathf.Pow(healingFactor, stackCount);
+
+            if (tempHealthCapFlag)
+            {
+                this.healthCapPercentage *= this.tempHealthCapPercentage;
+            }
+        }
+
+        public void ApplyTempHealthCap(float percentage)
+        {
+            tempHealthCapPercentage *= percentage;
+            effectEnabled = true;
+            tempHealthCapFlag = true;
+        }
+
+        public void ResetTempHealthCap()
+        {
+            tempHealthCapPercentage = 1.0f;
+            tempHealthCapFlag = false;
         }
 
         public float GetHealMultiplier()
         {
+            // Let the patch handle heal multiplier
             return healingEffectPercentage;
         }
 
         private IEnumerator OnPointStart(IGameModeHandler gm)
         {
+            wasDeactivated = false;
+
+            ResetTempHealthCap();
+            this.player.data.health = this.player.data.maxHealth;
+
             effectWarmup = true;
             effectEnabled = false;
 
@@ -158,13 +174,21 @@ namespace GearUpCards.MonoBehaviours
 
         private IEnumerator OnBattleStart(IGameModeHandler gm)
         {
-            effectWarmup = false;
-            effectEnabled = true;
+            ResetTempHealthCap();
 
             previousHealth = this.player.data.health;
+            previousMaxHealth = this.player.data.maxHealth;
+
             stackCount = stats.GetGearData().hollowLifeStack;
             CalculateEffects();
 
+            effectWarmup = false;
+            if (stackCount > 0)
+            {
+                effectEnabled = true;
+            }
+
+            this.player.data.health = this.player.data.maxHealth * healthCapPercentage;
             // UnityEngine.Debug.Log($"[HOLLOW] from player [{player.playerID}] - Battle Start");
 
             yield break;
@@ -179,6 +203,19 @@ namespace GearUpCards.MonoBehaviours
             yield break;
         }
 
+        private void OnRespawn()
+        {
+            ResetTempHealthCap();
+
+            previousHealth = this.player.data.health;
+            previousMaxHealth = this.player.data.maxHealth;
+
+            if (stackCount > 0)
+            {
+                effectEnabled = true;
+            }
+        }
+
         public void OnDisable()
         {
             bool isRespawning = player.data.healthHandler.isRespawning;
@@ -191,7 +228,10 @@ namespace GearUpCards.MonoBehaviours
             }
             else
             {
+                ResetTempHealthCap();
                 effectEnabled = false;
+
+                wasDeactivated = true;
                 // UnityEngine.Debug.Log($"[HOLLOW] from player [{player.playerID}] - dead ded!?");
             }
         }

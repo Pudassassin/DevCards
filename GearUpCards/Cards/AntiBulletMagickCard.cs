@@ -95,7 +95,7 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "Forced Reload",
-                    amount = "+3s",
+                    amount = "+3.5s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()

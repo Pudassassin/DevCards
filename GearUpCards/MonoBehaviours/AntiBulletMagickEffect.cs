@@ -26,17 +26,29 @@ namespace GearUpCards.MonoBehaviours
 
         private const string bulletGameObjectName = "Bullet_Base(Clone)";
         private const float spellCooldownBase = 15.0f;
-        private const float spellForceReloadTimeAdd = 3.0f;
-        private const float spellRange = 7.0f;
-        private const float spellDuration = 1.0f;
+        private const float spellForceReloadTimeAddBase = 3.5f;
+        private const float spellRangeBase = 7.0f;
+        private const float spellDurationBase = 1.0f;
 
         private const float procTime = .025f;
-        private const float warmupTime = 3.0f;
+        private const float warmupTime = 2.0f;
 
         internal Action<BlockTrigger.BlockTriggerType> spellAction;
 
-        internal int magickFragmentCount;
+        // ===== Spell modifiers =====
+        // cooldown reduction and cast/burst speed
+        internal int magickFragment = 0;
+        // AoE and range
+        internal int glyptInfluence = 0;
+        // Spell power
+        internal int glyptPotency = 0;
+
+
         internal float spellCooldown = 15.0f;
+        internal float spellRange = 7.0f;
+        internal float spellForceReloadTimeAdd = 3.5f;
+        internal float spellDuration = 1.0f;
+
         internal bool spellReady = false;
         internal bool empowerCharged = false;
 
@@ -194,10 +206,17 @@ namespace GearUpCards.MonoBehaviours
 
         internal void RecalculateEffectStats()
         {
-            magickFragmentCount = this.stats.GetGearData().magickFragmentStack;
-            spellCooldown = spellCooldownBase - (magickFragmentCount * 1.5f);
+            magickFragment = this.stats.GetGearData().magickFragmentStack;
+            glyptInfluence = this.stats.GetGearData().glyptInfluence;
+            glyptPotency = this.stats.GetGearData().glyptPotency;
 
+            spellCooldown = spellCooldownBase - (magickFragment * 1.5f);
             spellCooldown = Mathf.Clamp(spellCooldown, 7.0f, 30.0f);
+
+            spellRange = spellRangeBase + (0.5f * glyptInfluence);
+
+            spellForceReloadTimeAdd = spellForceReloadTimeAddBase + (0.5f * glyptPotency);
+            spellDuration = spellDurationBase + (0.25f * glyptPotency);
         }
 
         internal void DeleteBullet()
@@ -272,31 +291,4 @@ namespace GearUpCards.MonoBehaviours
             // UnityEngine.Debug.Log($"Scanner destroyed  [{this.player.playerID}]");
         }
     }
-
-    // public class AntiBulletMagickStatus : ReversibleEffect
-    // {
-    //     internal float timeApplied;
-    //     internal float duration = 3.0f;
-    // 
-    //     public override void OnAwake()
-    //     {
-    //         timeApplied = Time.time;
-    // 
-    //         GunAmmo gunAmmo = this.gameObject.GetComponent<WeaponHandler>().gun.GetComponentInChildren<GunAmmo>();
-    // 
-    //         Traverse.Create(gunAmmo).Field("currentAmmo").SetValue((int) 0);
-    //         Traverse.Create(gunAmmo).Field("freeReloadCounter").SetValue((float) 0.0f);
-    //         Traverse.Create(gunAmmo).InvokeMethod("SetActiveBullets");
-    //         
-    //         float reloadTime = (float) 
-    //         reloadCounter = ReloadTime();
-    //         gun.isReloading = true;
-    //         gun.player.data.stats.OnOutOfAmmp(maxAmmo);
-    //     }
-    // 
-    //     public void ApplyStatus(float duration)
-    //     {
-    //         this.duration = duration;
-    //     }
-    // }
 }

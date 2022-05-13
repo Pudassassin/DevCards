@@ -40,6 +40,15 @@ namespace GearUpCards.Extensions
         public int hollowLifeStack;
         public int tacticalScannerStack;
         public int shieldBatteryStack;
+        public int chompyBulletStack;
+
+        public int glyptDivination;
+        public int glyptInfluence;
+        public int glyptGeometric;
+        public int glyptPotency;
+        public int glyptPiercing;
+
+        public int orbObliteration;
 
         public int magickFragmentStack;
 
@@ -56,8 +65,17 @@ namespace GearUpCards.Extensions
             hollowLifeStack = 0;
             tacticalScannerStack = 0;
             shieldBatteryStack = 0;
+            chompyBulletStack = 0;
 
             magickFragmentStack = 0;
+
+            glyptDivination = 0;
+            glyptInfluence = 0;
+            glyptGeometric = 0;
+            glyptPotency = 0;
+            glyptPiercing = 0;
+
+            orbObliteration = 0;
 
             gunMod = GearUpConstants.ModType.none;
             blockMod = GearUpConstants.ModType.none;
@@ -95,8 +113,17 @@ namespace GearUpCards.Extensions
             __instance.GetGearData().hollowLifeStack = 0;
             __instance.GetGearData().tacticalScannerStack = 0;
             __instance.GetGearData().shieldBatteryStack = 0;
+            __instance.GetGearData().chompyBulletStack = 0;
 
             __instance.GetGearData().magickFragmentStack = 0;
+
+            __instance.GetGearData().glyptDivination = 0;
+            __instance.GetGearData().glyptInfluence = 0;
+            __instance.GetGearData().glyptGeometric = 0;
+            __instance.GetGearData().glyptPotency = 0;
+            __instance.GetGearData().glyptPiercing = 0;
+
+            __instance.GetGearData().orbObliteration = 0;
 
             __instance.GetGearData().gunMod = GearUpConstants.ModType.none;
             __instance.GetGearData().blockMod = GearUpConstants.ModType.none;

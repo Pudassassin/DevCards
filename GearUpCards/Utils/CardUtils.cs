@@ -31,13 +31,13 @@ namespace GearUpCards.Utils
             public static CardCategory tagNoRemove = CustomCardCategories.instance.CardCategory("NoRemove");
         }
 
-        public class HandCardData
+        public class PlayerCardData
         {
             public CardInfo cardInfo;
             public Player owner;
             public int index;
 
-            public HandCardData(CardInfo cardInfo, Player owner, int index)
+            public PlayerCardData(CardInfo cardInfo, Player owner, int index)
             {
                 this.cardInfo = cardInfo;
                 this.owner = owner;
@@ -47,22 +47,22 @@ namespace GearUpCards.Utils
 
         public static bool PlayerHasCard(Player player, string cardName)
         {
-            List<HandCardData> candidate = GetPlayerCardsWithName(player, cardName);
+            List<PlayerCardData> candidate = GetPlayerCardsWithName(player, cardName);
             return candidate.Count > 0;
         }
 
         public static bool PlayerHasCardCategory(Player player, CardCategory cardCategory)
         {
-            List<HandCardData> candidate = GetPlayerCardsWithCategory(player, cardCategory);
+            List<PlayerCardData> candidate = GetPlayerCardsWithCategory(player, cardCategory);
             return candidate.Count > 0;
         }
 
-        public static List<HandCardData> GetPlayerCardsWithName(Player player, string targetCardName)
+        public static List<PlayerCardData> GetPlayerCardsWithName(Player player, string targetCardName)
         {
             targetCardName = targetCardName.ToUpper();
             string checkCardName;
 
-            List<HandCardData> candidates = new List<HandCardData>();
+            List<PlayerCardData> candidates = new List<PlayerCardData>();
             List<CardInfo> playerCards = player.data.currentCards;
 
             for (int i = 0; i < playerCards.Count; i++)
@@ -71,15 +71,15 @@ namespace GearUpCards.Utils
 
                 if (checkCardName.Equals(targetCardName))
                 {
-                    candidates.Add(new HandCardData(playerCards[i], player, i));
+                    candidates.Add(new PlayerCardData(playerCards[i], player, i));
                 }
             }
             return candidates;
         }
 
-        public static List<HandCardData> GetPlayerCardsWithCategory(Player player, CardCategory targetCategory)
+        public static List<PlayerCardData> GetPlayerCardsWithCategory(Player player, CardCategory targetCategory)
         {
-            List<HandCardData> candidates = new List<HandCardData>();
+            List<PlayerCardData> candidates = new List<PlayerCardData>();
             List<CardInfo> playerCards = player.data.currentCards;
 
             for (int i = 0; i < playerCards.Count; i++)
@@ -96,7 +96,7 @@ namespace GearUpCards.Utils
                 }
                 if (match)
                 {
-                    candidates.Add(new HandCardData(playerCards[i], player, i));
+                    candidates.Add(new PlayerCardData(playerCards[i], player, i));
                 }
             }
             return candidates;

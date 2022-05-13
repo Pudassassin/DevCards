@@ -15,26 +15,19 @@ using static GearUpCards.Utils.CardUtils;
 
 namespace GearUpCards.Cards
 {
-    class MagickFragmentsCard : CustomCard
+    class InfluenceGlyptCard : CustomCard
     {
-        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_MagickFragment");
+        // internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_MagickFragment");
 
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            
+            gun.attackSpeed = 1.0f / 0.85f;
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            if (block.cdMultiplier > 1.0f)
-            {
-                block.cdMultiplier -= 0.3f;
-            }
-            else
-            {
-                block.cdMultiplier *= 0.7f;
-            }
-            player.data.maxHealth *= 0.75f;
-            characterStats.GetGearData().magickFragmentStack += 1;
+            // explosive mono stuff
+
+            characterStats.GetGearData().glyptInfluence += 1;
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -42,15 +35,16 @@ namespace GearUpCards.Cards
         }
         protected override string GetTitle()
         {
-            return "Magick Fragments";
+            return "Influence Glypt";
         }
         protected override string GetDescription()
         {
-            return "This mysterious glyph hasten your spellcasting, but at what cost?";
+            // return "Improve your Spells' range and effect area. Your Bullets cause a small blast on impact.";
+            return "Improve your Spells' range and effect area.";
         }
         protected override GameObject GetCardArt()
         {
-            return cardArt;
+            return null;
         }
         protected override CardInfo.Rarity GetRarity()
         {
@@ -60,25 +54,25 @@ namespace GearUpCards.Cards
         {
             return new CardInfoStat[]
             {
-                new CardInfoStat()
-                {
-                    positive = true,
-                    stat = "Block CD",
-                    amount = "-30%",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
+                // new CardInfoStat()
+                // {
+                //     positive = true,
+                //     stat = "Blast DMG",
+                //     amount = "!WIP!",
+                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                // },
                 new CardInfoStat()
                 {
                     positive = false,
-                    stat = "Health",
-                    amount = "-25%",
+                    stat = "ATK SPD",
+                    amount = "-15%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "Spell CD",
-                    amount = "Faster",
+                    stat = "Spell Range/AoE",
+                    amount = "Larger",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };

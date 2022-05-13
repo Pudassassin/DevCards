@@ -218,7 +218,7 @@ namespace GearUpCards.Utils
 
                     targetPos = Vector3.Scale(item.gameObject.transform.position, new Vector3(1.0f, 1.0f, 0.0f));
                     distance = (targetPos - groundZero).magnitude;
-                    Miscs.Log($"Object: [{item.gameObject.name}] Pos: [{item.gameObject.transform.position}] Distance: [{distance}]");
+                    // Miscs.Log($"Object: [{item.gameObject.name}] Pos: [{item.gameObject.transform.position}] Distance: [{distance}]");
 
                     if (distance <= radius)
                     {

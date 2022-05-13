@@ -15,9 +15,9 @@ using static GearUpCards.Utils.CardUtils;
 
 namespace GearUpCards.Cards
 {
-    class MagickFragmentsCard : CustomCard
+    class GeometricGlyptCard : CustomCard
     {
-        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_MagickFragment");
+        // internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_MagickFragment");
 
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
@@ -25,16 +25,10 @@ namespace GearUpCards.Cards
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            if (block.cdMultiplier > 1.0f)
-            {
-                block.cdMultiplier -= 0.3f;
-            }
-            else
-            {
-                block.cdMultiplier *= 0.7f;
-            }
-            player.data.maxHealth *= 0.75f;
-            characterStats.GetGearData().magickFragmentStack += 1;
+            gun.reflects += 3;
+            gunAmmo.reloadTimeMultiplier *= 1.10f;
+
+            characterStats.GetGearData().glyptGeometric += 1;
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -42,15 +36,15 @@ namespace GearUpCards.Cards
         }
         protected override string GetTitle()
         {
-            return "Magick Fragments";
+            return "Geometric Glypt";
         }
         protected override string GetDescription()
         {
-            return "This mysterious glyph hasten your spellcasting, but at what cost?";
+            return "Add some bounces to your Bullets and Spells. Not all Spells can be bouncy, through...";
         }
         protected override GameObject GetCardArt()
         {
-            return cardArt;
+            return null;
         }
         protected override CardInfo.Rarity GetRarity()
         {
@@ -63,22 +57,22 @@ namespace GearUpCards.Cards
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "Block CD",
-                    amount = "-30%",
+                    stat = "Bullet Bounces",
+                    amount = "+3",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
-                    stat = "Health",
-                    amount = "-25%",
+                    stat = "Reload SPD",
+                    amount = "+10%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "Spell CD",
-                    amount = "Faster",
+                    stat = "Spell Bounces",
+                    amount = "Add",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };

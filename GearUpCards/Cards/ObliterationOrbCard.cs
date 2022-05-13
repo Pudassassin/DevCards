@@ -6,6 +6,8 @@ using GearUpCards.MonoBehaviours;
 using UnboundLib;
 using UnboundLib.Cards;
 using UnityEngine;
+
+using GearUpCards.Extensions;
 using static GearUpCards.Utils.CardUtils;
 
 namespace GearUpCards.Cards
@@ -23,21 +25,10 @@ namespace GearUpCards.Cards
         // 'attackSpeedMultiplier' works as intended >> More is more rapid firing
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            // gun.projectileColor = new Color(1f, 0.0f, 0.0f, 1f);
-            // add one stack of ChompyBulletEffect to the bullet modifier pool
+            block.cdAdd += 0.5f;
 
-            List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList();
-
-            GameObject gameObject = new GameObject("ObliterationModifier", new Type[]
-            {
-                typeof(ObliterationModifier)
-            });
-            list.Add(new ObjectsToSpawn
-            {
-                AddToProjectile = gameObject
-            });
-
-            gun.objectsToSpawn = list.ToArray();
+            characterStats.GetGearData().orbObliteration += 1;
+            player.gameObject.GetOrAddComponent<OrbSpellsMono>();
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -50,7 +41,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Blocking fires an orb that destroys part of the map and remove affected players' max HP until battle ends.";
+            return "Blocking fires an orb that obliterates part of the map and reduce players' max HP until they respawn.";
         }
         protected override GameObject GetCardArt()
         {
@@ -68,21 +59,21 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "Max HP Culling",
-                    amount = "+20%",
+                    amount = "15-25%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "Block CD",
-                    amount = "!WIP",
+                    amount = "+0.5s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "Spell CD",
-                    amount = "!WIP",
+                    amount = "8s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };

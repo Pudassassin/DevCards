@@ -37,7 +37,7 @@ namespace GearUpCards
     {
         private const string ModId = "com.pudassassin.rounds.GearUpCards";
         private const string ModName = "GearUpCards";
-        public const string Version = "0.1.16"; //build #88 / Release 0-1-2
+        public const string Version = "0.1.34"; //build #106 / Release 0-1-2
 
         public const string ModInitials = "GearUP";
 
@@ -73,7 +73,13 @@ namespace GearUpCards
             // Passives + consolations cards
             CustomCard.BuildCard<GunPartsCard>(GunPartsCard.callback);
             CustomCard.BuildCard<MedicalPartsCard>(MedicalPartsCard.callback);
+
+            // Spell Glypts
             CustomCard.BuildCard<MagickFragmentsCard>(MagickFragmentsCard.callback);
+            CustomCard.BuildCard<DivinationGlyptCard>(DivinationGlyptCard.callback);
+            CustomCard.BuildCard<InfluenceGlyptCard>(InfluenceGlyptCard.callback);
+            CustomCard.BuildCard<GeometricGlyptCard>(GeometricGlyptCard.callback);
+            CustomCard.BuildCard<PotencyGlyptCard>(PotencyGlyptCard.callback);
 
             // Adding hooks
             GameModeManager.AddHook(GameModeHooks.HookGameStart, GameStart);

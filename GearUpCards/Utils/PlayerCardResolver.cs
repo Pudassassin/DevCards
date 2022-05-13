@@ -6,11 +6,11 @@ using UnityEngine;
 using static GearUpCards.Utils.CardUtils;
 using CardChoiceSpawnUniqueCardPatch.CustomCategories;
 
-namespace GearUpCards.MonoBehaviours
+namespace GearUpCards.Utils
 {
-    internal class CardHandResolveMono : MonoBehaviour
+    internal class PlayerCardResolver : MonoBehaviour
     {
-        public static IEnumerator ResolveHandCards(Player player)
+        public static IEnumerator Resolve(Player player)
         {
             yield return ResolveCardCategory(player, GearCategory.typeSizeMod, "Medical Parts");
             yield return ResolveCardCategory(player, GearCategory.typeUniqueMagick, "Magick Fragments");
@@ -24,7 +24,7 @@ namespace GearUpCards.MonoBehaviours
         public static IEnumerator ResolveCardCategory(Player player, CardCategory category, string cardNameToAdd)
         {
             // Resolve card conflicts
-            List<HandCardData> conflictedCards = GetPlayerCardsWithCategory(player, category);
+            List<PlayerCardData> conflictedCards = GetPlayerCardsWithCategory(player, category);
             // foreach (var item in conflictedCards)
             // {
             //     UnityEngine.Debug.Log($"[{item.cardInfo.cardName}] - [{item.index}] - [{item.owner.playerID}]");
@@ -49,7 +49,7 @@ namespace GearUpCards.MonoBehaviours
         public static IEnumerator UpdateCategoryBlacklist(Player player, CardCategory categoryToCheck)
         {
             // mutally exclusives, desinated unique card, etc.
-            List<HandCardData> cardToCheck = GetPlayerCardsWithCategory(player, categoryToCheck);
+            List<PlayerCardData> cardToCheck = GetPlayerCardsWithCategory(player, categoryToCheck);
             // UnityEngine.Debug.Log($"Player[{player.playerID}] Check blacklist for [{categoryToCheck.name}] >> found [{cardToCheck.Count}]");
 
             if (cardToCheck.Count == 0)
@@ -70,7 +70,7 @@ namespace GearUpCards.MonoBehaviours
         public static IEnumerator UpdateCategoryWhitelist(Player player, CardCategory categoryToCheck)
         {
             // unlocking condition, etc.
-            List<HandCardData> cardToCheck = GetPlayerCardsWithCategory(player, categoryToCheck);
+            List<PlayerCardData> cardToCheck = GetPlayerCardsWithCategory(player, categoryToCheck);
 
             if (cardToCheck.Count > 0)
             {

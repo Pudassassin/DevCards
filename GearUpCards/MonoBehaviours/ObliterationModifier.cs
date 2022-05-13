@@ -1,14 +1,20 @@
 ﻿using GearUpCards.Utils;
 using ModdingUtils.MonoBehaviours;
 using System;
+using UnboundLib;
 using UnityEngine;
+
+using GearUpCards.Extensions;
 
 namespace GearUpCards.MonoBehaviours
 {
     public class ObliterationModifier : RayHitEffect
     {
-        private float healthCullFactor = 0.80f;
-        private float obliterationRadius = 2.5f;
+        private static GameObject VFXPrefab = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_OrbLiterationImpact");
+
+        private float healthCullAreaHit = 0.85f;
+        private float healthCullDirectHit = 0.75f;
+        private float obliterationRadius = 3.5f;
 
         // private Gun shooterGun;
         // private Player shooterPlayer;
@@ -25,24 +31,68 @@ namespace GearUpCards.MonoBehaviours
             // }
 
             bool hitPLayer = false;
-            if (hit.transform.gameObject.tag.Contains("Player"))
-            {
-                // do damage to victim ()
-                GameObject victim = hit.transform.gameObject;
+            HollowLifeEffect status;
+            float playerDistance;
 
-                ObliterationStatus status = victim.AddComponent<ObliterationStatus>();
-                status.CullMaxHealth(healthCullFactor);
+            ProjectileHit projectileHit = this.gameObject.GetComponentInParent<ProjectileHit>();
+            CharacterStatModifiers shooterStats = projectileHit.ownPlayer.gameObject.GetComponent<CharacterStatModifiers>();
+            float glyptPotency = shooterStats.GetGearData().glyptPotency;
+            float glyptInfluence = shooterStats.GetGearData().glyptInfluence;
+
+            float effectRadius = obliterationRadius + (0.25f * glyptInfluence);
+
+            Player victimPlayer = hit.transform.GetComponent<Player>();
+            int victimID = -1;
+
+            if (victimPlayer)
+            {
+                // direct hit victim take more MAX HP loss
+                GameObject victim = victimPlayer.gameObject;
+                float effectValue = healthCullDirectHit - (0.025f * glyptPotency);
+
+                status = victim.GetOrAddComponent<HollowLifeEffect>();
+                status.ApplyTempHealthCap(effectValue);
+                victimPlayer.data.health *= effectValue;
 
                 hitPLayer = true;
+                victimID = victimPlayer.playerID;
                 // return HasToReturn.canContinue;
             }
 
-            // map object obliteration!
+            // apply MAX HP Culling
+            foreach (Player target in PlayerManager.instance.players)
+            {
+                if (target.playerID == victimID)
+                {
+                    continue;
+                }
+
+                playerDistance = (target.transform.position - gameObject.transform.position).magnitude;
+                if (playerDistance <= effectRadius)
+                {
+                    float effectValue = healthCullAreaHit - (0.025f * glyptPotency);
+
+                    status = target.gameObject.GetOrAddComponent<HollowLifeEffect>();
+                    status.ApplyTempHealthCap(effectValue);
+                    target.data.health *= effectValue;
+                }
+            }
+
+            // map obliteration!
             if (!hitPLayer)
             {
                 MapUtils.RPCA_DestroyMapObject(hit.transform.gameObject);
-                MapUtils.RPCA_DestroyMapObjectsAtArea(gameObject.transform.position, obliterationRadius);
             }
+
+            MapUtils.RPCA_DestroyMapObjectsAtArea(gameObject.transform.position, obliterationRadius);
+
+            // VFX part
+            GameObject VFX = Instantiate(VFXPrefab, gameObject.transform.position + new Vector3(0.0f, 0.0f, 100.0f), Quaternion.identity);
+            VFX.transform.localScale = Vector3.one * effectRadius;
+            VFX.name = "OrbLiterationImpactVFX_Copy";
+            VFX.GetComponent<Canvas>().sortingLayerName = "MostFront";
+            VFX.GetComponent<Canvas>().sortingOrder = 10000;
+            VFX.AddComponent<RemoveAfterSeconds>().seconds = 1.55f;
 
             return HasToReturn.canContinue;
         }
@@ -63,7 +113,6 @@ namespace GearUpCards.MonoBehaviours
         {
             healthScale *= percentage;
 
-            characterDataModifier.health_mult = percentage;
             characterDataModifier.maxHealth_mult = healthScale;
 
             try
@@ -75,6 +124,7 @@ namespace GearUpCards.MonoBehaviours
                 Miscs.LogWarn("[GearUp] ObliterationStatus: caught an exception!");
                 Miscs.LogWarn(exception);
             }
+
         }
     }
 }
