@@ -54,7 +54,7 @@ namespace GearUpCards.Cards
             characterStats.GetGearData().sizeMod = GearUpConstants.ModType.sizeNormalize;
 
             // Add Size Normalizer mono
-            SizeNormalizerEffect effect = player.gameObject.GetOrAddComponent<SizeNormalizerEffect>();
+            // SizeNormalizerEffect effect = player.gameObject.GetOrAddComponent<SizeNormalizerEffect>();
             // effect.Refresh();
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
@@ -69,7 +69,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Set your final player size much closer to default where it started.";
+            return "Set your final player size to default BUT leave your mass unchanged.";
         }
         protected override GameObject GetCardArt()
         {
@@ -93,29 +93,8 @@ namespace GearUpCards.Cards
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "Movement Speed",
+                    stat = "Movement SPD",
                     amount = "+25%",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
-                new CardInfoStat()
-                {
-                    positive = true,
-                    stat = "Size",
-                    amount = "Near normal",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
-                new CardInfoStat()
-                {
-                    positive = false,
-                    stat = "GO BEEG",
-                    amount = "Cannot",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
-                new CardInfoStat()
-                {
-                    positive = false,
-                    stat = "go smol",
-                    amount = "Cannot",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };
@@ -128,9 +107,9 @@ namespace GearUpCards.Cards
         {
             return GearUpCards.ModInitials;
         }
-        internal static void callback(CardInfo card)
+        public override void Callback()
         {
-            card.gameObject.AddComponent<ExtraName>().text = "[Size]\nMod";
+            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "[Size]\nMod";
         }
     }
 }

@@ -9,7 +9,7 @@ using GearUpCards.MonoBehaviours;
 namespace GearUpCards.Patches
 {
     [HarmonyPatch(typeof(HealthHandler))]
-    class HealthHandlerPatch
+    class HealthHandler_Patch
     {
         [HarmonyPrefix]
         [HarmonyPriority(Priority.First)]

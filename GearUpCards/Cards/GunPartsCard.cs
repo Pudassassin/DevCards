@@ -21,11 +21,11 @@ namespace GearUpCards.Cards
 
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            gun.attackSpeed = .80f;
+            gun.attackSpeed = 1.0f / 1.20f;
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            gun.damage *= 1.25f;
+            gun.damage *= 1.20f;
             // gun.attackSpeedMultiplier += 0.25f;
             gunAmmo.maxAmmo += 3;
         }
@@ -57,14 +57,14 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "DMG",
-                    amount = "+25%",
+                    amount = "+20%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = true,
                     stat = "ATK SPD",
-                    amount = "+25%",
+                    amount = "+20%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
@@ -84,9 +84,9 @@ namespace GearUpCards.Cards
         {
             return GearUpCards.ModInitials;
         }
-        internal static void callback(CardInfo card)
+        public override void Callback()
         {
-            card.gameObject.AddComponent<ExtraName>().text = "Gun\nMaterial";
+            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Gun\nMaterial";
         }
     }
 }

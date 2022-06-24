@@ -41,6 +41,9 @@ namespace GearUpCards.MonoBehaviours
         internal MonoBehaviour magickEffect = null;
         internal float magickCooldown;
 
+        internal float tempCooldown;
+        private bool wasDeactivated = false;
+
         /* DEBUG */
         // internal int proc_count = 0;
 
@@ -72,7 +75,12 @@ namespace GearUpCards.MonoBehaviours
 
         public void Update()
         {
-            float cooldown;
+            if (wasDeactivated)
+            {
+                effectEnabled = true;
+                wasDeactivated = false;
+            }
+
             cooldownUI.transform.position = player.transform.position;
             cooldownUI.transform.localScale = Vector3.one * 3.0f;
 
@@ -83,11 +91,11 @@ namespace GearUpCards.MonoBehaviours
                 // Tactical Scanner Cooldown
                 if (scannerEffect != null)
                 {
-                    cooldown = scannerEffect.GetCooldown();
-                    if (cooldown > 0.0f)
+                    tempCooldown = scannerEffect.GetCooldown();
+                    if (tempCooldown > 0.0f)
                     {
                         scannerIcon.SetActive(true);
-                        scannerCD.text = FormatCooldown(cooldown);
+                        scannerCD.text = FormatCooldown(tempCooldown);
                     }
                     else
                     {
@@ -104,11 +112,11 @@ namespace GearUpCards.MonoBehaviours
                     stats.GetGearData().uniqueMagick != GearUpConstants.ModType.disabled
                    )
                 {
-                    cooldown = stats.GetGearData().t_uniqueMagickCooldown;
-                    if (cooldown > 0.0f)
+                    tempCooldown = stats.GetGearData().t_uniqueMagickCooldown;
+                    if (tempCooldown > 0.0f)
                     {
                         magickIcon.SetActive(true);
-                        magickCD.text = FormatCooldown(cooldown);
+                        magickCD.text = FormatCooldown(tempCooldown);
                     }
                     else
                     {
@@ -208,6 +216,8 @@ namespace GearUpCards.MonoBehaviours
             }
             else
             {
+                wasDeactivated = true;
+
                 effectEnabled = false;
                 cooldownUI.SetActive(false);
                 // UnityEngine.Debug.Log($"[HOLLOW] from player [{player.playerID}] - dead ded!?");

@@ -28,7 +28,11 @@ namespace GearUpCards.Extensions
             sizeShrinker,
 
             magickAntiBullet = 30,
-            magickTimeDilution
+            magickTimeDilution,
+
+            gunSpreadArc = 40,
+            gunSpreadLine,
+            gunSpreadParallel
         }
     }
 
@@ -40,22 +44,25 @@ namespace GearUpCards.Extensions
         public int hollowLifeStack;
         public int tacticalScannerStack;
         public int shieldBatteryStack;
-        public int chompyBulletStack;
 
-        public int glyptDivination;
-        public int glyptInfluence;
-        public int glyptGeometric;
-        public int glyptPotency;
-        public int glyptPiercing;
+        public int chompyBulletStack;
+        public int tiberiumBulletStack;
+
+        public int glyphDivination;
+        public int glyphInfluence;
+        public int glyphGeometric;
+        public int glyphPotency;
+        public int glyphPiercing;
 
         public int orbObliteration;
 
         public int magickFragmentStack;
 
         public GearUpConstants.ModType gunMod;
+        public GearUpConstants.ModType gunSpreadMod;
         public GearUpConstants.ModType blockMod;
-
         public GearUpConstants.ModType sizeMod;
+
         public GearUpConstants.ModType uniqueMagick;
 
         public float t_uniqueMagickCooldown;
@@ -65,22 +72,25 @@ namespace GearUpCards.Extensions
             hollowLifeStack = 0;
             tacticalScannerStack = 0;
             shieldBatteryStack = 0;
+
             chompyBulletStack = 0;
+            tiberiumBulletStack = 0;
 
             magickFragmentStack = 0;
 
-            glyptDivination = 0;
-            glyptInfluence = 0;
-            glyptGeometric = 0;
-            glyptPotency = 0;
-            glyptPiercing = 0;
+            glyphDivination = 0;
+            glyphInfluence = 0;
+            glyphGeometric = 0;
+            glyphPotency = 0;
+            glyphPiercing = 0;
 
             orbObliteration = 0;
 
             gunMod = GearUpConstants.ModType.none;
+            gunSpreadMod = GearUpConstants.ModType.none;
             blockMod = GearUpConstants.ModType.none;
-
             sizeMod = GearUpConstants.ModType.none;
+
             uniqueMagick = GearUpConstants.ModType.none;
         }
     }
@@ -113,22 +123,25 @@ namespace GearUpCards.Extensions
             __instance.GetGearData().hollowLifeStack = 0;
             __instance.GetGearData().tacticalScannerStack = 0;
             __instance.GetGearData().shieldBatteryStack = 0;
+
             __instance.GetGearData().chompyBulletStack = 0;
+            __instance.GetGearData().tiberiumBulletStack = 0;
 
             __instance.GetGearData().magickFragmentStack = 0;
 
-            __instance.GetGearData().glyptDivination = 0;
-            __instance.GetGearData().glyptInfluence = 0;
-            __instance.GetGearData().glyptGeometric = 0;
-            __instance.GetGearData().glyptPotency = 0;
-            __instance.GetGearData().glyptPiercing = 0;
+            __instance.GetGearData().glyphDivination = 0;
+            __instance.GetGearData().glyphInfluence = 0;
+            __instance.GetGearData().glyphGeometric = 0;
+            __instance.GetGearData().glyphPotency = 0;
+            __instance.GetGearData().glyphPiercing = 0;
 
             __instance.GetGearData().orbObliteration = 0;
 
             __instance.GetGearData().gunMod = GearUpConstants.ModType.none;
+            __instance.GetGearData().gunSpreadMod = GearUpConstants.ModType.none;
             __instance.GetGearData().blockMod = GearUpConstants.ModType.none;
-
             __instance.GetGearData().sizeMod = GearUpConstants.ModType.none;
+
             __instance.GetGearData().uniqueMagick = GearUpConstants.ModType.none;
         }
     }

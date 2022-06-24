@@ -23,19 +23,19 @@ namespace GearUpCards.MonoBehaviours
         // public string _debugScanLayer = "Front";
         private static GameObject scanVFXPrefab = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_TacticalScan");
 
-        private const float scannerStatusAmpFactor = .20f;
+        private const float scannerStatusAmpFactor = .50f;
 
         private const float scannerStatusBaseDuration = 6.0f;
         private const float scannerStatusStackDuration = 1.0f;
 
-        private const float scannerBaseRange = 8.0f;
+        private const float scannerBaseRange = 12.0f;
         private const float scannerStackRange = 2.0f;
 
         private const float scannerBaseCooldown = 10.0f;
         private const float scannerStackCooldown = -1.0f;
 
         private const float procTime = .10f;
-        private const float warmupTime = 3.0f;
+        private const float warmupTime = 0.0f;
 
         internal Action<BlockTrigger.BlockTriggerType> scannerAction;
 

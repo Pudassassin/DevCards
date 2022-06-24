@@ -25,7 +25,7 @@ namespace GearUpCards.Cards
         // 'attackSpeedMultiplier' works as intended >> More is more rapid firing
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            block.cdAdd += 0.5f;
+            block.cdAdd += 1.0f;
 
             characterStats.GetGearData().orbObliteration += 1;
             player.gameObject.GetOrAddComponent<OrbSpellsMono>();
@@ -59,14 +59,14 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "Max HP Culling",
-                    amount = "15-25%",
+                    amount = "10~15%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "Block CD",
-                    amount = "+0.5s",
+                    amount = "+1s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
@@ -86,9 +86,9 @@ namespace GearUpCards.Cards
         {
             return GearUpCards.ModInitials;
         }
-        internal static void callback(CardInfo card)
+        public override void Callback()
         {
-            card.gameObject.AddComponent<ExtraName>().text = "Orb\nSpell";
+            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Orb\nSpell";
         }
     }
 }

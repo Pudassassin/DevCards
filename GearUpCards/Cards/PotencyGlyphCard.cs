@@ -15,7 +15,7 @@ using static GearUpCards.Utils.CardUtils;
 
 namespace GearUpCards.Cards
 {
-    class DivinationGlyptCard : CustomCard
+    class PotencyGlyphCard : CustomCard
     {
         // internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_MagickFragment");
 
@@ -25,10 +25,10 @@ namespace GearUpCards.Cards
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            gun.projectielSimulatonSpeed *= 1.15f;
-            gun.projectileSpeed *= 1.15f;
+            gun.damage *= 1.5f;
+            data.maxHealth *= 0.90f;
 
-            characterStats.GetGearData().glyptDivination += 1;
+            characterStats.GetGearData().glyphPotency += 1;
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -36,11 +36,11 @@ namespace GearUpCards.Cards
         }
         protected override string GetTitle()
         {
-            return "Divination Glypt";
+            return "Potency Glyph";
         }
         protected override string GetDescription()
         {
-            return "Your Bullets and Spells reach a little further AND quicker!";
+            return "Your Bullets hurts more and your Spells become more powerful!";
         }
         protected override GameObject GetCardArt()
         {
@@ -57,22 +57,22 @@ namespace GearUpCards.Cards
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "Bullet Speed",
-                    amount = "+15%",
+                    stat = "Bullet DMG",
+                    amount = "+50%",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                },
+                new CardInfoStat()
+                {
+                    positive = false,
+                    stat = "Health",
+                    amount = "-10%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "Projectile Speed",
-                    amount = "+15%",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
-                new CardInfoStat()
-                {
-                    positive = true,
-                    stat = "Spell Trajectory",
-                    amount = "Improved",
+                    stat = "Spell Power",
+                    amount = "Enhanced",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };
@@ -85,9 +85,9 @@ namespace GearUpCards.Cards
         {
             return GearUpCards.ModInitials;
         }
-        internal static void callback(CardInfo card)
+        public override void Callback()
         {
-            card.gameObject.AddComponent<ExtraName>().text = "Spell\nGlypt";
+            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Spell\nGlyph";
         }
     }
 }

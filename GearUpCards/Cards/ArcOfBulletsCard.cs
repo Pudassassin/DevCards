@@ -15,20 +15,46 @@ using static GearUpCards.Utils.CardUtils;
 
 namespace GearUpCards.Cards
 {
-    class PotencyGlyptCard : CustomCard
+    class ArcOfBulletsCard : CustomCard
     {
-        // internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_MagickFragment");
+        // internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_GunParts");
 
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            
+            cardInfo.allowMultiple = false;
+            cardInfo.categories = new CardCategory[]
+            {
+                GearCategory.typeUniqueGunSpread
+            };
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            gun.damage *= 1.5f;
-            data.maxHealth *= 0.90f;
+            // black/whitelisting
+            ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.typeUniqueGunSpread);
 
-            characterStats.GetGearData().glyptPotency += 1;
+            gun.damage *= 0.65f;
+
+            // about half of [Buckshot]'s spread but this is for mono's calculation
+            gun.spread += 0.25f;
+            gun.evenSpread += 1.0f;
+            gun.numberOfProjectiles += 4;
+
+            player.gameObject.GetOrAddComponent<UniqueGunSpreadMono>();
+            characterStats.GetGearData().gunSpreadMod = GearUpConstants.ModType.gunSpreadArc;
+
+            // add modifier to bullet
+            List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList<ObjectsToSpawn>();
+
+            GameObject gameObject = new GameObject("ParallelBulletModifier", new Type[]
+            {
+                typeof(BulletNoClipModifier)
+            });
+            list.Add(new ObjectsToSpawn
+            {
+                AddToProjectile = gameObject
+            });
+
+            gun.objectsToSpawn = list.ToArray();
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -36,11 +62,11 @@ namespace GearUpCards.Cards
         }
         protected override string GetTitle()
         {
-            return "Potency Glypt";
+            return "Arc of Bullets";
         }
         protected override string GetDescription()
         {
-            return "Your Bullets hurts more and your Spells become more powerful!";
+            return "Add and evenly spread bullets in an arc formation.";
         }
         protected override GameObject GetCardArt()
         {
@@ -48,7 +74,7 @@ namespace GearUpCards.Cards
         }
         protected override CardInfo.Rarity GetRarity()
         {
-            return CardInfo.Rarity.Common;
+            return CardInfo.Rarity.Uncommon;
         }
         protected override CardInfoStat[] GetStats()
         {
@@ -57,37 +83,37 @@ namespace GearUpCards.Cards
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "Bullet DMG",
-                    amount = "+50%",
+                    stat = "Projectiles",
+                    amount = "+4",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
-                    stat = "Health",
-                    amount = "-10%",
+                    stat = "Spread",
+                    amount = "+25%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
-                    positive = true,
-                    stat = "Spell Power",
-                    amount = "Enhanced",
+                    positive = false,
+                    stat = "DMG",
+                    amount = "-35%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };
         }
         protected override CardThemeColor.CardThemeColorType GetTheme()
         {
-            return CardThemeColor.CardThemeColorType.MagicPink;
+            return CardThemeColor.CardThemeColorType.FirepowerYellow;
         }
         public override string GetModName()
         {
             return GearUpCards.ModInitials;
         }
-        internal static void callback(CardInfo card)
+        public override void Callback()
         {
-            card.gameObject.AddComponent<ExtraName>().text = "Spell\nGlypt";
+            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Unique\nSpread";
         }
     }
 }

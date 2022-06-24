@@ -29,7 +29,7 @@ namespace GearUpCards.MonoBehaviours
         private const string bulletGameObjectName = "Bullet_Base(Clone)";
 
         private const float procTime = .05f;
-        private const float warmupTime = 2.5f;
+        private const float warmupTime = 0.0f;
 
         class OrbSpellStats
         {
@@ -364,15 +364,15 @@ namespace GearUpCards.MonoBehaviours
         // cooldown reduction and cast/burst speed
         internal int magickFragment = 0;
         // velocity and trajectory speed
-        internal int glyptDivination = 0;
+        internal int glyphDivination = 0;
         // AoE and range
-        internal int glyptInfluence = 0;
+        internal int glyphInfluence = 0;
         // Bounces!
-        internal int glyptGeometric = 0;
+        internal int glyphGeometric = 0;
         // Spell power
-        internal int glyptPotency = 0;
+        internal int glyphPotency = 0;
         // Projectile piercing?
-        // internal int glyptPiercing = 0;
+        // internal int glyphPiercing = 0;
 
         // Unique 'Gun' mod/class
         internal bool playerIsOrbSage = false;
@@ -587,10 +587,10 @@ namespace GearUpCards.MonoBehaviours
         {
             // General Stats
             magickFragment = stats.GetGearData().magickFragmentStack;
-            glyptDivination = stats.GetGearData().glyptDivination;
-            glyptGeometric = stats.GetGearData().glyptGeometric;
-            glyptInfluence = stats.GetGearData().glyptInfluence;
-            glyptPotency = stats.GetGearData().glyptPotency;
+            glyphDivination = stats.GetGearData().glyphDivination;
+            glyphGeometric = stats.GetGearData().glyphGeometric;
+            glyphInfluence = stats.GetGearData().glyphInfluence;
+            glyphPotency = stats.GetGearData().glyphPotency;
 
             burstTimeStats = Mathf.Clamp(0.3f - (magickFragment * 0.05f), 0.1f, 1.0f);
 
@@ -604,9 +604,9 @@ namespace GearUpCards.MonoBehaviours
                 float cooldown = Mathf.Clamp(8.0f - (magickFragment * 0.5f), 3.0f, 15.0f);
                 float burstTime = Mathf.Clamp(0.3f - (magickFragment * 0.05f), 0.1f, 0.75f);
                 int orbCount = Mathf.FloorToInt((1.1f + stats.GetGearData().orbObliteration) / 2);
-                int bounceCount = Mathf.FloorToInt(glyptGeometric / 3.0f);
-                float orbVelocity = 0.5f + (glyptDivination * 0.1f);
-                float orbSpeed = 1.0f + (glyptDivination * 0.1f);
+                int bounceCount = Mathf.FloorToInt(glyphGeometric / 2.0f);
+                float orbVelocity = 0.5f + (glyphDivination * 0.1f);
+                float orbSpeed = 1.0f + (glyphDivination * 0.1f);
 
                 // if in list: Update and enable
                 if (checkIndex >= 0)

@@ -89,9 +89,9 @@ namespace GearUpCards.Cards
         {
             return GearUpCards.ModInitials;
         }
-        internal static void callback(CardInfo card)
+        public override void Callback()
         {
-            card.gameObject.AddComponent<ExtraName>().text = "Passive\nHealth";
+            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Passive\nHealth";
         }
     }
 }

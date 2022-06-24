@@ -21,12 +21,12 @@ namespace GearUpCards.Cards
 
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            gun.attackSpeed = 1 / 0.75f;
+            gun.attackSpeed = 1 / 0.65f;
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            block.additionalBlocks += 1;
-            block.cdAdd += 1.25f;
+            // block.additionalBlocks += 1;
+            block.cdAdd += 1.0f;
 
             characterStats.GetGearData().shieldBatteryStack += 1;
             player.gameObject.GetOrAddComponent<ShieldBatteryEffect>();
@@ -41,7 +41,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "[Empower] now gains +1 Empower\nshot instead of bullet speed\nand damage boosts.";
+            return "[Empower] now gains +1 Empower shot instead of stacking bullet boosts.";
         }
         protected override GameObject GetCardArt()
         {
@@ -55,32 +55,32 @@ namespace GearUpCards.Cards
         {
             return new CardInfoStat[]
             {
-                new CardInfoStat()
-                {
-                    positive = true,
-                    stat = "Echo",
-                    amount = "+1 Block",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
+                // new CardInfoStat()
+                // {
+                //     positive = true,
+                //     stat = "Echo",
+                //     amount = "+1 Block",
+                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                // },
                 new CardInfoStat()
                 {
                     positive = true,
                     stat = "Shot",
-                    amount = "+1 Empower",
+                    amount = "+2 Empower",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "Block CD",
-                    amount = "+1.25s",
+                    amount = "+1.0s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "ATK SPD",
-                    amount = "-25%",
+                    amount = "-35%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };
@@ -93,9 +93,9 @@ namespace GearUpCards.Cards
         {
             return GearUpCards.ModInitials;
         }
-        internal static void callback(CardInfo card)
+        public override void Callback()
         {
-            card.gameObject.AddComponent<ExtraName>().text = "Upgrade\n[Empower]";
+            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Upgrade\n[Empower]";
         }
     }
 }

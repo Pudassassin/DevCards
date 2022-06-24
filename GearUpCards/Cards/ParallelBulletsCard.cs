@@ -15,26 +15,46 @@ using static GearUpCards.Utils.CardUtils;
 
 namespace GearUpCards.Cards
 {
-    class MagickFragmentsCard : CustomCard
+    class ParallelBulletsCard : CustomCard
     {
-        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_MagickFragment");
+        // internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_GunParts");
 
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            
+            cardInfo.allowMultiple = false;
+            cardInfo.categories = new CardCategory[]
+            {
+                GearCategory.typeUniqueGunSpread
+            };
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            if (block.cdMultiplier > 1.0f)
+            // black/whitelisting
+            ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.typeUniqueGunSpread);
+
+            gun.damage *= 0.35f;
+
+            gun.spread += 0.5f;
+            gun.evenSpread += 1.0f;
+            gun.numberOfProjectiles += 4;
+
+            player.gameObject.GetOrAddComponent<UniqueGunSpreadMono>();
+            characterStats.GetGearData().gunSpreadMod = GearUpConstants.ModType.gunSpreadParallel;
+
+            // add modifier to bullet
+            List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList<ObjectsToSpawn>();
+
+            GameObject gameObject = new GameObject("ParallelBulletModifier", new Type[]
             {
-                block.cdMultiplier -= 0.3f;
-            }
-            else
+                typeof(BulletNoClipModifier),
+                typeof(ParallelBulletModifier)
+            });
+            list.Add(new ObjectsToSpawn
             {
-                block.cdMultiplier *= 0.7f;
-            }
-            player.data.maxHealth *= 0.75f;
-            characterStats.GetGearData().magickFragmentStack += 1;
+                AddToProjectile = gameObject
+            });
+
+            gun.objectsToSpawn = list.ToArray();
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -42,19 +62,19 @@ namespace GearUpCards.Cards
         }
         protected override string GetTitle()
         {
-            return "Magick Fragments";
+            return "Parallel Bullets";
         }
         protected override string GetDescription()
         {
-            return "This mysterious glyph hasten your spellcasting, but at what cost?";
+            return "Add and convert bullets spread into a parallel formation. Width scales with projectile counts.";
         }
         protected override GameObject GetCardArt()
         {
-            return cardArt;
+            return null;
         }
         protected override CardInfo.Rarity GetRarity()
         {
-            return CardInfo.Rarity.Common;
+            return CardInfo.Rarity.Uncommon;
         }
         protected override CardInfoStat[] GetStats()
         {
@@ -63,29 +83,22 @@ namespace GearUpCards.Cards
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "Block CD",
-                    amount = "-30%",
+                    stat = "Projectiles",
+                    amount = "+4",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
-                    stat = "Health",
-                    amount = "-25%",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
-                new CardInfoStat()
-                {
-                    positive = true,
-                    stat = "Spell CD",
-                    amount = "Faster",
+                    stat = "DMG",
+                    amount = "-65%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };
         }
         protected override CardThemeColor.CardThemeColorType GetTheme()
         {
-            return CardThemeColor.CardThemeColorType.MagicPink;
+            return CardThemeColor.CardThemeColorType.FirepowerYellow;
         }
         public override string GetModName()
         {
@@ -93,7 +106,7 @@ namespace GearUpCards.Cards
         }
         public override void Callback()
         {
-            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Spell\nGlyph";
+            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Unique\nSpread";
         }
     }
 }

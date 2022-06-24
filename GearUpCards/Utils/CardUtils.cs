@@ -28,6 +28,8 @@ namespace GearUpCards.Utils
 
             public static CardCategory typeUniqueMagick = CustomCardCategories.instance.CardCategory("GearUp_UniqueMagick");
 
+            public static CardCategory typeUniqueGunSpread = CustomCardCategories.instance.CardCategory("GearUp_UniqueGunSpread");
+
             public static CardCategory tagNoRemove = CustomCardCategories.instance.CardCategory("NoRemove");
         }
 

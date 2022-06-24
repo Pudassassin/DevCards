@@ -15,7 +15,7 @@ using static GearUpCards.Utils.CardUtils;
 
 namespace GearUpCards.Cards
 {
-    class GeometricGlyptCard : CustomCard
+    class GeometricGlyphCard : CustomCard
     {
         // internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_MagickFragment");
 
@@ -28,7 +28,7 @@ namespace GearUpCards.Cards
             gun.reflects += 3;
             gunAmmo.reloadTimeMultiplier *= 1.10f;
 
-            characterStats.GetGearData().glyptGeometric += 1;
+            characterStats.GetGearData().glyphGeometric += 1;
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -36,11 +36,11 @@ namespace GearUpCards.Cards
         }
         protected override string GetTitle()
         {
-            return "Geometric Glypt";
+            return "Geometric Glyph";
         }
         protected override string GetDescription()
         {
-            return "Add some bounces to your Bullets and Spells. Not all Spells can be bouncy, through...";
+            return "Add some bounces to your Bullets and Spell Orbs. Not all Spells can be bouncy, through...";
         }
         protected override GameObject GetCardArt()
         {
@@ -85,9 +85,9 @@ namespace GearUpCards.Cards
         {
             return GearUpCards.ModInitials;
         }
-        internal static void callback(CardInfo card)
+        public override void Callback()
         {
-            card.gameObject.AddComponent<ExtraName>().text = "Spell\nGlypt";
+            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Spell\nGlyph";
         }
     }
 }

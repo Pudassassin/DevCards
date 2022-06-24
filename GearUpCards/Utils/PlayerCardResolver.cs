@@ -14,9 +14,11 @@ namespace GearUpCards.Utils
         {
             yield return ResolveCardCategory(player, GearCategory.typeSizeMod, "Medical Parts");
             yield return ResolveCardCategory(player, GearCategory.typeUniqueMagick, "Magick Fragments");
+            yield return ResolveCardCategory(player, GearCategory.typeUniqueGunSpread, "Gun Parts");
 
             yield return UpdateCategoryBlacklist(player, GearCategory.typeSizeMod);
             yield return UpdateCategoryBlacklist(player, GearCategory.typeUniqueMagick);
+            yield return UpdateCategoryBlacklist(player, GearCategory.typeUniqueGunSpread);
 
             yield break;
         }
@@ -25,10 +27,10 @@ namespace GearUpCards.Utils
         {
             // Resolve card conflicts
             List<PlayerCardData> conflictedCards = GetPlayerCardsWithCategory(player, category);
-            // foreach (var item in conflictedCards)
-            // {
-            //     UnityEngine.Debug.Log($"[{item.cardInfo.cardName}] - [{item.index}] - [{item.owner.playerID}]");
-            // }
+            foreach (var item in conflictedCards)
+            {
+                UnityEngine.Debug.Log($"[{item.cardInfo.cardName}] - [{item.index}] - [{item.owner.playerID}]");
+            }
 
             if (conflictedCards.Count >= 1)
             {
@@ -50,7 +52,7 @@ namespace GearUpCards.Utils
         {
             // mutally exclusives, desinated unique card, etc.
             List<PlayerCardData> cardToCheck = GetPlayerCardsWithCategory(player, categoryToCheck);
-            // UnityEngine.Debug.Log($"Player[{player.playerID}] Check blacklist for [{categoryToCheck.name}] >> found [{cardToCheck.Count}]");
+            UnityEngine.Debug.Log($"Player[{player.playerID}] Check blacklist for [{categoryToCheck.name}] >> found [{cardToCheck.Count}]");
 
             if (cardToCheck.Count == 0)
             {

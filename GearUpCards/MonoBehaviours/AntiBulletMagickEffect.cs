@@ -31,7 +31,7 @@ namespace GearUpCards.MonoBehaviours
         private const float spellDurationBase = 1.0f;
 
         private const float procTime = .025f;
-        private const float warmupTime = 2.0f;
+        private const float warmupTime = 0.0f;
 
         internal Action<BlockTrigger.BlockTriggerType> spellAction;
 
@@ -39,9 +39,9 @@ namespace GearUpCards.MonoBehaviours
         // cooldown reduction and cast/burst speed
         internal int magickFragment = 0;
         // AoE and range
-        internal int glyptInfluence = 0;
+        internal int glyphInfluence = 0;
         // Spell power
-        internal int glyptPotency = 0;
+        internal int glyphPotency = 0;
 
 
         internal float spellCooldown = 15.0f;
@@ -207,16 +207,16 @@ namespace GearUpCards.MonoBehaviours
         internal void RecalculateEffectStats()
         {
             magickFragment = this.stats.GetGearData().magickFragmentStack;
-            glyptInfluence = this.stats.GetGearData().glyptInfluence;
-            glyptPotency = this.stats.GetGearData().glyptPotency;
+            glyphInfluence = this.stats.GetGearData().glyphInfluence;
+            glyphPotency = this.stats.GetGearData().glyphPotency;
 
             spellCooldown = spellCooldownBase - (magickFragment * 1.5f);
             spellCooldown = Mathf.Clamp(spellCooldown, 7.0f, 30.0f);
 
-            spellRange = spellRangeBase + (0.5f * glyptInfluence);
+            spellRange = spellRangeBase + (0.5f * glyphInfluence);
 
-            spellForceReloadTimeAdd = spellForceReloadTimeAddBase + (0.5f * glyptPotency);
-            spellDuration = spellDurationBase + (0.25f * glyptPotency);
+            spellForceReloadTimeAdd = spellForceReloadTimeAddBase + (0.5f * glyphPotency);
+            spellDuration = spellDurationBase + (0.25f * glyphPotency);
         }
 
         internal void DeleteBullet()

@@ -26,6 +26,8 @@ namespace GearUpCards
     [BepInDependency("com.willis.rounds.unbound", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("pykess.rounds.plugins.moddingutils", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("pykess.rounds.plugins.cardchoicespawnuniquecardpatch", BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency("pykess.rounds.plugins.rayhitreflectpatch", BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency("com.willuwontu.rounds.evenspreadpatch", BepInDependency.DependencyFlags.HardDependency)]
 
     // Declares our mod to Bepin
     [BepInPlugin(ModId, ModName, Version)]
@@ -37,7 +39,7 @@ namespace GearUpCards
     {
         private const string ModId = "com.pudassassin.rounds.GearUpCards";
         private const string ModName = "GearUpCards";
-        public const string Version = "0.1.34"; //build #106 / Release 0-1-2
+        public const string Version = "0.1.46"; //build #118 / Release 0-1-2
 
         public const string ModInitials = "GearUP";
 
@@ -54,36 +56,43 @@ namespace GearUpCards
             Instance = this;
 
             // Random idea cards
-            CustomCard.BuildCard<HollowLifeCard>(HollowLifeCard.callback);
-            CustomCard.BuildCard<ChompyBulletCard>(ChompyBulletCard.callback);
-            CustomCard.BuildCard<TacticalScannerCard>(TacticalScannerCard.callback);
-            CustomCard.BuildCard<SizeNormalizerCard>(SizeNormalizerCard.callback);
+            CustomCard.BuildCard<HollowLifeCard>();
+            CustomCard.BuildCard<ChompyBulletCard>();
+            CustomCard.BuildCard<TacticalScannerCard>();
+            CustomCard.BuildCard<SizeNormalizerCard>();
+
+            // Tiberium card series
+            CustomCard.BuildCard<TiberiumBulletCard>();
+
+            // Unique Gun Spread
+            CustomCard.BuildCard<ArcOfBulletsCard>();
+            CustomCard.BuildCard<ParallelBulletsCard>();
 
             // Prototype cards
-            CustomCard.BuildCard<ShieldBatteryCard>(ShieldBatteryCard.callback);
+            CustomCard.BuildCard<ShieldBatteryCard>();
 
             // Unique Magick series (powerful on-block "spell" abilities)
-            CustomCard.BuildCard<AntiBulletMagickCard>(AntiBulletMagickCard.callback);
+            CustomCard.BuildCard<AntiBulletMagickCard>();
 
             // Orb Spells
-            CustomCard.BuildCard<ObliterationOrbCard>(ObliterationOrbCard.callback);
+            CustomCard.BuildCard<ObliterationOrbCard>();
 
             // Crystal card series
 
             // Passives + consolations cards
-            CustomCard.BuildCard<GunPartsCard>(GunPartsCard.callback);
-            CustomCard.BuildCard<MedicalPartsCard>(MedicalPartsCard.callback);
+            CustomCard.BuildCard<GunPartsCard>();
+            CustomCard.BuildCard<MedicalPartsCard>();
 
-            // Spell Glypts
-            CustomCard.BuildCard<MagickFragmentsCard>(MagickFragmentsCard.callback);
-            CustomCard.BuildCard<DivinationGlyptCard>(DivinationGlyptCard.callback);
-            CustomCard.BuildCard<InfluenceGlyptCard>(InfluenceGlyptCard.callback);
-            CustomCard.BuildCard<GeometricGlyptCard>(GeometricGlyptCard.callback);
-            CustomCard.BuildCard<PotencyGlyptCard>(PotencyGlyptCard.callback);
+            // Spell Glyphs
+            CustomCard.BuildCard<MagickFragmentsCard>();
+            CustomCard.BuildCard<DivinationGlyphCard>();
+            CustomCard.BuildCard<InfluenceGlyphCard>();
+            CustomCard.BuildCard<GeometricGlyphCard>();
+            CustomCard.BuildCard<PotencyGlyphCard>();
 
             // Adding hooks
             GameModeManager.AddHook(GameModeHooks.HookGameStart, GameStart);
-            GameModeManager.AddHook(GameModeHooks.HookRoundStart, CardPickEnd);
+            // GameModeManager.AddHook(GameModeHooks.HookRoundStart, CardPickEnd);
             GameModeManager.AddHook(GameModeHooks.HookPointEnd, PointEnd);
             // GameModeManager.AddHook(GameModeHooks.HookPointStart, PointStart);
 
@@ -138,6 +147,7 @@ namespace GearUpCards
             yield break;
         }
 
+        // I'd love to have this redundancy running but it can make thing worse, leave it for later lel
         IEnumerator CardPickEnd(IGameModeHandler gm)
         {
             // UnityEngine.Debug.Log($"[GearUp Main] CardPickEnd Call");

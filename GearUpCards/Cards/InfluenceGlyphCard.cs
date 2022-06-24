@@ -15,7 +15,7 @@ using static GearUpCards.Utils.CardUtils;
 
 namespace GearUpCards.Cards
 {
-    class InfluenceGlyptCard : CustomCard
+    class InfluenceGlyphCard : CustomCard
     {
         // internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_MagickFragment");
 
@@ -27,7 +27,7 @@ namespace GearUpCards.Cards
         {
             // explosive mono stuff
 
-            characterStats.GetGearData().glyptInfluence += 1;
+            characterStats.GetGearData().glyphInfluence += 1;
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -35,7 +35,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetTitle()
         {
-            return "Influence Glypt";
+            return "Influence Glyph";
         }
         protected override string GetDescription()
         {
@@ -85,9 +85,9 @@ namespace GearUpCards.Cards
         {
             return GearUpCards.ModInitials;
         }
-        internal static void callback(CardInfo card)
+        public override void Callback()
         {
-            card.gameObject.AddComponent<ExtraName>().text = "Spell\nGlypt";
+            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Spell\nGlyph";
         }
     }
 }

@@ -12,8 +12,8 @@ namespace GearUpCards.MonoBehaviours
     {
         private static GameObject VFXPrefab = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_OrbLiterationImpact");
 
-        private float healthCullAreaHit = 0.85f;
-        private float healthCullDirectHit = 0.75f;
+        private float healthCullAreaHit = 0.9f;
+        private float healthCullDirectHit = 0.85f;
         private float obliterationRadius = 3.5f;
 
         // private Gun shooterGun;
@@ -36,10 +36,10 @@ namespace GearUpCards.MonoBehaviours
 
             ProjectileHit projectileHit = this.gameObject.GetComponentInParent<ProjectileHit>();
             CharacterStatModifiers shooterStats = projectileHit.ownPlayer.gameObject.GetComponent<CharacterStatModifiers>();
-            float glyptPotency = shooterStats.GetGearData().glyptPotency;
-            float glyptInfluence = shooterStats.GetGearData().glyptInfluence;
+            float glyphPotency = shooterStats.GetGearData().glyphPotency;
+            float glyphInfluence = shooterStats.GetGearData().glyphInfluence;
 
-            float effectRadius = obliterationRadius + (0.25f * glyptInfluence);
+            float effectRadius = obliterationRadius + (0.5f * glyphInfluence);
 
             Player victimPlayer = hit.transform.GetComponent<Player>();
             int victimID = -1;
@@ -48,7 +48,7 @@ namespace GearUpCards.MonoBehaviours
             {
                 // direct hit victim take more MAX HP loss
                 GameObject victim = victimPlayer.gameObject;
-                float effectValue = healthCullDirectHit - (0.025f * glyptPotency);
+                float effectValue = healthCullDirectHit - (0.05f * glyphPotency);
 
                 status = victim.GetOrAddComponent<HollowLifeEffect>();
                 status.ApplyTempHealthCap(effectValue);
@@ -70,7 +70,7 @@ namespace GearUpCards.MonoBehaviours
                 playerDistance = (target.transform.position - gameObject.transform.position).magnitude;
                 if (playerDistance <= effectRadius)
                 {
-                    float effectValue = healthCullAreaHit - (0.025f * glyptPotency);
+                    float effectValue = healthCullAreaHit - (0.025f * glyphPotency);
 
                     status = target.gameObject.GetOrAddComponent<HollowLifeEffect>();
                     status.ApplyTempHealthCap(effectValue);

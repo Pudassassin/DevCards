@@ -149,7 +149,7 @@ namespace GearUpCards.MonoBehaviours
             batteryStackCount = stats.GetGearData().shieldBatteryStack;
             empowerStackCount = CardUtils.GetPlayerCardsWithName(this.player, "EMPOWER").Count;
 
-            empowerMaxAmmo = batteryStackCount + empowerStackCount + 1;
+            empowerMaxAmmo = (batteryStackCount * 2) + empowerStackCount;
             empowerList = player.gameObject.GetComponentsInChildren<Empower>().ToList();
 
             int bulletBatch;
@@ -173,6 +173,12 @@ namespace GearUpCards.MonoBehaviours
             {
                 burstMode = false;
                 // empowerMaxAmmo += 1;
+            }
+
+            // baseline for owning at least one [Empower] card
+            if (empowerStackCount > 0)
+            {
+                empowerMaxAmmo += 1;
             }
 
             float bulletSpeedMul;

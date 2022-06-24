@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
+using System.Collections;
+using System;
+using System.Reflection;
+
 using UnboundLib;
 using UnityEngine;
 using System.Linq;
 using UnboundLib.GameModes;
 using Photon.Pun;
-using System.Reflection;
 using ModdingUtils.MonoBehaviours;
 
 using GearUpCards.Extensions;
 using GearUpCards.Utils;
-
-using System.Collections;
 
 namespace GearUpCards.MonoBehaviours
 {
@@ -24,13 +25,14 @@ namespace GearUpCards.MonoBehaviours
         internal float prevSizeModifier;
         internal float prevMaxHealth;
 
-        internal float totalScaleBefore;
-        internal float totalScaleAfter;
+        internal float prevTotalScale;
+        internal float totalScaleTarget;
         internal float targetScale;
 
         internal float timer = 0.0f;
         internal bool effectEnabled;
         internal bool effectApplied;
+        internal bool wasDeactivated = false;
 
         public void Awake()
         {
@@ -39,7 +41,7 @@ namespace GearUpCards.MonoBehaviours
 
             Refresh();
 
-            GameModeManager.AddHook(GameModeHooks.HookBattleStart, OnBattleStart);
+            GameModeManager.AddHook(GameModeHooks.HookPointStart, OnPointStart);
             GameModeManager.AddHook(GameModeHooks.HookRoundEnd, OnRoundEnd);
         }
 
@@ -49,38 +51,53 @@ namespace GearUpCards.MonoBehaviours
         }
 
         // [*] [Brawler] and [Pristine Perserverence] will make player size temporary bigger than what [Size Norm.] supposed to keep due to the MAX HP increases
+        // [*] potential issue with [Grow Others] and similar where it won't respond to the forced size increases
         // [!] severely reduce [Overpower] knockback force due to being locked down to default size (still do proper damage)
 
         public void Update()
         {
             timer += TimeHandler.deltaTime;
 
+            // Respawn case
+            if (wasDeactivated)
+            {
+                Refresh();
+
+                wasDeactivated = false;
+            }
+
             if (timer > procTime)
             {
                 if (effectEnabled)
                 {
-                    if (!StatsMath.ApproxEqual(this.player.data.maxHealth, prevMaxHealth))
+                    // if (!StatsMath.ApproxEqual(this.player.data.maxHealth, prevMaxHealth))
+                    // {
+                    //     effectApplied = false;
+                    //     prevMaxHealth = this.player.data.maxHealth;
+                    //     totalScaleBefore = Mathf.Pow(this.player.data.maxHealth / 100f * 1.2f, 0.2f) * prevSizeModifier;
+                    // }
+
+                    float currentTotalScale = Mathf.Pow(player.data.maxHealth / 100f * 1.2f, 0.2f) * stats.sizeMultiplier;
+                    if (!StatsMath.ApproxEqual(currentTotalScale, prevTotalScale))
                     {
-                        effectApplied = false;
-                        prevMaxHealth = this.player.data.maxHealth;
-                        totalScaleBefore = Mathf.Pow(this.player.data.maxHealth / 100f * 1.2f, 0.2f) * prevSizeModifier;
+                        Refresh();
                     }
                 }
 
                 if (effectEnabled && !effectApplied)
                 {
-                    if (totalScaleBefore >= 1.2f)
+                    if (prevTotalScale >= 1.2f)
                     {
-                        targetScale = 1.65f - (0.5f * Mathf.Pow(0.9f, this.totalScaleBefore));
+                        targetScale = 1.65f - (0.5f * Mathf.Pow(0.9f, this.prevTotalScale));
                     }
                     else
                     {
-                        targetScale = 0.1f + Mathf.Pow(1.1f, this.totalScaleBefore);
+                        targetScale = 0.1f + Mathf.Pow(1.1f, this.prevTotalScale);
                     }
 
-                    totalScaleAfter = prevSizeModifier * targetScale / totalScaleBefore;
+                    totalScaleTarget = prevSizeModifier * targetScale / prevTotalScale;
 
-                    this.player.gameObject.GetOrAddComponent<SizeNormalizerStatus>().SetSize(targetScale / totalScaleBefore);
+                    this.player.gameObject.GetOrAddComponent<SizeNormalizerStatus>().SetSize(targetScale / prevTotalScale);
                     effectApplied = true;
 
                     // UnityEngine.Debug.Log($"[SizeNorm] adjusting... [{player.playerID}] [{totalScaleBefore}] >> [{targetScale}] == [{totalScaleAfter}] >> [{stats.sizeMultiplier}]");
@@ -102,8 +119,10 @@ namespace GearUpCards.MonoBehaviours
 
         }
 
-        private IEnumerator OnBattleStart(IGameModeHandler gm)
+        private IEnumerator OnPointStart(IGameModeHandler gm)
         {
+            wasDeactivated = false;
+
             Refresh();
 
             yield break;
@@ -129,12 +148,15 @@ namespace GearUpCards.MonoBehaviours
             }
             else
             {
+                wasDeactivated = true;
+                effectEnabled = false;
                 // UnityEngine.Debug.Log($"[HOLLOW] from player [{player.playerID}] - dead ded!?");
             }
         }
+
         public void OnDestroy()
         {
-            GameModeManager.RemoveHook(GameModeHooks.HookBattleStart, OnBattleStart);
+            GameModeManager.RemoveHook(GameModeHooks.HookPointStart, OnPointStart);
             GameModeManager.RemoveHook(GameModeHooks.HookRoundEnd, OnRoundEnd);
         }
 
@@ -148,7 +170,7 @@ namespace GearUpCards.MonoBehaviours
 
             prevMaxHealth = player.data.maxHealth;
             prevSizeModifier = this.stats.sizeMultiplier;
-            totalScaleBefore = Mathf.Pow(this.player.data.maxHealth / 100f * 1.2f, 0.2f) * prevSizeModifier;
+            prevTotalScale = Mathf.Pow(prevMaxHealth / 100f * 1.2f, 0.2f) * prevSizeModifier;
         }
     }
 
@@ -162,7 +184,16 @@ namespace GearUpCards.MonoBehaviours
         public void SetSize(float size)
         {
             characterStatModifiersModifier.sizeMultiplier_mult = size;
-            ApplyModifiers();
+
+            try
+            {
+                ApplyModifiers();
+            }
+            catch (Exception exception)
+            {
+                Miscs.LogWarn("[GearUp] SizeNormStatus: caught an exception!");
+                Miscs.LogWarn(exception);
+            }
         }
     }
 }

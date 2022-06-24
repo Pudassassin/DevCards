@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using GearUpCards.MonoBehaviours;
 using UnboundLib;
 using UnboundLib.Cards;
 using UnityEngine;
+
+using GearUpCards.MonoBehaviours;
+using GearUpCards.Extensions;
 using static GearUpCards.Utils.CardUtils;
 
 namespace GearUpCards.Cards
@@ -16,41 +18,35 @@ namespace GearUpCards.Cards
 
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            gun.attackSpeed = 1.33f;
+            gun.attackSpeed = 1.0f / 0.85f;
         }
 
         // "attackSpeed" is technically a gunfire cooldown between shots >> Less is more rapid firing
         // 'attackSpeedMultiplier' works as intended >> More is more rapid firing
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            gun.damage *= .75f;
-
-            // if (gun.attackSpeedMultiplier > 1.0f)
-            // {
-            //     gun.attackSpeedMultiplier -= .25f;
-            // }
-            // else
-            // {
-            //     gun.attackSpeedMultiplier *= .75f;
-            // }
-
-            gunAmmo.reloadTimeMultiplier += .25f;
-
+            gun.damage *= .85f;
+            gunAmmo.reloadTimeMultiplier += .15f;
             gun.projectileColor = new Color(1f, 0.0f, 0.0f, 1f);
-            // add one stack of ChompyBulletEffect to the bullet modifier pool
 
-            List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList<ObjectsToSpawn>();
-
-            GameObject gameObject = new GameObject("ChompyBulletModifier", new Type[]
+            // add ONLY one stack of ChompyBulletEffect to the bullet modifier pool
+            if (characterStats.GetGearData().chompyBulletStack == 0)
             {
-                typeof(ChompyBulletModifier)
-            });
-            list.Add(new ObjectsToSpawn
-            {
-                AddToProjectile = gameObject
-            });
+                List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList<ObjectsToSpawn>();
 
-            gun.objectsToSpawn = list.ToArray();
+                GameObject gameObject = new GameObject("ChompyBulletModifier", new Type[]
+                {
+                    typeof(ChompyBulletModifier)
+                });
+                list.Add(new ObjectsToSpawn
+                {
+                    AddToProjectile = gameObject
+                });
+
+                gun.objectsToSpawn = list.ToArray();
+            }
+
+            characterStats.GetGearData().chompyBulletStack += 1;
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -81,28 +77,28 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "HP Culling",
-                    amount = "+15%",
+                    amount = "+20%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "DMG",
-                    amount = "-25%",
+                    amount = "-15%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "ATK SPD",
-                    amount = "-25%",
+                    amount = "-15%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "Reload SPD",
-                    amount = "-25%",
+                    amount = "-15%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
 
@@ -116,9 +112,9 @@ namespace GearUpCards.Cards
         {
             return GearUpCards.ModInitials;
         }
-        internal static void callback(CardInfo card)
+        public override void Callback()
         {
-            card.gameObject.AddComponent<ExtraName>().text = "Passive\nBullet";
+            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Passive\nBullet";
         }
     }
 }
