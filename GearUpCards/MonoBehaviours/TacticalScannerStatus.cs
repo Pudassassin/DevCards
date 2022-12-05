@@ -229,7 +229,7 @@ namespace GearUpCards.MonoBehaviours
                 bulletBatch = this.playerGun.numberOfProjectiles;
             }
 
-            this.dataDamage.text = $"{bulletBatch}x[{this.playerGun.damage * 55.0f:f2}] < DMG";
+            this.dataDamage.text = $"{bulletBatch}x[{this.playerGun.damage * this.playerGun.bulletDamageMultiplier * 55.0f:f2}] < DMG";
 
             // float bps = StatsMath.GetGunBPS(this.playerGun);
             // this.dataBPS.text = $"BPS > [{bps:f2}]";

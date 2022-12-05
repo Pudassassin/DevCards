@@ -26,10 +26,11 @@ namespace GearUpCards.Cards
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
             gun.projectileColor = new Color(0.0f, 0.85f, 0.0f, 1f);
+            gun.bulletDamageMultiplier *= 0.75f;
 
             data.maxHealth *= 0.75f;
 
-            // add ONLY one stack of ChompyBulletEffect to the bullet modifier pool
+            // add ONLY one stack of bullet mono
             if (characterStats.GetGearData().tiberiumBulletStack == 0)
             {
                 List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList<ObjectsToSpawn>();
@@ -60,7 +61,8 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Bullets cause HP loss over short bursts\nand long term, bypassing Decay.\n(Stack Additively)";
+            return "";
+            //return "Bullets cause target to lose\nHP over time until death!\n(Stackable Additively)";
         }
         protected override GameObject GetCardArt()
         {
@@ -78,14 +80,21 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "Burst DoT",
-                    amount = "+100%, 4s",
+                    amount = "+100% dmg, 4s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "Chronic DoT",
-                    amount = "+2.5%/s",
+                    stat = "HP Loss-",
+                    amount = "+5% dmg/s",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                },
+                new CardInfoStat()
+                {
+                    positive = true,
+                    stat = "per bullet",
+                    amount = "+0.35 dmg/s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
@@ -98,8 +107,8 @@ namespace GearUpCards.Cards
                 new CardInfoStat()
                 {
                     positive = false,
-                    stat = "HP Regen",
-                    amount = "-2.5/s",
+                    stat = "Self HP",
+                    amount = "-1/s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
 

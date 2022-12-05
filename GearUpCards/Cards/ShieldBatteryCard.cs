@@ -41,7 +41,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "[Empower] now gains +1 Empower shot instead of stacking bullet boosts.";
+            return "[Empower] now gains +1 Empower shot instead of stacking bullet boosts.\n(It WILL still stacks block effects on impact!)";
         }
         protected override GameObject GetCardArt()
         {
@@ -65,7 +65,7 @@ namespace GearUpCards.Cards
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "Shot",
+                    stat = "Shots",
                     amount = "+2 Empower",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },

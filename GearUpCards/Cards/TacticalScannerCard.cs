@@ -19,13 +19,13 @@ namespace GearUpCards.Cards
     {
         internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_TacticalScanner");
 
-        private class ScannerSpawner : MonoBehaviour
-        {
-            void Start()
-            {
-
-            }
-        }
+        // private class ScannerSpawner : MonoBehaviour
+        // {
+        //     void Start()
+        //     {
+        // 
+        //     }
+        // }
 
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
@@ -51,7 +51,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Blocking scans nearby players:\n Enemies take more damage,\nFriends heal for more.";
+            return "Blocking scans nearby players and amplifies Healing/DMG done.";
         }
         protected override GameObject GetCardArt()
         {

@@ -167,12 +167,10 @@ namespace GearUpCards.MonoBehaviours
             if (empowerMaxAmmo > vollayPerClip)
             {
                 burstMode = true;
-                // empowerMaxAmmo -= 1;
             }
             else
             {
                 burstMode = false;
-                // empowerMaxAmmo += 1;
             }
 
             // baseline for owning at least one [Empower] card
