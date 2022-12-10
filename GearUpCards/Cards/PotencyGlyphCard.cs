@@ -17,7 +17,7 @@ namespace GearUpCards.Cards
 {
     class PotencyGlyphCard : CustomCard
     {
-        // internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_MagickFragment");
+        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_GlyphPotency");
 
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
@@ -25,8 +25,8 @@ namespace GearUpCards.Cards
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            gun.damage *= 1.5f;
-            data.maxHealth *= 0.90f;
+            gun.damage *= 1.65f;
+            data.maxHealth *= 0.85f;
 
             characterStats.GetGearData().glyphPotency += 1;
         }
@@ -58,14 +58,14 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "Bullet DMG",
-                    amount = "+50%",
+                    amount = "+65%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "Health",
-                    amount = "-10%",
+                    amount = "-15%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()

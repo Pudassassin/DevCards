@@ -54,7 +54,7 @@ namespace GearUpCards.Extensions
         public int glyphPotency;
         public int glyphPiercing;
 
-        public int orbObliteration;
+        public int orbObliterationStack;
 
         public int magickFragmentStack;
 
@@ -84,7 +84,7 @@ namespace GearUpCards.Extensions
             glyphPotency = 0;
             glyphPiercing = 0;
 
-            orbObliteration = 0;
+            orbObliterationStack = 0;
 
             gunMod = GearUpConstants.ModType.none;
             gunSpreadMod = GearUpConstants.ModType.none;
@@ -135,7 +135,7 @@ namespace GearUpCards.Extensions
             __instance.GetGearData().glyphPotency = 0;
             __instance.GetGearData().glyphPiercing = 0;
 
-            __instance.GetGearData().orbObliteration = 0;
+            __instance.GetGearData().orbObliterationStack = 0;
 
             __instance.GetGearData().gunMod = GearUpConstants.ModType.none;
             __instance.GetGearData().gunSpreadMod = GearUpConstants.ModType.none;

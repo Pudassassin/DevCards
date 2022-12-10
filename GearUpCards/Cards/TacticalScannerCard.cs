@@ -76,7 +76,7 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "Duration",
-                    amount = "7s",
+                    amount = "6s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
@@ -105,7 +105,7 @@ namespace GearUpCards.Cards
         }
         public override void Callback()
         {
-            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Active\nBlock";
+            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Gear\nBlock";
         }
     }
 }

@@ -17,7 +17,7 @@ namespace GearUpCards.Cards
 {
     class ArcOfBulletsCard : CustomCard
     {
-        // internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_GunParts");
+        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_ArcOfBullets");
 
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
@@ -35,7 +35,7 @@ namespace GearUpCards.Cards
             gun.damage *= 0.65f;
 
             // about half of [Buckshot]'s spread but this is for mono's calculation
-            gun.spread += 0.25f;
+            gun.spread += 75.0f / 360.0f;
             gun.evenSpread += 1.0f;
             gun.numberOfProjectiles += 4;
 
@@ -45,7 +45,7 @@ namespace GearUpCards.Cards
             // add modifier to bullet
             List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList<ObjectsToSpawn>();
 
-            GameObject gameObject = new GameObject("ParallelBulletModifier", new Type[]
+            GameObject gameObject = new GameObject("ArcOfBulletsModifier", new Type[]
             {
                 typeof(BulletNoClipModifier)
             });
@@ -70,7 +70,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            return null;
+            return cardArt;
         }
         protected override CardInfo.Rarity GetRarity()
         {
@@ -91,7 +91,7 @@ namespace GearUpCards.Cards
                 {
                     positive = false,
                     stat = "Spread",
-                    amount = "+25%",
+                    amount = "+ ~75 deg",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()

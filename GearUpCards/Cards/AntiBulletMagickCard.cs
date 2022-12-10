@@ -25,7 +25,8 @@ namespace GearUpCards.Cards
             cardInfo.categories = new CardCategory[]
             {
                 GearCategory.typeUniqueMagick,
-                GearCategory.tagNoRemove
+                GearCategory.tagNoRemove,
+                GearCategory.tagSpell
             };
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
@@ -47,9 +48,10 @@ namespace GearUpCards.Cards
 
             // black/whitelisting
             ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.typeUniqueMagick);
+            ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Remove(GearCategory.tagSpellOnlyAugment);
 
             // stats
-            block.cdAdd += 1.5f;
+            block.cdAdd += 1.0f;
             characterStats.GetGearData().uniqueMagick = GearUpConstants.ModType.magickAntiBullet;
 
             // Add effect mono
@@ -70,7 +72,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Blocking casts the spell that deletes all nearby bullets in flight and also in guns' magazines, including yours!";
+            return "Blocking casts no-bullet zone and force <i>EVERYONE</i> nearby to fumble reloading. You suffer less from this spell.";
         }
         protected override GameObject GetCardArt()
         {
@@ -87,22 +89,22 @@ namespace GearUpCards.Cards
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "Bullets",
-                    amount = "Deletes",
+                    stat = "2s",
+                    amount = "Zone Time",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = true,
                     stat = "Forced Reload",
-                    amount = "+3.5s",
+                    amount = "RLD + 3.5s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "Block CD",
-                    amount = "+1.5s",
+                    amount = "+1s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()

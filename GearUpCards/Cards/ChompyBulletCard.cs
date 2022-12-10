@@ -59,7 +59,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Bullets deal bonus damage based on\n target's current health.\nEffect varies with gun's firerate.";
+            return "Bullets deal more damage based on target's current HP.\nScales inversely with firerate.";
         }
         protected override GameObject GetCardArt()
         {

@@ -17,7 +17,7 @@ namespace GearUpCards.Cards
 {
     class ParallelBulletsCard : CustomCard
     {
-        // internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_GunParts");
+        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_ParallelBullets");
 
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
@@ -34,7 +34,7 @@ namespace GearUpCards.Cards
 
             gun.damage *= 0.35f;
 
-            gun.spread += 0.5f;
+            gun.spread += 0.375f;
             gun.evenSpread += 1.0f;
             gun.numberOfProjectiles += 4;
 
@@ -44,7 +44,7 @@ namespace GearUpCards.Cards
             // add modifier to bullet
             List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList<ObjectsToSpawn>();
 
-            GameObject gameObject = new GameObject("ParallelBulletModifier", new Type[]
+            GameObject gameObject = new GameObject("ParallelBulletsModifier", new Type[]
             {
                 typeof(BulletNoClipModifier),
                 typeof(ParallelBulletModifier)
@@ -70,7 +70,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            return null;
+            return cardArt;
         }
         protected override CardInfo.Rarity GetRarity()
         {

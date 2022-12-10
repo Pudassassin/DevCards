@@ -25,29 +25,31 @@ namespace GearUpCards.MonoBehaviours
         private static GameObject spellVFXPrefab = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_AntiBulletMagick");
 
         private const string bulletGameObjectName = "Bullet_Base(Clone)";
-        private const float spellCooldownBase = 15.0f;
+        private const float spellCooldownBase = 12.0f;
         private const float spellForceReloadTimeAddBase = 3.5f;
-        private const float spellRangeBase = 7.0f;
-        private const float spellDurationBase = 1.0f;
+        private const float spellRangeBase = 8.0f;
+        private const float spellDurationBase = 1.5f;
+        private const float spellForceReloadSelfMultiplierBase = 0.5f;
 
         private const float procTime = .025f;
-        private const float warmupTime = 0.0f;
+        private const float warmupTime = 2.0f;
 
         internal Action<BlockTrigger.BlockTriggerType> spellAction;
 
         // ===== Spell modifiers =====
-        // cooldown reduction and cast/burst speed
+        // cooldown reduction and reduce self-effect
         internal int magickFragment = 0;
         // AoE and range
         internal int glyphInfluence = 0;
-        // Spell power
+        // Time incleased 
         internal int glyphPotency = 0;
 
 
-        internal float spellCooldown = 15.0f;
-        internal float spellRange = 7.0f;
+        internal float spellCooldown = 12.0f;
+        internal float spellRange = 8.0f;
         internal float spellForceReloadTimeAdd = 3.5f;
-        internal float spellDuration = 1.0f;
+        internal float spellDuration = 1.5f;
+        internal float spellForceReloadSelfMultiplier = 0.5f;
 
         internal bool spellReady = false;
         internal bool empowerCharged = false;
@@ -55,8 +57,11 @@ namespace GearUpCards.MonoBehaviours
         internal Vector3 prevPosition;
         internal Vector3 castPosition;
 
-        internal float timeLastBlocked = 0.0f;
-        internal float timeLastActivated = 0.0f;
+        // internal float timeLastBlocked = 0.0f;
+        // internal float timeLastActivated = 0.0f;
+
+        public float CooldownTimer = 0.0f;
+        public float DurationTimer = 0.0f;
 
         internal float timer = 0.0f;
         internal bool effectWarmUp = false;
@@ -88,6 +93,10 @@ namespace GearUpCards.MonoBehaviours
         public void Update()
         {
             timer += TimeHandler.deltaTime;
+            if (CooldownTimer > 0.0f)
+            { 
+                CooldownTimer -= TimeHandler.deltaTime;
+            }
 
             if (timer >= procTime)
             {
@@ -103,7 +112,7 @@ namespace GearUpCards.MonoBehaviours
                     spellReady = false;
                 }
 
-                if (Time.time < timeLastActivated + spellDuration)
+                //if (Time.time < timeLastActivated + spellDuration)
                 {
                     DeleteBullet();
                 }
@@ -121,17 +130,19 @@ namespace GearUpCards.MonoBehaviours
             {
                 return;
             }
-            else if (Time.time >= timeLastBlocked + spellCooldown)
+            // else if (Time.time >= timeLastBlocked + spellCooldown)
+            else if (CooldownTimer <= 0.0f)
             {
                 spellReady = true;
+                CooldownTimer = 0.0f;
             }
         }
 
         public float GetCooldown()
         {
-            float cooldown = timeLastBlocked + spellCooldown - Time.time;
+            // float cooldown = timeLastBlocked + spellCooldown - Time.time;
             if (spellReady) return -1.0f;
-            else return cooldown;
+            else return CooldownTimer;
         }
 
         // a work around the delegate limits, cheeky!
@@ -154,7 +165,7 @@ namespace GearUpCards.MonoBehaviours
                     VFX.GetComponent<Canvas>().sortingLayerName = "MostFront";
                     VFX.GetComponent<Canvas>().sortingOrder = 10000;
 
-                    VFX.AddComponent<RemoveAfterSeconds>().seconds = 1.25f;
+                    VFX.AddComponent<RemoveAfterSeconds>().seconds = spellDuration;
 
                     // check players in range and apply status
                     float distance;
@@ -182,7 +193,14 @@ namespace GearUpCards.MonoBehaviours
                         GunAmmo targetGunAmmo = target.gameObject.GetComponent<WeaponHandler>().gun.GetComponentInChildren<GunAmmo>();
 
                         // UnityEngine.Debug.Log($"[AntiBullet] Applying ForceReload to player[{target.playerID}]");
-                        ApplyForceReload(targetGun, targetGunAmmo);
+                        if (target.playerID == this.player.playerID)
+                        {
+                            ApplyForceReload(targetGun, targetGunAmmo, spellForceReloadTimeAdd * spellForceReloadSelfMultiplier);
+                        }
+                        else
+                        {
+                            ApplyForceReload(targetGun, targetGunAmmo, spellForceReloadTimeAdd);
+                        }
 
                         // UnityEngine.Debug.Log($"[AntiBullet] Forced-Reload player[{target.playerID}]");
 
@@ -191,12 +209,15 @@ namespace GearUpCards.MonoBehaviours
                     if (trigger == BlockTrigger.BlockTriggerType.Empower)
                     {
                         empowerCharged = false;
-                        timeLastActivated = Time.time;
+                        // timeLastActivated = Time.time;
+                        DurationTimer = spellDuration;
                     }
                     else
                     {
-                        timeLastBlocked = Time.time;
-                        timeLastActivated = Time.time;
+                        // timeLastBlocked = Time.time;
+                        // timeLastActivated = Time.time;
+                        CooldownTimer = spellCooldown;
+                        DurationTimer = spellDuration;
                         spellReady = false;
                         empowerCharged = true;
                     }
@@ -213,7 +234,10 @@ namespace GearUpCards.MonoBehaviours
             spellCooldown = spellCooldownBase - (magickFragment * 1.5f);
             spellCooldown = Mathf.Clamp(spellCooldown, 7.0f, 30.0f);
 
-            spellRange = spellRangeBase + (0.5f * glyphInfluence);
+            spellForceReloadSelfMultiplier = spellForceReloadSelfMultiplierBase - (magickFragment * 0.05f);
+            spellForceReloadSelfMultiplier = Mathf.Clamp(spellForceReloadSelfMultiplier, 0.0f, 1.0f);
+
+            spellRange = spellRangeBase + (1.0f * glyphInfluence);
 
             spellForceReloadTimeAdd = spellForceReloadTimeAddBase + (0.5f * glyphPotency);
             spellDuration = spellDurationBase + (0.25f * glyphPotency);
@@ -237,13 +261,13 @@ namespace GearUpCards.MonoBehaviours
             }
         }
 
-        internal void ApplyForceReload(Gun gun, GunAmmo gunAmmo)
+        internal void ApplyForceReload(Gun gun, GunAmmo gunAmmo, float duration)
         {
             Traverse.Create(gunAmmo).Field("currentAmmo").SetValue((int)0);
             Traverse.Create(gunAmmo).Field("freeReloadCounter").SetValue((float)0.0f);
             gunAmmo.InvokeMethod("SetActiveBullets", false);
 
-            float reloadTime = (float)gunAmmo.InvokeMethod("ReloadTime") + spellForceReloadTimeAdd;
+            float reloadTime = (float)gunAmmo.InvokeMethod("ReloadTime") + duration;
             Traverse.Create(gunAmmo).Field("reloadCounter").SetValue((float) reloadTime);
             gun.isReloading = true;
             int maxAmmo = gunAmmo.maxAmmo;
@@ -253,14 +277,16 @@ namespace GearUpCards.MonoBehaviours
         private IEnumerator OnPointStart(IGameModeHandler gm)
         {
             effectWarmUp = true;
-            timeLastBlocked = Time.time - spellCooldown + warmupTime;
+            // timeLastBlocked = Time.time - spellCooldown + warmupTime;
+            CooldownTimer = warmupTime;
+            spellReady = false;
             yield break;
         }
 
         private IEnumerator OnBattleStart(IGameModeHandler gm)
         {
             effectWarmUp = false;
-            spellReady = true;
+            // spellReady = true;
 
             yield break;
         }

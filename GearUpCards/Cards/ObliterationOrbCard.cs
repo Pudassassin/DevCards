@@ -14,21 +14,28 @@ namespace GearUpCards.Cards
 {
     class ObliterationOrbCard : CustomCard
     {
-        // internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_ChompyBullet");
+        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_OrbLiteration");
 
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            
+            cardInfo.categories = new CardCategory[]
+            {
+                GearCategory.tagSpell
+            };
         }
 
         // "attackSpeed" is technically a gunfire cooldown between shots >> Less is more rapid firing
         // 'attackSpeedMultiplier' works as intended >> More is more rapid firing
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
+            ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Remove(GearCategory.tagSpellOnlyAugment);
+
             block.cdAdd += 1.0f;
 
-            characterStats.GetGearData().orbObliteration += 1;
+            characterStats.GetGearData().orbObliterationStack += 1;
             player.gameObject.GetOrAddComponent<OrbSpellsMono>();
+
+            CooldownUIMono cooldownUI = player.gameObject.GetOrAddComponent<CooldownUIMono>();
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -41,11 +48,11 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Blocking fires an orb that obliterates part of the map and reduce players' max HP until they respawn.";
+            return "Blocking fires the orb that obliterates part of the map and reduce players' max HP.";
         }
         protected override GameObject GetCardArt()
         {
-            return null;
+            return cardArt;
         }
         protected override CardInfo.Rarity GetRarity()
         {

@@ -14,7 +14,7 @@ namespace GearUpCards.MonoBehaviours
 
         private float healthCullAreaHit = 0.9f;
         private float healthCullDirectHit = 0.85f;
-        private float obliterationRadius = 3.5f;
+        private float obliterationRadius = 4.0f;
 
         // private Gun shooterGun;
         // private Player shooterPlayer;
@@ -39,7 +39,7 @@ namespace GearUpCards.MonoBehaviours
             float glyphPotency = shooterStats.GetGearData().glyphPotency;
             float glyphInfluence = shooterStats.GetGearData().glyphInfluence;
 
-            float effectRadius = obliterationRadius + (0.5f * glyphInfluence);
+            float effectRadius = obliterationRadius + (1.0f * glyphInfluence);
 
             Player victimPlayer = hit.transform.GetComponent<Player>();
             int victimID = -1;
@@ -84,7 +84,7 @@ namespace GearUpCards.MonoBehaviours
                 MapUtils.RPCA_DestroyMapObject(hit.transform.gameObject);
             }
 
-            MapUtils.RPCA_DestroyMapObjectsAtArea(gameObject.transform.position, obliterationRadius);
+            MapUtils.RPCA_DestroyMapObjectsAtArea(gameObject.transform.position, effectRadius);
 
             // VFX part
             GameObject VFX = Instantiate(VFXPrefab, gameObject.transform.position + new Vector3(0.0f, 0.0f, 100.0f), Quaternion.identity);

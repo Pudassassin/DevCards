@@ -31,6 +31,8 @@ namespace GearUpCards.Utils
             public static CardCategory typeUniqueGunSpread = CustomCardCategories.instance.CardCategory("GearUp_UniqueGunSpread");
 
             public static CardCategory tagNoRemove = CustomCardCategories.instance.CardCategory("NoRemove");
+            public static CardCategory tagSpell = CustomCardCategories.instance.CardCategory("GearUp_Spell");
+            public static CardCategory tagSpellOnlyAugment = CustomCardCategories.instance.CardCategory("GearUp_SpellOnlyAugment");
         }
 
         public class PlayerCardData

@@ -25,17 +25,17 @@ namespace GearUpCards.MonoBehaviours
 
         private const float scannerStatusAmpFactor = .50f;
 
-        private const float scannerStatusBaseDuration = 6.0f;
+        private const float scannerStatusBaseDuration = 5.0f;
         private const float scannerStatusStackDuration = 1.0f;
 
-        private const float scannerBaseRange = 12.0f;
-        private const float scannerStackRange = 2.0f;
+        private const float scannerBaseRange = 10.5f;
+        private const float scannerStackRange = 1.5f;
 
         private const float scannerBaseCooldown = 10.0f;
         private const float scannerStackCooldown = -1.0f;
 
         private const float procTime = .10f;
-        private const float warmupTime = 0.0f;
+        private const float warmupTime = 2.0f;
 
         internal Action<BlockTrigger.BlockTriggerType> scannerAction;
 
@@ -49,6 +49,7 @@ namespace GearUpCards.MonoBehaviours
         internal bool empowerCharged = false;
 
         internal float timeLastBlocked = 0.0f;
+        public float cooldownTimer = 0.0f;
 
         internal float timer = 0.0f;
         internal bool effectWarmUp = false;
@@ -80,6 +81,11 @@ namespace GearUpCards.MonoBehaviours
         public void Update()
         {
             timer += TimeHandler.deltaTime;
+            
+            if (cooldownTimer > 0.0f)
+            {
+                cooldownTimer -= TimeHandler.deltaTime;
+            }
 
             if (timer >= procTime)
             {
@@ -115,22 +121,25 @@ namespace GearUpCards.MonoBehaviours
         {
             if (effectWarmUp)
             {
-                timeLastBlocked = 0.0f;
-                scannerReady = true;
+                // timeLastBlocked = 0.0f;
+                scannerReady = false;
             }
             else if (scannerReady)
             {
                 return;
             }
-            else if (Time.time >= timeLastBlocked + scannerCooldown)
+            // else if (Time.time >= timeLastBlocked + scannerCooldown)
+            else if (cooldownTimer <= 0.0f)
             {
                 scannerReady = true;
+                cooldownTimer = 0.0f;
             }
         }
 
         public float GetCooldown()
         {
-            float cooldown = timeLastBlocked + scannerCooldown - Time.time;
+            // float cooldown = timeLastBlocked + scannerCooldown - Time.time;
+            float cooldown = cooldownTimer;
             if (scannerReady) return -1.0f;
             else return cooldown;
         }
@@ -187,7 +196,8 @@ namespace GearUpCards.MonoBehaviours
                     }
                     else
                     {
-                        timeLastBlocked = Time.time;
+                        // timeLastBlocked = Time.time;
+
                         scannerReady = false;
                         empowerCharged = true;
                     }
@@ -198,7 +208,7 @@ namespace GearUpCards.MonoBehaviours
         private IEnumerator OnPointStart(IGameModeHandler gm)
         {
             effectWarmUp = true;
-            timeLastBlocked = Time.time - scannerCooldown + warmupTime;
+            // timeLastBlocked = Time.time - scannerCooldown + warmupTime;
             yield break;
         }
 

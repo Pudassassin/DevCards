@@ -49,8 +49,8 @@ namespace GearUpCards.Cards
             ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.typeSizeMod);
 
             // stats
-            player.data.maxHealth *= 1.5f;
-            characterStats.movementSpeed *= 1.25f;
+            player.data.maxHealth *= 1.65f;
+            characterStats.movementSpeed *= 1.35f;
             characterStats.GetGearData().sizeMod = GearUpConstants.ModType.sizeNormalize;
 
             // Add Size Normalizer mono
@@ -87,14 +87,14 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "HP",
-                    amount = "+50%",
+                    amount = "+65%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = true,
                     stat = "Movement SPD",
-                    amount = "+25%",
+                    amount = "+35%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };
@@ -109,7 +109,7 @@ namespace GearUpCards.Cards
         }
         public override void Callback()
         {
-            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "[Size]\nMod";
+            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Unique\nSize";
         }
     }
 }

@@ -199,7 +199,7 @@ namespace GearUpCards.MonoBehaviours
             }
         }
 
-        public float GetChargeCount()
+        public int GetChargeCount()
         {
             return empowerAmmo;
         }

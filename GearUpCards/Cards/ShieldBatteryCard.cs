@@ -17,19 +17,22 @@ namespace GearUpCards.Cards
 {
     class ShieldBatteryCard : CustomCard
     {
-        // internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_MedicalParts");
+        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_ShieldBattery");
 
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            gun.attackSpeed = 1 / 0.65f;
+            gun.attackSpeed = 1 / 0.75f;
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
             // block.additionalBlocks += 1;
-            block.cdAdd += 1.0f;
+            block.cdAdd += 0.5f;
 
             characterStats.GetGearData().shieldBatteryStack += 1;
             player.gameObject.GetOrAddComponent<ShieldBatteryEffect>();
+
+            // temp
+            CooldownUIMono cooldownUI = player.gameObject.GetOrAddComponent<CooldownUIMono>();
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -41,11 +44,11 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "[Empower] now gains +1 Empower shot instead of stacking bullet boosts.\n(It WILL still stacks block effects on impact!)";
+            return "[Empower] now have <color=#00ff00ff>\"+1 Empower Shot\"</color> but <color=#ff0000ff>no longer give bullet boosts.</color>";
         }
         protected override GameObject GetCardArt()
         {
-            return null;
+            return cardArt;
         }
         protected override CardInfo.Rarity GetRarity()
         {
@@ -73,14 +76,14 @@ namespace GearUpCards.Cards
                 {
                     positive = false,
                     stat = "Block CD",
-                    amount = "+1.0s",
+                    amount = "+0.5s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "ATK SPD",
-                    amount = "-35%",
+                    amount = "-25%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };

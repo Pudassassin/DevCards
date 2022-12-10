@@ -27,13 +27,20 @@ namespace GearUpCards.Cards
         {
             if (block.cdMultiplier > 1.0f)
             {
-                block.cdMultiplier -= 0.3f;
+                block.cdMultiplier -= 0.25f;
             }
             else
             {
-                block.cdMultiplier *= 0.7f;
+                block.cdMultiplier *= 0.75f;
             }
+
+            if (block.cdAdd > 1.0f)
+            {
+                block.cdAdd -= 0.1f;
+            }
+
             player.data.maxHealth *= 0.75f;
+
             characterStats.GetGearData().magickFragmentStack += 1;
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
@@ -64,7 +71,7 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "Block CD",
-                    amount = "-30%",
+                    amount = "-25% & -0.1s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()

@@ -29,9 +29,9 @@ namespace GearUpCards.MonoBehaviours
         private const string bulletGameObjectName = "Bullet_Base(Clone)";
 
         private const float procTime = .05f;
-        private const float warmupTime = 0.0f;
+        private const float warmupTime = 2.0f;
 
-        class OrbSpellStats
+        public class OrbSpellStats
         {
             public enum OrbSpellType
             {
@@ -209,7 +209,8 @@ namespace GearUpCards.MonoBehaviours
             {
                 spellReady = false;
                 spellBursting = false;
-                cooldownTimer = cooldownStats - 2.0f;
+                // cooldownTimer = cooldownStats - warmupTime;
+                cooldownTimer = warmupTime;
             }
 
             public void RefreshOrbSpell()
@@ -230,11 +231,18 @@ namespace GearUpCards.MonoBehaviours
                 }
                 else if (!spellReady && orbMaxCount > 0)
                 {
-                    cooldownTimer += TimeHandler.deltaTime;
+                    // cooldownTimer += TimeHandler.deltaTime;
+                    cooldownTimer -= TimeHandler.deltaTime;
 
                     if (spellBursting)
                     {
-                        if (cooldownTimer >= orbDummyGun.timeBetweenBullets)
+                        // if (cooldownTimer >= orbDummyGun.timeBetweenBullets)
+                        // {
+                        //     spellReady = true;
+                        //     cooldownTimer = 0.0f;
+                        // }
+
+                        if (cooldownTimer <= 0.0f)
                         {
                             spellReady = true;
                             cooldownTimer = 0.0f;
@@ -242,12 +250,17 @@ namespace GearUpCards.MonoBehaviours
                     }
                     else
                     {
-                        if (cooldownTimer >= cooldownStats)
+                        // if (cooldownTimer >= cooldownStats)
+                        // {
+                        //     RefreshOrbSpell();
+                        // }
+
+                        if (cooldownTimer <= 0.0f)
                         {
                             RefreshOrbSpell();
                         }
                     }
-                    
+
                 }
                 else if (orbMaxCount <= 0)
                 {
@@ -316,7 +329,8 @@ namespace GearUpCards.MonoBehaviours
                         Miscs.LogWarn(exception);
                     }
 
-                    if (!spellBursting && orbCount > 1)
+                    // also check if manual cast is enable
+                    if (!spellBursting && orbCount > 1) 
                     {
                         // fire, trigger burst
 
@@ -331,13 +345,21 @@ namespace GearUpCards.MonoBehaviours
                         if (orbCount <= 0)
                         {
                             spellBursting = false;
+                            cooldownTimer = cooldownStats;
                         }
 
                     }
                     else
                     {
                         // fire normally
+
                         orbCount--;
+                        if (orbCount <= 0)
+                        {
+                            cooldownTimer = cooldownStats;
+                            spellReady = false;
+                        }
+                        return true;
                     }
 
                     spellReady = false;
@@ -467,7 +489,7 @@ namespace GearUpCards.MonoBehaviours
             }
         }
 
-        private int QueryOrbSpell(OrbSpellStats.OrbSpellType type)
+        public int QueryOrbSpell(OrbSpellStats.OrbSpellType type)
         {
             int result = -1;
             for (int i = 0; i < orbSpells.Count; i++)
@@ -480,6 +502,22 @@ namespace GearUpCards.MonoBehaviours
             }
 
             return result;
+        }
+
+        public float GetOrbSpellCooldown(Index orbSpellIndex)
+        {
+            float cooldown = -1.0f;
+
+            try
+            {
+                cooldown  = orbSpells[orbSpellIndex].GetCurrentCooldown();
+            }
+            catch (Exception exception)
+            {
+                Miscs.LogWarn(exception.ToString());
+            }
+
+            return cooldown;
         }
 
         private int InsertOrbSpell(OrbSpellStats newOrbSpell)
@@ -598,14 +636,14 @@ namespace GearUpCards.MonoBehaviours
 
             // Orb Spell Obliteration
             checkIndex = QueryOrbSpell(OrbSpellStats.OrbSpellType.obliteration);
-            if (stats.GetGearData().orbObliteration > 0)
+            if (stats.GetGearData().orbObliterationStack > 0)
             {
                 // stats calculation
-                float cooldown = Mathf.Clamp(8.0f - (magickFragment * 0.5f), 3.0f, 15.0f);
+                float cooldown = Mathf.Clamp(8.0f - (magickFragment * 1.0f), 3.0f, 15.0f);
                 float burstTime = Mathf.Clamp(0.3f - (magickFragment * 0.05f), 0.1f, 0.75f);
-                int orbCount = Mathf.FloorToInt((1.1f + stats.GetGearData().orbObliteration) / 2);
-                int bounceCount = Mathf.FloorToInt(glyphGeometric / 2.0f);
-                float orbVelocity = 0.5f + (glyphDivination * 0.1f);
+                int orbCount = Mathf.FloorToInt((2.1f + stats.GetGearData().orbObliterationStack) / 2.0f);
+                int bounceCount = glyphGeometric;  //Mathf.FloorToInt((3.1f + glyphGeometric) / 2.0f);
+                float orbVelocity = 0.5f + (glyphDivination * 0.25f);
                 float orbSpeed = 1.0f + (glyphDivination * 0.1f);
 
                 // if in list: Update and enable

@@ -17,7 +17,7 @@ namespace GearUpCards.Cards
 {
     class DivinationGlyphCard : CustomCard
     {
-        // internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_MagickFragment");
+        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_GlyphDivination");
 
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
@@ -26,7 +26,7 @@ namespace GearUpCards.Cards
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
             gun.projectielSimulatonSpeed *= 1.15f;
-            gun.projectileSpeed *= 1.15f;
+            gun.projectileSpeed *= 1.25f;
 
             characterStats.GetGearData().glyphDivination += 1;
         }
@@ -44,7 +44,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            return null;
+            return cardArt;
         }
         protected override CardInfo.Rarity GetRarity()
         {
@@ -58,7 +58,7 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "Bullet Speed",
-                    amount = "+15%",
+                    amount = "+25%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()

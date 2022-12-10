@@ -200,7 +200,7 @@ namespace GearUpCards.MonoBehaviours
                     gun.evenSpread = prevEvenSpread;
                 }
 
-                gun.multiplySpread = prevSpreadMul * prevSpread * (25 + gun.numberOfProjectiles * 5);
+                gun.multiplySpread = prevSpreadMul * prevSpread * (50 + gun.numberOfProjectiles * 5);
             }
         }
     }

@@ -17,7 +17,7 @@ namespace GearUpCards.Cards
 {
     class GeometricGlyphCard : CustomCard
     {
-        // internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_MagickFragment");
+        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_GlyphGeometry");
 
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
@@ -26,7 +26,8 @@ namespace GearUpCards.Cards
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
             gun.reflects += 3;
-            gunAmmo.reloadTimeMultiplier *= 1.10f;
+            // gunAmmo.reloadTimeMultiplier *= 1.10f;
+            gunAmmo.reloadTimeAdd += 0.15f;
 
             characterStats.GetGearData().glyphGeometric += 1;
         }
@@ -40,11 +41,12 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Add some bounces to your Bullets and Spell Orbs. Not all Spells can be bouncy, through...";
+            // return "Add some bounces to your Bullets and Spell Orbs. Not all Spells can be bouncy, through...";
+            return "<i>\"Simple Geometry!\"</i>";
         }
         protected override GameObject GetCardArt()
         {
-            return null;
+            return cardArt;
         }
         protected override CardInfo.Rarity GetRarity()
         {
@@ -64,15 +66,15 @@ namespace GearUpCards.Cards
                 new CardInfoStat()
                 {
                     positive = false,
-                    stat = "Reload SPD",
-                    amount = "+10%",
+                    stat = "Reload Time",
+                    amount = "+0.15s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = true,
                     stat = "Spell Bounces",
-                    amount = "Add",
+                    amount = "Increased",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };

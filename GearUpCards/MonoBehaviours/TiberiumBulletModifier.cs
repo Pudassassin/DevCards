@@ -33,16 +33,20 @@ namespace GearUpCards.MonoBehaviours
 
                 int stackCount = shooterStats.GetGearData().tiberiumBulletStack;
 
-                // factor is per second from bullet damage
+                // Calculate chronic HP Loss
+                CharacterData victimChar = hit.transform.gameObject.GetComponent<CharacterData>();
+
                 float gunDamage = shooterGun.damage * 55.0f;
-                float chronicFactor = 0.05f * stackCount;
-                float chronicFactorFlat = 0.35f * stackCount;
+                float chronicDmg        = 0.05f * stackCount * gunDamage;
+                float chronicFlat       = 0.35f * stackCount;
+                float chronicHpPercent  = 0.0005f * stackCount * victimChar.maxHealth;
                 float burstFactor = 0.25f * stackCount;
 
                 TiberiumToxicEffect victimToxic = hit.transform.gameObject.GetOrAddComponent<TiberiumToxicEffect>();
 
+
                 // Apply toxic to victim
-                victimToxic.ApplyChronicStack(gunDamage * chronicFactor + chronicFactorFlat, 0.2f);
+                victimToxic.ApplyChronicStack(chronicDmg + chronicFlat + chronicHpPercent, 0.2f);
                 victimToxic.ApplyNewStack(gunDamage * burstFactor, 0.2f, 20, false);
 
             }
