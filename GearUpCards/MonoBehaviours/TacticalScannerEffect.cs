@@ -139,9 +139,8 @@ namespace GearUpCards.MonoBehaviours
         public float GetCooldown()
         {
             // float cooldown = timeLastBlocked + scannerCooldown - Time.time;
-            float cooldown = cooldownTimer;
             if (scannerReady) return -1.0f;
-            else return cooldown;
+            else return cooldownTimer;
         }
 
         // a work around the delegate limits, cheeky!
@@ -197,6 +196,7 @@ namespace GearUpCards.MonoBehaviours
                     else
                     {
                         // timeLastBlocked = Time.time;
+                        cooldownTimer = scannerCooldown;
 
                         scannerReady = false;
                         empowerCharged = true;

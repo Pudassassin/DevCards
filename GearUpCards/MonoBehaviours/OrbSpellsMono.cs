@@ -20,24 +20,26 @@ using GearUpCards.Utils;
 
 namespace GearUpCards.MonoBehaviours
 {
-    internal class OrbSpellsMono : MonoBehaviour
+    public class OrbSpellsMono : MonoBehaviour
     {
         // public float _debugScale = 2.0f;
 
-        // private static GameObject spellVFXPrefab = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_AntiBulletMagick");
+        private static GameObject spellVFXOrbLiterate = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_VortexLoop");
 
         private const string bulletGameObjectName = "Bullet_Base(Clone)";
 
         private const float procTime = .05f;
         private const float warmupTime = 2.0f;
 
+        public enum OrbSpellType
+        {
+            none = 0,
+            obliteration
+        }
+
         public class OrbSpellStats
         {
-            public enum OrbSpellType
-            {
-                none = 0,
-                obliteration
-            }
+            
 
             // on-block casts
             //   gun stats handled by outside methods
@@ -176,17 +178,11 @@ namespace GearUpCards.MonoBehaviours
                 orbDummyGun.waveMovement = false;
             }
 
-            public void SetupOrbSpell(OrbSpellType type, GameObject bulletModifier, float cooldownStats, int orbMaxCount, int castPriority)
+            public void SetupOrbSpell(OrbSpellType type, ObjectsToSpawn[] objectsToSpawns, float cooldownStats, int orbMaxCount, int castPriority)
             {
                 this.type = type;
-                this.bulletModifier = bulletModifier;
 
-                List<ObjectsToSpawn> list = new List<ObjectsToSpawn>();
-                list.Add(new ObjectsToSpawn
-                {
-                    AddToProjectile = bulletModifier
-                });
-                orbDummyGun.objectsToSpawn = list.ToArray();
+                orbDummyGun.objectsToSpawn = objectsToSpawns;
 
                 this.cooldownStats = cooldownStats;
                 this.orbMaxCount = orbMaxCount;
@@ -274,7 +270,7 @@ namespace GearUpCards.MonoBehaviours
             {
                 if (!spellReady && !spellBursting)
                 {
-                    return cooldownStats - cooldownTimer;
+                    return cooldownTimer;
                 }
                 else if (orbMaxCount <= 0)
                 {
@@ -489,7 +485,7 @@ namespace GearUpCards.MonoBehaviours
             }
         }
 
-        public int QueryOrbSpell(OrbSpellStats.OrbSpellType type)
+        public int QueryOrbSpell(OrbSpellType type)
         {
             int result = -1;
             for (int i = 0; i < orbSpells.Count; i++)
@@ -504,7 +500,7 @@ namespace GearUpCards.MonoBehaviours
             return result;
         }
 
-        public float GetOrbSpellCooldown(Index orbSpellIndex)
+        public float GetOrbSpellCooldown(int orbSpellIndex)
         {
             float cooldown = -1.0f;
 
@@ -635,7 +631,7 @@ namespace GearUpCards.MonoBehaviours
             int checkIndex;
 
             // Orb Spell Obliteration
-            checkIndex = QueryOrbSpell(OrbSpellStats.OrbSpellType.obliteration);
+            checkIndex = QueryOrbSpell(OrbSpellType.obliteration);
             if (stats.GetGearData().orbObliterationStack > 0)
             {
                 // stats calculation
@@ -662,7 +658,15 @@ namespace GearUpCards.MonoBehaviours
 
                     checkIndex = InsertOrbSpell(newOrbSpell);
 
-                    orbSpells[checkIndex].SetupOrbSpell(OrbSpellStats.OrbSpellType.obliteration, orbModifier, cooldown, orbCount, 10);
+                    ObjectsToSpawn[] objectsToSpawn = new ObjectsToSpawn[]
+                    {
+                        new ObjectsToSpawn
+                        {
+                            AddToProjectile = orbModifier
+                        }
+                    };
+
+                    orbSpells[checkIndex].SetupOrbSpell(OrbSpellType.obliteration, objectsToSpawn, cooldown, orbCount, 10);
                 }
 
                 orbSpells[checkIndex].orbDummyGun.projectileColor = new Color(0.4f, 0.0f, 0.4f, 1.0f);
@@ -671,6 +675,13 @@ namespace GearUpCards.MonoBehaviours
                 orbSpells[checkIndex].orbDummyGun.projectielSimulatonSpeed = orbSpeed;
                 orbSpells[checkIndex].orbDummyGun.timeBetweenBullets = burstTime;
                 orbSpells[checkIndex].orbDummyGun.reflects = bounceCount;
+
+                Action<GameObject> actionVFX = new Action<GameObject>(ShootActionAddVFX(spellVFXOrbLiterate));
+                orbSpells[checkIndex].orbDummyGun.ShootPojectileAction = (Action<GameObject>)Delegate.Combine
+                    (
+                        orbSpells[checkIndex].orbDummyGun.ShootPojectileAction,
+                        actionVFX
+                    );
 
                 Miscs.Log("[GearUp] OrbSpellsMono: Obliteration Updated!");
             }
@@ -796,6 +807,28 @@ namespace GearUpCards.MonoBehaviours
 
             this.block.BlockAction = (Action<BlockTrigger.BlockTriggerType>)Delegate.Remove(this.block.BlockAction, this.spellAction);
             // UnityEngine.Debug.Log($"Scanner destroyed  [{this.player.playerID}]");
+        }
+
+        // Action Delegates
+        public Action<GameObject> ShootActionAddVFX(GameObject VFXPrefab)
+        {
+            return delegate (GameObject bulletFired)
+            {
+                try
+                {
+                    this.ExecuteAfterFrames(1, () =>
+                    {
+                        GameObject VFX = Instantiate(VFXPrefab, bulletFired.transform);
+                        VFX.transform.up = bulletFired.transform.forward;
+                        // arrow.transform.localScale /= 2;
+                    });
+                }
+                catch (Exception)
+                {
+                    UnityEngine.Debug.LogWarning($"[OrbSpellMono] ShootActionAddVFX failed! [{player.playerID}]");
+                }
+                
+            };
         }
     }
 

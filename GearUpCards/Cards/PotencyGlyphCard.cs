@@ -44,7 +44,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            return null;
+            return cardArt;
         }
         protected override CardInfo.Rarity GetRarity()
         {

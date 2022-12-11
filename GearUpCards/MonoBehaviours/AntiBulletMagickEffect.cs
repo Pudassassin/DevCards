@@ -31,6 +31,11 @@ namespace GearUpCards.MonoBehaviours
         private const float spellDurationBase = 1.5f;
         private const float spellForceReloadSelfMultiplierBase = 0.5f;
 
+        public float spellCastDelay = 0.1f;
+        public float spellCastDelayTimer = 0.0f;
+        public bool spellIsCast = false;
+        public BlockTrigger.BlockTriggerType spellTrigger;
+
         private const float procTime = .025f;
         private const float warmupTime = 2.0f;
 
@@ -98,6 +103,26 @@ namespace GearUpCards.MonoBehaviours
                 CooldownTimer -= TimeHandler.deltaTime;
             }
 
+            if (DurationTimer > 0.0f)
+            {
+                DurationTimer -= TimeHandler.deltaTime;
+            }
+
+            if (spellIsCast)
+            {
+                if (spellCastDelayTimer > 0.0f)
+                {
+                    spellCastDelayTimer -= TimeHandler.deltaTime;
+                }
+                else
+                {
+                    spellCastDelayTimer = 0.0f;
+                    spellIsCast = false;
+
+                    CastSpell(player.transform.position, spellTrigger);
+                }
+            }
+
             if (timer >= procTime)
             {
                 prevPosition = this.player.transform.position;
@@ -113,6 +138,7 @@ namespace GearUpCards.MonoBehaviours
                 }
 
                 //if (Time.time < timeLastActivated + spellDuration)
+                if (DurationTimer > 0.0f)
                 {
                     DeleteBullet();
                 }
@@ -157,72 +183,91 @@ namespace GearUpCards.MonoBehaviours
                 if (conditionMet)
                 {
                     // empower do cheeky teleport, I can just grab player.transform.position
-
-                    // ScanVFX part
-                    GameObject VFX = Instantiate(spellVFXPrefab, this.player.transform.position + new Vector3(0.0f, 0.0f, 100.0f), Quaternion.identity);
-                    VFX.transform.localScale = Vector3.one * spellRange;
-                    VFX.name = "AntiBulletVFX_Copy";
-                    VFX.GetComponent<Canvas>().sortingLayerName = "MostFront";
-                    VFX.GetComponent<Canvas>().sortingOrder = 10000;
-
-                    VFX.AddComponent<RemoveAfterSeconds>().seconds = spellDuration;
-
-                    // check players in range and apply status
-                    float distance;
-
                     castPosition = this.player.transform.position;
-                    DeleteBullet();
 
-                    foreach (Player target in PlayerManager.instance.players)
-                    {
-                        if (target.playerID == this.player.playerID && trigger == BlockTrigger.BlockTriggerType.Empower)
-                        {
-                            distance = (this.prevPosition - this.player.transform.position).magnitude;
-                        }
-                        else
-                        {
-                            distance = (target.transform.position - this.player.transform.position).magnitude;
-                        }
-
-                        if (distance > spellRange)
-                            continue;
-
-                        // UnityEngine.Debug.Log($"[AntiBullet] Reading player[{target.playerID}]");
-
-                        Gun targetGun = target.gameObject.GetComponent<WeaponHandler>().gun;
-                        GunAmmo targetGunAmmo = target.gameObject.GetComponent<WeaponHandler>().gun.GetComponentInChildren<GunAmmo>();
-
-                        // UnityEngine.Debug.Log($"[AntiBullet] Applying ForceReload to player[{target.playerID}]");
-                        if (target.playerID == this.player.playerID)
-                        {
-                            ApplyForceReload(targetGun, targetGunAmmo, spellForceReloadTimeAdd * spellForceReloadSelfMultiplier);
-                        }
-                        else
-                        {
-                            ApplyForceReload(targetGun, targetGunAmmo, spellForceReloadTimeAdd);
-                        }
-
-                        // UnityEngine.Debug.Log($"[AntiBullet] Forced-Reload player[{target.playerID}]");
-
-                    }
 
                     if (trigger == BlockTrigger.BlockTriggerType.Empower)
                     {
+                        CastSpell(castPosition, trigger);
                         empowerCharged = false;
                         // timeLastActivated = Time.time;
-                        DurationTimer = spellDuration;
                     }
                     else
                     {
+                        switch (trigger)
+                        {
+                            case BlockTrigger.BlockTriggerType.Default:
+                                spellCastDelayTimer = spellCastDelay;
+                                break;
+                            case BlockTrigger.BlockTriggerType.ShieldCharge:
+                                spellCastDelayTimer = spellCastDelay + 0.5f;
+                                break;
+                            default:
+                                spellCastDelayTimer = 0.0f;
+                                break;
+                        }
+                        spellIsCast = true;
+                        spellTrigger = trigger;
+
                         // timeLastBlocked = Time.time;
                         // timeLastActivated = Time.time;
                         CooldownTimer = spellCooldown;
-                        DurationTimer = spellDuration;
                         spellReady = false;
                         empowerCharged = true;
                     }
                 }
             };
+        }
+
+        public void CastSpell(Vector3 position, BlockTrigger.BlockTriggerType trigger)
+        {
+            // VFX Part
+            GameObject VFX = Instantiate(spellVFXPrefab, this.player.transform.position + new Vector3(0.0f, 0.0f, 100.0f), Quaternion.identity);
+            VFX.transform.localScale = Vector3.one * spellRange;
+            VFX.name = "AntiBulletVFX_Copy";
+            VFX.GetComponent<Canvas>().sortingLayerName = "MostFront";
+            VFX.GetComponent<Canvas>().sortingOrder = 10000;
+
+            VFX.AddComponent<RemoveAfterSeconds>().seconds = spellDuration;
+
+            // check players in range and apply status
+            float distance;
+
+            DeleteBullet();
+
+            foreach (Player target in PlayerManager.instance.players)
+            {
+                if (target.playerID == this.player.playerID && trigger == BlockTrigger.BlockTriggerType.Empower)
+                {
+                    distance = (this.prevPosition - castPosition).magnitude;
+                }
+                else
+                {
+                    distance = (target.transform.position - castPosition).magnitude;
+                }
+
+                if (distance > spellRange)
+                    continue;
+
+                // UnityEngine.Debug.Log($"[AntiBullet] Reading player[{target.playerID}]");
+
+                Gun targetGun = target.gameObject.GetComponent<WeaponHandler>().gun;
+                GunAmmo targetGunAmmo = target.gameObject.GetComponent<WeaponHandler>().gun.GetComponentInChildren<GunAmmo>();
+
+                // UnityEngine.Debug.Log($"[AntiBullet] Applying ForceReload to player[{target.playerID}]");
+                if (target.playerID == this.player.playerID)
+                {
+                    ApplyForceReload(targetGun, targetGunAmmo, spellForceReloadTimeAdd * spellForceReloadSelfMultiplier);
+                }
+                else
+                {
+                    ApplyForceReload(targetGun, targetGunAmmo, spellForceReloadTimeAdd);
+                }
+
+                // UnityEngine.Debug.Log($"[AntiBullet] Forced-Reload player[{target.playerID}]");
+
+            }
+            DurationTimer = spellDuration;
         }
 
         internal void RecalculateEffectStats()

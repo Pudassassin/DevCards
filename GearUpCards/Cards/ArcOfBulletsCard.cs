@@ -35,7 +35,7 @@ namespace GearUpCards.Cards
             gun.damage *= 0.65f;
 
             // about half of [Buckshot]'s spread but this is for mono's calculation
-            gun.spread += 75.0f / 360.0f;
+            gun.spread += 60.0f / 360.0f;
             gun.evenSpread += 1.0f;
             gun.numberOfProjectiles += 4;
 
@@ -91,7 +91,7 @@ namespace GearUpCards.Cards
                 {
                     positive = false,
                     stat = "Spread",
-                    amount = "+ ~75 deg",
+                    amount = "+60 deg",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()

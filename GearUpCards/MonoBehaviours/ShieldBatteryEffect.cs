@@ -23,6 +23,9 @@ namespace GearUpCards.MonoBehaviours
 {
     internal class ShieldBatteryEffect : MonoBehaviour
     {
+        // private static GameObject empowerShotVFX = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_EmpowerShot");
+        // internal bool addShotVFX = false;
+
         private static string empowerPrefabName = "A_Empower";
         private static GameObject empowerPrefab = null;
         // public float _debugScanInitialScale = 5.0f;
@@ -85,8 +88,8 @@ namespace GearUpCards.MonoBehaviours
             this.attackAction = new Action(this.GetDoAttackAction(this.player, this.gun));
             this.gun.AddAttackAction(this.attackAction);
 
-            this.shootAction = new Action<GameObject>(this.GetDoShootAction(this.player, this.gun));
-            this.gun.ShootPojectileAction = (Action<GameObject>)Delegate.Combine(this.gun.ShootPojectileAction, this.shootAction);
+            // this.shootAction = new Action<GameObject>(this.GetDoShootAction(this.player, this.gun));
+            // this.gun.ShootPojectileAction = (Action<GameObject>)Delegate.Combine(this.gun.ShootPojectileAction, this.shootAction);
         }
 
         public void Update()
@@ -150,34 +153,35 @@ namespace GearUpCards.MonoBehaviours
             empowerStackCount = CardUtils.GetPlayerCardsWithName(this.player, "EMPOWER").Count;
 
             empowerMaxAmmo = (batteryStackCount * 2) + empowerStackCount;
-            empowerList = player.gameObject.GetComponentsInChildren<Empower>().ToList();
-
-            int bulletBatch;
-            if (this.gun.bursts > 1)
-            {
-                bulletBatch = this.gun.bursts * this.gun.numberOfProjectiles;
-            }
-            else
-            {
-                bulletBatch = this.gun.numberOfProjectiles;
-            }
-
-            float vollayPerClip = (float)this.gunAmmo.maxAmmo / (float)(bulletBatch);
-            vollayPerClip = Mathf.CeilToInt(vollayPerClip);
-            if (empowerMaxAmmo > vollayPerClip)
-            {
-                burstMode = true;
-            }
-            else
-            {
-                burstMode = false;
-            }
 
             // baseline for owning at least one [Empower] card
             if (empowerStackCount > 0)
             {
                 empowerMaxAmmo += 1;
             }
+
+            empowerList = player.gameObject.GetComponentsInChildren<Empower>().ToList();
+
+            // int bulletBatch;
+            // if (this.gun.bursts > 1)
+            // {
+            //     bulletBatch = this.gun.bursts * this.gun.numberOfProjectiles;
+            // }
+            // else
+            // {
+            //     bulletBatch = this.gun.numberOfProjectiles;
+            // }
+            // 
+            // float vollayPerClip = (float)this.gunAmmo.maxAmmo / (float)(bulletBatch);
+            // vollayPerClip = Mathf.CeilToInt(vollayPerClip);
+            // if (empowerMaxAmmo > vollayPerClip)
+            // {
+            //     burstMode = true;
+            // }
+            // else
+            // {
+            //     burstMode = false;
+            // }
 
             float bulletSpeedMul;
             float damageMul;
@@ -218,12 +222,38 @@ namespace GearUpCards.MonoBehaviours
             };
         }
 
+        // Action Delegates
+        // public Action<GameObject> ShootActionAddVFX()
+        // {
+        //     return delegate (GameObject bulletFired)
+        //     {
+        //         if (!addShotVFX) return;
+        // 
+        //         try
+        //         {
+        //             this.ExecuteAfterFrames(1, () =>
+        //             {
+        //                 GameObject VFX = Instantiate(empowerShotVFX, bulletFired.transform);
+        //                 VFX.transform.up = bulletFired.transform.forward;
+        //                 VFX.transform.localScale /= 2;
+        //             });
+        //         }
+        //         catch (Exception)
+        //         {
+        //             UnityEngine.Debug.LogWarning($"[ShieldBatteryEffect] ShootActionAddVFX failed! [{player.playerID}]");
+        //         }
+        // 
+        //         addShotVFX = false;
+        //     };
+        // }
+
         public Action GetDoAttackAction(Player player, Gun gun)
         {
             return delegate ()
             {
                 // check empower ammo
-                if (empowerAmmo > 0 && !burstMode)
+                // if (empowerAmmo > 0 && !burstMode)
+                if (empowerAmmo > 0)
                 {
                     // reset Empower state
                     try
@@ -240,6 +270,7 @@ namespace GearUpCards.MonoBehaviours
                     }
 
                     // deduce empower ammo
+                    // addShotVFX = true;
                     empowerAmmo -= 1;
                 }
             };
@@ -250,7 +281,7 @@ namespace GearUpCards.MonoBehaviours
             return delegate (GameObject bulletFired)
             {
                 // check empower ammo
-                if (empowerAmmo > 0 && burstMode)
+                if (empowerAmmo > 1 && burstMode)
                 {
                     // reset Empower state
                     try
@@ -266,11 +297,17 @@ namespace GearUpCards.MonoBehaviours
                     }
 
                     // deduce empower ammo
+                    // addShotVFX = true;
                     empowerAmmo -= 1;
+                }
+                else
+                {
+                    empowerAmmo = 0;
                 }
             };
         }
 
+        // Event methods
         private IEnumerator OnPointStart(IGameModeHandler gm)
         {
             effectWarmUp = true;

@@ -175,7 +175,7 @@ namespace GearUpCards.MonoBehaviours
                     gun.evenSpread = prevEvenSpread;
                 }
 
-                gun.multiplySpread = prevSpreadMul * prevSpread * 50;
+                gun.multiplySpread = prevSpreadMul * prevSpread * 150;
             }
         }
 
@@ -210,11 +210,13 @@ namespace GearUpCards.MonoBehaviours
         private const float delayTime = 1.5f;
         internal float timer = 0.0f;
         private bool effectEnabled = false;
+        internal bool previousState = true;
 
         public void Awake()
         {
             if (transform.parent != null)
             {
+                previousState = transform.parent.Find("Collider").gameObject.activeSelf;
                 transform.parent.Find("Collider").gameObject.SetActive(false);
                 effectEnabled = true;
             }
@@ -228,7 +230,7 @@ namespace GearUpCards.MonoBehaviours
 
                 if (timer >= delayTime)
                 {
-                    transform.parent.Find("Collider").gameObject.SetActive(true);
+                    transform.parent.Find("Collider").gameObject.SetActive(previousState);
                     Destroy(this);
                 }
             }

@@ -1,16 +1,11 @@
-﻿using System.Collections.Generic;
-using UnboundLib;
+﻿using UnboundLib;
 using UnityEngine;
-using System.Linq;
 using UnboundLib.GameModes;
-using Photon.Pun;
-using System.Reflection;
 using ModdingUtils.MonoBehaviours;
 
 using GearUpCards.Utils;
 using GearUpCards.Extensions;
 using System.Collections;
-using System;
 using UnityEngine.UI;
 
 namespace GearUpCards.MonoBehaviours
@@ -32,16 +27,16 @@ namespace GearUpCards.MonoBehaviours
 
         internal GameObject cooldownUI = null;
 
-        internal Text scannerCDText = null;
+        internal UnityEngine.UI.Text scannerCDText = null;
         internal GameObject scannerIcon = null;
 
-        internal Text magickCDText = null;
+        internal UnityEngine.UI.Text magickCDText = null;
         internal GameObject magickIcon = null;
 
-        internal Text orbLibCDText = null;
-        internal GameObject orbLibIcon = null;
+        internal UnityEngine.UI.Text orbLitCDText = null;
+        internal GameObject orbLitIcon = null;
 
-        internal Text empowerShotText = null;
+        internal UnityEngine.UI.Text empowerShotText = null;
         internal GameObject empowerShotIcon = null;
 
         internal TacticalScannerEffect scannerEffect = null;
@@ -51,12 +46,13 @@ namespace GearUpCards.MonoBehaviours
         internal float magickCooldown;
 
         internal ShieldBatteryEffect shieldBattery = null;
-        internal float empowerShotCount;
+        internal int empowerShotCount;
 
-        internal OrbSpellsMono orbSpells = null;
+        internal OrbSpellsMono orbSpellsMono = null;
         internal float orbLiterationCooldown;
+        public int orbLitIndex = -1;
 
-        internal float tempCooldown;
+        // internal float tempCooldown;
         private bool wasDeactivated = false;
 
         /* DEBUG */
@@ -89,8 +85,8 @@ namespace GearUpCards.MonoBehaviours
             magickCDText = GameObject.Find($"{cooldownUI.name}/Canvas/Magick/Text").GetComponent<Text>();
             magickIcon = GameObject.Find($"{cooldownUI.name}/Canvas/Magick");
 
-            orbLibCDText = GameObject.Find($"{cooldownUI.name}/Canvas/OrbLiterate/Text").GetComponent<Text>();
-            orbLibIcon = GameObject.Find($"{cooldownUI.name}/Canvas/OrbLiterate");
+            orbLitCDText = GameObject.Find($"{cooldownUI.name}/Canvas/OrbLiterate/Text").GetComponent<Text>();
+            orbLitIcon = GameObject.Find($"{cooldownUI.name}/Canvas/OrbLiterate");
 
             empowerShotText = GameObject.Find($"{cooldownUI.name}/Canvas/EmpowerShots/Text").GetComponent<Text>();
             empowerShotIcon = GameObject.Find($"{cooldownUI.name}/Canvas/EmpowerShots");
@@ -114,11 +110,12 @@ namespace GearUpCards.MonoBehaviours
                 // Tactical Scanner Cooldown
                 if (scannerEffect != null)
                 {
-                    tempCooldown = scannerEffect.GetCooldown();
-                    if (tempCooldown > 0.0f)
+                    scannerCooldown = scannerEffect.GetCooldown();
+
+                    if (scannerCooldown > 0.0f)
                     {
                         scannerIcon.SetActive(true);
-                        scannerCDText.text = FormatCooldown(tempCooldown);
+                        scannerCDText.text = FormatCooldown(scannerCooldown);
                     }
                     else
                     {
@@ -135,11 +132,11 @@ namespace GearUpCards.MonoBehaviours
                     stats.GetGearData().uniqueMagick != GearUpConstants.ModType.disabled
                    )
                 {
-                    tempCooldown = stats.GetGearData().t_uniqueMagickCooldown;
-                    if (tempCooldown > 0.0f)
+                    magickCooldown = stats.GetGearData().t_uniqueMagickCooldown;
+                    if (magickCooldown > 0.0f)
                     {
                         magickIcon.SetActive(true);
-                        magickCDText.text = FormatCooldown(tempCooldown);
+                        magickCDText.text = FormatCooldown(magickCooldown);
                     }
                     else
                     {
@@ -152,78 +149,87 @@ namespace GearUpCards.MonoBehaviours
                 }
 
                 // (temp) OrbLiterate Cooldown
-                if (!skipOrbs)
+                if (orbSpellsMono != null)
                 {
-                    // Miscs.Log("[GearUp] CooldownUIMono try fetching orbs");
-                    try
+                    orbLitIndex = orbSpellsMono.QueryOrbSpell(OrbSpellsMono.OrbSpellType.obliteration);
+
+                    if (orbLitIndex >= 0)
                     {
-                        if (orbSpells != null)
+                        orbLiterationCooldown = orbSpellsMono.GetOrbSpellCooldown(orbLitIndex);
+                        if (orbLiterationCooldown > 0.0f)
                         {
-                            int spellIndex = orbSpells.QueryOrbSpell(OrbSpellsMono.OrbSpellStats.OrbSpellType.obliteration);
-                            if (spellIndex < 0)
-                            {
-                                orbLibIcon.SetActive(false);
-                            }
-                            else
-                            {
-                                tempCooldown = orbSpells.GetOrbSpellCooldown(spellIndex);
-                                if (tempCooldown > 0.0f)
-                                {
-                                    orbLibIcon.SetActive(true);
-                                    orbLibCDText.text = FormatCooldown(tempCooldown);
-                                }
-                                else
-                                {
-                                    orbLibIcon.SetActive(false);
-                                }
-                            }
+                            orbLitIcon.SetActive(true);
+                            orbLitCDText.text = FormatCooldown(orbLiterationCooldown);
                         }
                         else
                         {
-                            orbLibIcon.SetActive(false);
+                            orbLitIcon.SetActive(false);
                         }
                     }
-                    catch (Exception exception)
+                    else
                     {
-                        Miscs.LogWarn(exception.ToString());
-
-                        orbLibIcon.SetActive(false);
-                        skipOrbs = true;
+                        orbLitIcon.SetActive(false);
                     }
                 }
+                else
+                {
+                    orbLitIcon.SetActive(false);
+                }
+
+                
+
+                // if (!skipOrbs)
+                // {
+                //     Miscs.Log("[GearUp] CooldownUIMono try fetching orbs");
+                //     
+                // 
+                //     try
+                //     {
+                //         
+                //     }
+                //     catch (Exception exception)
+                //     {
+                //         Miscs.LogWarn(exception.ToString());
+                //     
+                //         orbLibIcon.SetActive(false);
+                //         skipOrbs = true;
+                //     }
+                // }
 
                 // (temp) Empower Shots Counter
-                if (!skipBattery)
+                if (shieldBattery != null)
                 {
-                    // Miscs.Log("[GearUp] CooldownUIMono try fetching ShieldBattery");
-                    try
+                    empowerShotCount = shieldBattery.GetChargeCount();
+                    if (empowerShotCount > 0)
                     {
-                        if (shieldBattery != null)
-                        {
-                            int shotCount = shieldBattery.GetChargeCount();
-                            if (shotCount > 0)
-                            {
-                                empowerShotIcon.SetActive(true);
-                                empowerShotText.text = shotCount.ToString();
-                            }
-                            else
-                            {
-                                empowerShotIcon.SetActive(false);
-                            }
-                        }
-                        else
-                        {
-                            empowerShotIcon.SetActive(false);
-                        }
+                        empowerShotIcon.SetActive(true);
+                        empowerShotText.text = empowerShotCount.ToString();
                     }
-                    catch (Exception exception)
+                    else
                     {
-                        Miscs.LogWarn(exception.ToString());
-
                         empowerShotIcon.SetActive(false);
-                        skipBattery = true;
                     }
                 }
+                else
+                {
+                    empowerShotIcon.SetActive(false);
+                }
+
+                // if (!skipBattery)
+                // {
+                //     // Miscs.Log("[GearUp] CooldownUIMono try fetching ShieldBattery");
+                //     try
+                //     {
+                //
+                //     }
+                //     catch (Exception exception)
+                //     {
+                //         Miscs.LogWarn(exception.ToString());
+                // 
+                //         empowerShotIcon.SetActive(false);
+                //         skipBattery = true;
+                //     }
+                // }
 
             }
             else
@@ -235,7 +241,7 @@ namespace GearUpCards.MonoBehaviours
 
         internal string FormatCooldown(float cooldown)
         {
-            if (cooldown >= 9.9f) return $"{cooldown:f0}";
+            if (cooldown >= 4.9f) return $"{cooldown:f0}";
             else return $"{cooldown:f1}";
         }
 
@@ -244,7 +250,7 @@ namespace GearUpCards.MonoBehaviours
             // Common block ability with cooldowns
             if (stats.GetGearData().tacticalScannerStack > 0)
             {
-                scannerEffect = player.gameObject.GetOrAddComponent<TacticalScannerEffect>();
+                scannerEffect = player.gameObject.GetComponent<TacticalScannerEffect>();
             }
             else
             {
@@ -253,7 +259,7 @@ namespace GearUpCards.MonoBehaviours
 
             if (stats.GetGearData().shieldBatteryStack > 0)
             {
-                shieldBattery = player.gameObject.GetOrAddComponent<ShieldBatteryEffect>();
+                shieldBattery = player.gameObject.GetComponent<ShieldBatteryEffect>();
             }
             else
             {
@@ -262,11 +268,11 @@ namespace GearUpCards.MonoBehaviours
 
             if (stats.GetGearData().orbObliterationStack > 0)
             {
-                shieldBattery = player.gameObject.GetOrAddComponent<ShieldBatteryEffect>();
+                orbSpellsMono = player.gameObject.GetComponent<OrbSpellsMono>();
             }
             else
             {
-                shieldBattery = null;
+                orbSpellsMono = null;
             }
 
             // Unique Magicks

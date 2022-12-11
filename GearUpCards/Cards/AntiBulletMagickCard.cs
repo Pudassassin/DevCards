@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using UnboundLib;
@@ -25,8 +24,7 @@ namespace GearUpCards.Cards
             cardInfo.categories = new CardCategory[]
             {
                 GearCategory.typeUniqueMagick,
-                GearCategory.tagNoRemove,
-                GearCategory.tagSpell
+                GearCategory.tagNoRemove
             };
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
@@ -48,10 +46,9 @@ namespace GearUpCards.Cards
 
             // black/whitelisting
             ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.typeUniqueMagick);
-            ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Remove(GearCategory.tagSpellOnlyAugment);
 
             // stats
-            block.cdAdd += 1.0f;
+            block.cdAdd += 1.5f;
             characterStats.GetGearData().uniqueMagick = GearUpConstants.ModType.magickAntiBullet;
 
             // Add effect mono
@@ -72,7 +69,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Blocking casts no-bullet zone and force <i>EVERYONE</i> nearby to fumble reloading. You suffer less from this spell.";
+            return "Blocking casts the spell that deletes all nearby bullets in flight and also in guns' magazines, including yours!";
         }
         protected override GameObject GetCardArt()
         {
@@ -89,8 +86,8 @@ namespace GearUpCards.Cards
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "2s",
-                    amount = "Zone Time",
+                    stat = "Zone Time",
+                    amount = "1.5s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
