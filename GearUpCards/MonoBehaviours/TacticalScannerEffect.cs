@@ -31,8 +31,8 @@ namespace GearUpCards.MonoBehaviours
         private const float scannerBaseRange = 10.5f;
         private const float scannerStackRange = 1.5f;
 
-        private const float scannerBaseCooldown = 10.0f;
-        private const float scannerStackCooldown = -1.0f;
+        private const float scannerBaseCooldown = 9.5f;
+        private const float scannerStackCooldown = -0.5f;
 
         private const float procTime = .10f;
         private const float warmupTime = 2.0f;

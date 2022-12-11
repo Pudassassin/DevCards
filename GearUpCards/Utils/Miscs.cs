@@ -14,7 +14,7 @@ namespace GearUpCards.Utils
 {
     internal class Miscs
     {
-        public static bool debugFlag = true;
+        public static bool debugFlag = false;
 
         public static void Log(object message)
         {

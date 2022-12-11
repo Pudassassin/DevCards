@@ -1,129 +1,197 @@
-# GearUP Cards [0.1.13] 
-Public Release 0-1-2, build #85
+# GearUP Cards [0.2.0] 
+Public Release 0-2-0, build #141
 
 Adding in game-changing mechanics into the modded ROUNDS fray! Bought to you by Pudassassin
 
-## Cards
+## **Cards**
 
-### Rare Cards
+### **Rare Cards**
 #### \[Anti-Bullet Magick]
-Unique Magick - *Spell caster*
+- **Unique Magick** - *Spell caster*
 
 - *Blocking casts the spell that deletes all nearby bullets in flight and also in guns' magazines, including **yours!***
 
-  - \[\+] Deletes Bullets
-  - \[+/-] +3s Forced Reload
-  - \[--] +1.5s Block Cooldown
-  - \[--] 15s *Spell* Cooldown
+- All players affected suffer **additional 3.5s reload time** on top of their own guns' reload time.
 
-1. Anti-bullet zone stays effective for 1 second where you cast or where your empowered shot landed.
-2. Affected players are forced to reload +3s on top of their normal reload time. Only apply at the moment spell is cast.
-3. \[-1.5s] cooldown per \[Magick Fragments] card you have, down to 7s minimum.
+- Caster suffer less penalty from above.
 
-***You can only have one Unique Magick in posession!***
-- The extras you obtain are converted to \[Magick Fragments] or potentially lost!
+- \[Magick Fragment] reduce cooldown and lessen reload penalty on self.
+
+- \[Potency Glyph] increase zoning duration and force-reload time added.
+
+- \[Influence Glyph] increase effect radius.
 
 #### \[Hollow Life]
 Health Passive
 
 - *Puffs up your total Max HP; you no longer heal as effective and to full health.
-(Stack multiplicatively)*
+**(Stack multiplicatively)***
 
-  - \[+] x3 Max HP
-  - \[--] -25% Health Cap
-  - \[--] -15% Healing Effects
+- Max HP is **multiplied by 3**, but also gain **-25% HP Cap** to the current health and **-15% to healing effects**. (Heals and Regens)
 
-1. Affected all sources of health gain: Heal, Life Steal, Regeneration.
-2. Any health gained above the cap incurred by this card is quickly removed.
+**Tip: Look for the cards that benefit from having larger Max HP pool, or having you to stay low on health, but definitely not \[Pristine Perserverance]!*
 
-**Tip: Look for the cards that benefit from having larger Max HP, or lower current HP.*
-
-### Uncommon Cards
+### **Uncommon Cards**
 #### \[Chompy Bullet]
-Bullet Passive
+**Passive Bullet Modifier**
 
 - *Bullets deal bonus damage based on target's current health. Effect varies with gun's firerate.\**
 
-  - \[\+] +15% HP Culling\*
-  - \[--] -25% Damage
-  - \[--] -25% Attack Speed
-  - \[--] -25% Reload Speed
+- This will make your gun slightly harder to shoot but will do wonder against the hearty tankers!
 
-1. The value shown is the potential bonus damage per shot of the default gun with one stack of this card [~ 3 bullet per second]
-2. The more bullets you fire per second, the weaker this card's effect becomes (higher ATK SPD, projectile counts and/or burst counts)
+*The effect will spread and dilute out the more bullet you can shoot out per second
 
 #### \[Tactical Scanner]
-Block Active - *Gear equipments*
+**Active Block** - *Gear equipments*
 
 - *Blocking scans nearby players' power: Scanned enemies take more damage. Scanned friendlies heal for more.*
 
-  - \[+] +20% Scan Amplification *(per stack)*
-  - \[+] 7s Duration *(+1s per extra stack)*
-  - \[--] +0.5 Block Cooldown
-  - \[--] 9s *Gear* Cooldown *(-1s per extra stack)*
+- Also displays a quick summary of the scanned players' combat stats.
 
-1. Increase all source of heal gains/losses by a flat amp. percentage, no feedback loop!
-2. Also show the latest stats of the scanned player:
-   - HP/Max HP (green)
-   - Health delta over the last second (after amps) (white)
-   - DMG: xA\[B] where A is total bullet they shoot per volley, B is base damage for each bullet
-   - ATK/s: shots(or volley of bullets) fired per second
-   - RLD: reload time in seconds
-   - Blocks: block counts on each trigger
-   - BlkCD: block cooldown in seconds
+- Ability is improved for additional copies of the card
 
 #### \[Size Normalizer]
-Unique Size Modification
+**Unique Size Modification**
 
-- *Set your final player size much closer to default where it started.*
+- *Set your final player size to default, retaining the current mass and gravity.*
 
-  - \[+] +50% Health
-  - \[+] +25% Movement Speed
-  - \[+/-] Near normal size
-  - \[+/-] Cannot GO BEEG
-  - \[+/-] Cannot go smol
+- For when you are going **too BEEG** or **too smol** to your liking, moderately boost to health and movement speed.
 
-***You can only have one Unique Mods of each type in posession!***
-- The extra Size Mod cards you obtain are converted to \[Medical Parts] or potentially lost!
-- The following cards from other mods are also consider as Size Mod:
-  - \[Size Difference]
-  - \[Size Matter]
+#### \[Arc of Bullets]
+**Unique Gun Spread Modification**
 
-### Common Cards
+- *Add and evenly spread bullets in an arc formation.*
+
+- also provides +4 projectiles, +60 degree spread and -35% damage penalty
+
+#### \[Parallel Bullets]
+**Unique Gun Spread Modification**
+
+- *Add and convert bullets spread into a parallel formation. Width scales with projectile counts.*
+
+- the bullets fired will fan out initally before arranging into uniformed trajectory
+
+- also provides +4 projectiles, initial spread and -65% damage penalty
+
+#### \[Tiberium Bullets]
+**Passive Bullet Modifier** - *Tiberium Prophecy*
+
+- *Bullets inflict "Tiberium poisoning" on hit, causing burst of HP losses and 'chronic' HP loss, last until respawn (not just one of the revives).*
+
+- +100% of bullet's damage dealt over 4 second burst **as HP Removal** on hit
+
+- inflict +5% bullet's damage, +0.05% target's HP and +0.35 **chronic flat HP Loss per second** on each bullet hit
+
+#### \[Orb-literation!]
+**Active Orb Spell** - *Orb sage*
+
+- *Blocking fires the orb that obliterates part of the map and reduce players' max HP.*
+
+- ALL PLAYERS in the impact area suffer -10% max HP (-15% on direct hit), **last until respawn**
+
+- \[Magick Fragment] reduce cooldown and burst-casing delay.
+
+- \[Potency Glyph] increase percentage of MAX HP cullings.
+
+- \[Influence Glyph] increase effect radius.
+
+- \[Geometry Glyph] allowing the orb to bounce +1 time per stack.
+
+- \[Divination Glyph] increase overall velocity of the orb.
+
+- *Addional copies -* increase number of orbs cast. (2 orbs on 2 copies, every 2 additional copies give +1 orb)
+
+### **Common Cards**
 #### \[Medical Parts]
-Health Passive - *Material*
+**Health Passive** - *Material*
 
 - *Some hearty doodads to help you survive longer.*
 
-  - \[+] +50% Health
-  - \[+] +2 HP Regeneration/second
+- simply giving you +50% Health and 2 HP/s regen.
 
 *\* Material cards can be obtained normally or as result of having conflicting cards together.*
 
 #### \[Gun Parts]
-Gun Passive - *Material*
+**Gun Passive** - *Material*
 
 - *Attachments and enhancements to up your gun games.*
 
-  - \[+] +25% Damage
-  - \[+] +25% Attack Speed
-  - \[+] +3 Max Ammo
+- simply giving +20% Damage, +20% ATK SPD and +3 to Max Ammo to your gun
 
 #### \[Magick Fragments]
-Spell Passive - *Material*
+**Spell Passive** - *Glyph*
 
 - *This mysterious glyph hasten your spellcasting, but at what cost?*
 
-  - \[+] -30% Block Cooldown
-  - \[--] -25% Health
-  - \[+] Faster *Spell* Cooldown*
+- on its own, it gives *-25%* and *-0.1s* Block Cooldown at the cost of -25% Health.
 
-\* *The bonus varies from each spells and Magicks*
+#### \[Divination Glyph]
+**Spell Passive** - *Glyph*
+
+- *Your Bullets and Spells reach a little further AND quicker!*
+
+- on its own, it gives +25% Bullet (velocity) Speed and +15% Projectile (simulation) Speed.
+
+#### \[Geometry Glyph]
+**Spell Passive** - *Glyph*
+
+- *"Simple Geometry!"*
+
+- on its own, it gives +3 Bullet Bounces and +0.15s Reload Time
+
+#### \[Influence Glyph]
+**Spell Passive** - *Glyph*
+
+- *Improve your Spells' range and effect area.*
+
+- only available when you pick at least 1 'Spell' card-- it does nothing without one!
 
 ## Note from the modder
-There will be more cards planned to expand in each category, this first beta release serves as a pavement and test run on my first ever modding experience, ever.
+There will be more cards planned to expand in each category, here the second beta release give more contents and introducing 'Orb Spell', as well as bug fixes, rebalancing the first beta cards and framework updates
 
 ## Patch Notes
+#### Public Beta 2-0 \[v0.2.0]
+- added [Orb-Literation] and dependencies: map destruction, Max HP culls on impact
+- added [Tiberium Bullet] and dependencies: caustic HP removal bullet modifier
+- added [Arc of Bullets]: evenly spread bullets in arc
+- added [Parallel Bullets]: neatly arranged and focused bullets
+
+- added [Divination Glyph]: velocity/trajectory. speed to both Spell and Bullets
+- added [Influence Glyph]: spell range/AoE upgrade
+- added [Geometric Glyph]: bounces to both Spell and Bullets
+- added [Potency Glyph]: spell power, add raw damage to Bullets
+
+- reworked [Size Normalizer] to utilze patch instead of MonoBehavior; works instantly and reliably
+
+- rebalanced all of the initial release cards
+
+- rebalanced [Tactical Scanner]
+  - AoE radius: 12 (+1.5 per stack)
+  - Damage/Heal Amp: 50% per stack
+  - Duration: 6 seconds (+1 per stack)
+  - Cooldown: 9 seconds (-0.5 per stack)
+
+- rebalanced [Chompy Bullet]
+  - ~15% > ~20% HP Culling; per bullet-- at default gun firerate
+  - -25% > -15% DMG, ATKSPD and Reload SPD
+  - Stackable with diminishing return
+
+- completed [Shield Battery]
+  - 2 Empowered shot capacity
+  - no longer give an extra block
+  - +0.5s block cooldown
+  - -25% attack speed
+
+- all block ability cooldowns start at 2.0s at battle starts
+
+Under the hood:
+- Implemented HollowLifeEffect mono to handle temp HP caps incurred by [Orb-Literation] and possibly future cards
+
+- Chompy Bullet now only add one instance of the effect to each bullet, they will calculate the effect on the fly
+
+- Disabled redundancy system that iterate and resolve unique and/or mutually exclusive cards (it will be other mods'
+  faults that breach allowMultiple/black/whitelisting system)
+
 #### Public Beta 1-2 \[v0.1.13]
 - Under the hood reworks of healing and damage multipliers.
 
