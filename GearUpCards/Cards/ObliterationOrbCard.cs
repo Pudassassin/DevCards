@@ -62,13 +62,13 @@ namespace GearUpCards.Cards
         {
             return new CardInfoStat[]
             {
-                new CardInfoStat()
-                {
-                    positive = true,
-                    stat = "Max HP Culling",
-                    amount = "10~15%",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
+                // new CardInfoStat()
+                // {
+                //     positive = true,
+                //     stat = "Max HP Culling",
+                //     amount = "10~15%",
+                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                // },
                 new CardInfoStat()
                 {
                     positive = false,

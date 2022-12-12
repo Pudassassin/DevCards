@@ -59,7 +59,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Bullets deal more damage based on target's current HP.\nScales inversely with firerate.";
+            return "Bullets deal more damage based on target's current HP. Scales inversely with firerate.";
         }
         protected override GameObject GetCardArt()
         {
@@ -73,24 +73,24 @@ namespace GearUpCards.Cards
         {
             return new CardInfoStat[]
             {
-                new CardInfoStat()
-                {
-                    positive = true,
-                    stat = "HP Culling",
-                    amount = "+20%",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
+                // new CardInfoStat()
+                // {
+                //     positive = true,
+                //     stat = "HP Culling",
+                //     amount = "+20%",
+                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                // },
+                // new CardInfoStat()
+                // {
+                //     positive = false,
+                //     stat = "DMG",
+                //     amount = "-15%",
+                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                // },
                 new CardInfoStat()
                 {
                     positive = false,
-                    stat = "DMG",
-                    amount = "-15%",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
-                new CardInfoStat()
-                {
-                    positive = false,
-                    stat = "ATK SPD",
+                    stat = "DMG, AtkSPD",
                     amount = "-15%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },

@@ -44,7 +44,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Puffs up your Max HP <b>BUT</b> you lose some healing and not to full health.\n(Stack multiplicatively)";
+            return "Puffs up your Max HP <b>BUT</b> you lose some healing and not to full health.";
         }
         protected override GameObject GetCardArt()
         {

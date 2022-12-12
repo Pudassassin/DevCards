@@ -61,7 +61,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "";
+            return "Bullet deal +100% DMG/s as HP removal, then +5% DMG/s until the victim's true death";
             //return "Bullets cause target to lose\nHP over time until death!\n(Stackable Additively)";
         }
         protected override GameObject GetCardArt()
@@ -76,27 +76,27 @@ namespace GearUpCards.Cards
         {
             return new CardInfoStat[]
             {
-                new CardInfoStat()
-                {
-                    positive = true,
-                    stat = "HP Removal",
-                    amount = "+100% dmg, 4s",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
-                new CardInfoStat()
-                {
-                    positive = true,
-                    stat = "Chronic HP...",
-                    amount = "+5% dmg +0.35",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
-                new CardInfoStat()
-                {
-                    positive = true,
-                    stat = "Loss/s / shot",
-                    amount = "+0.05% HP",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
+                // new CardInfoStat()
+                // {
+                //     positive = true,
+                //     stat = "HP Removal",
+                //     amount = "+100% dmg, 4s",
+                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                // },
+                // new CardInfoStat()
+                // {
+                //     positive = true,
+                //     stat = "Chronic HP...",
+                //     amount = "+5% dmg +0.35",
+                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                // },
+                // new CardInfoStat()
+                // {
+                //     positive = true,
+                //     stat = "Loss/s / shot",
+                //     amount = "+0.05% HP",
+                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                // },
                 new CardInfoStat()
                 {
                     positive = false,

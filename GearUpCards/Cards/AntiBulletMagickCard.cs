@@ -69,7 +69,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Blocking casts the spell that deletes all nearby bullets in flight and also in guns' magazines, including yours!";
+            return "Blocking casts the no-bullet zone and force <b>EVERYONE</b> nearby to fumble reloading. You suffer less effect.";
         }
         protected override GameObject GetCardArt()
         {
@@ -101,14 +101,14 @@ namespace GearUpCards.Cards
                 {
                     positive = false,
                     stat = "Block CD",
-                    amount = "+1s",
+                    amount = "+1.5s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "Spell CD",
-                    amount = "15s",
+                    amount = "12s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };
