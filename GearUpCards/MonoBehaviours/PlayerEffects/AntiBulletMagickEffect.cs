@@ -27,7 +27,7 @@ namespace GearUpCards.MonoBehaviours
         private const string bulletGameObjectName = "Bullet_Base(Clone)";
         private const float spellCooldownBase = 12.0f;
         private const float spellForceReloadTimeAddBase = 3.5f;
-        private const float spellRangeBase = 8.0f;
+        private const float spellRangeBase = 9.0f;
         private const float spellDurationBase = 1.5f;
         private const float spellForceReloadSelfMultiplierBase = 0.5f;
 

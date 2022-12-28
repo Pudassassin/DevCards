@@ -32,7 +32,13 @@ namespace GearUpCards.Extensions
 
             gunSpreadArc = 40,
             gunSpreadLine,
-            gunSpreadParallel
+            gunSpreadParallel,
+            gunSpreadFlak
+        }
+
+        public enum AddOnType
+        {
+            cadModuleGlyph
         }
     }
 
@@ -65,6 +71,8 @@ namespace GearUpCards.Extensions
 
         public GearUpConstants.ModType uniqueMagick;
 
+        public List<GearUpConstants.AddOnType> addOnList;
+
         public float t_uniqueMagickCooldown;
 
         public CharacterStatModifiersGearData()
@@ -92,6 +100,8 @@ namespace GearUpCards.Extensions
             sizeMod = GearUpConstants.ModType.none;
 
             uniqueMagick = GearUpConstants.ModType.none;
+
+            addOnList = new List<GearUpConstants.AddOnType>();
         }
     }
 
@@ -143,6 +153,8 @@ namespace GearUpCards.Extensions
             __instance.GetGearData().sizeMod = GearUpConstants.ModType.none;
 
             __instance.GetGearData().uniqueMagick = GearUpConstants.ModType.none;
+
+            __instance.GetGearData().addOnList = new List<GearUpConstants.AddOnType> ();
         }
     }
 }

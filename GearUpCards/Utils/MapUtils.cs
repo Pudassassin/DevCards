@@ -95,7 +95,7 @@ namespace GearUpCards.Utils
             }
         }
 
-        public static List<MapObject>? mapObjects = null;
+        public static List<MapObject> mapObjects = null;
         public static Scene mapScene;
 
         public List<MapObject> GetMapObjectsList()

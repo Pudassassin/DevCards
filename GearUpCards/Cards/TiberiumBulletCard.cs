@@ -61,8 +61,9 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Bullet deal +100% DMG/s as HP removal, then +5% DMG/s until the victim's true death";
-            //return "Bullets cause target to lose\nHP over time until death!\n(Stackable Additively)";
+            return "Bullet deal +100% DMG -HP over 4s, then persisting +5% DMG -HP/s until true death.";
+            // return "Bullet deal +100% DMG as -HP over 4s, then +5% DMG -HP/s until the victim's true death";
+            // return "Bullets cause target to lose\nHP over time until death!\n(Stackable Additively)";
         }
         protected override GameObject GetCardArt()
         {

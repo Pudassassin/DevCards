@@ -14,7 +14,7 @@ namespace GearUpCards.Utils
 {
     internal class Miscs
     {
-        public static bool debugFlag = false;
+        public static bool debugFlag = true;
 
         public static void Log(object message)
         {
@@ -38,6 +38,67 @@ namespace GearUpCards.Utils
             {
                 UnityEngine.Debug.LogError(message);
             }
+        }
+
+		// String Utils
+		public static List<string> StringSplit(string input, char splitAt)
+		{
+			List<string> result = new List<string>();
+			string buffer = "";
+
+			for (int i = 0; i < input.Length; i++)
+			{
+				if (input[i] != splitAt)
+				{
+					buffer += input[i];
+				}
+				else
+				{
+					result.Add(buffer);
+					buffer = "";
+				}
+			}
+			if (buffer != "")
+			{
+				result.Add(buffer);
+			}
+
+			return result;
+		}
+
+		public static int ValidateStringQuery(string targetString, string query)
+        {
+			// prioritize literal accuracy rather than get the first hit (that is just totally off-target match)
+			int baseWeight = 15;
+			int queryIndex = 0;
+			int result = 0;
+			bool flagPerfectMatch = true;
+
+            for (int i = 0; i < targetString.Length; i++)
+            {
+                if (targetString[i] == query[queryIndex])
+                {
+					result += baseWeight;
+					queryIndex++;
+                }
+                else
+                {
+					flagPerfectMatch = false;
+					baseWeight--;
+					queryIndex++;
+				}
+
+                if (queryIndex == query.Length)
+                {
+                    if (flagPerfectMatch)
+                    {
+						result += baseWeight * 10;
+                    }
+					break;
+                }
+            }
+
+			return result;
         }
 
 		// Credits to Pykess

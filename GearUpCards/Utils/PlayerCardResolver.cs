@@ -40,7 +40,7 @@ namespace GearUpCards.Utils
                 {
                     yield return ModdingUtils.Utils.Cards.instance.ReplaceCard
                     (
-                        player, conflictedCards[i].index, replacementCard, cardNameToAdd[..2], 2.0f, 2.0f, true
+                        player, conflictedCards[i].index, replacementCard, "", 2.0f, 2.0f, true
                     );
 
                     yield return new WaitForSecondsRealtime(0.1f);

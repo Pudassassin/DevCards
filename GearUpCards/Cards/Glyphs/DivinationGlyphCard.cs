@@ -13,6 +13,8 @@ using GearUpCards.Utils;
 using GearUpCards.Extensions;
 using static GearUpCards.Utils.CardUtils;
 
+// using RarityLib.Utils;
+
 namespace GearUpCards.Cards
 {
     class DivinationGlyphCard : CustomCard
@@ -29,6 +31,18 @@ namespace GearUpCards.Cards
             gun.projectileSpeed *= 1.25f;
 
             characterStats.GetGearData().glyphDivination += 1;
+
+            // divination is special case to help finding spells MUCH easier
+            // RarityUtils.AjustCardRarityModifier
+            // (
+            //     GetCardInfo(GearUpCards.ModInitials, "Anti-Bullet Magick"),
+            //     mul: 2.50f
+            // );
+            // RarityUtils.AjustCardRarityModifier
+            // (
+            //     GetCardInfo(GearUpCards.ModInitials, "Orb-literation!"),
+            //     mul: 1.50f
+            // );
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {

@@ -29,6 +29,8 @@ namespace GearUpCards
     [BepInDependency("pykess.rounds.plugins.rayhitreflectpatch", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("com.willuwontu.rounds.evenspreadpatch", BepInDependency.DependencyFlags.HardDependency)]
 
+    [BepInDependency("root.rarity.lib", BepInDependency.DependencyFlags.HardDependency)]
+
     // Declares our mod to Bepin
     [BepInPlugin(ModId, ModName, Version)]
 
@@ -39,11 +41,13 @@ namespace GearUpCards
     {
         private const string ModId = "com.pudassassin.rounds.GearUpCards";
         private const string ModName = "GearUpCards";
-        public const string Version = "0.2.2"; //build #143 / Release 0-2-0
+        public const string Version = "0.2.11"; //build #158 / Release 0-2-1
 
         public const string ModInitials = "GearUP";
 
-        public static GearUpCards Instance { get; private set; }
+        // public static GearUpCards Instance { get; private set; }
+        public static bool isCardPickingPhase = false;
+        static int lastPickerID = -1;
 
         void Awake()
         {
@@ -53,7 +57,7 @@ namespace GearUpCards
         }
         void Start()
         {
-            Instance = this;
+            // Instance = this;
 
             // Random idea cards
             CustomCard.BuildCard<HollowLifeCard>();
@@ -67,8 +71,9 @@ namespace GearUpCards
             // Unique Gun Spread
             CustomCard.BuildCard<ArcOfBulletsCard>();
             CustomCard.BuildCard<ParallelBulletsCard>();
+            CustomCard.BuildCard<FlakCannonCard>();
 
-            // Prototype cards
+            // Block Passives
             CustomCard.BuildCard<ShieldBatteryCard>();
 
             // Unique Magick series (powerful on-block "spell" abilities)
@@ -77,9 +82,12 @@ namespace GearUpCards
             // Orb Spells
             CustomCard.BuildCard<ObliterationOrbCard>();
 
+            // Spell Casting-Assistance-Device series
+            CustomCard.BuildCard<GlyphCADModuleCard>();
+
             // Crystal card series
 
-            // Passives + consolations cards
+            // Parts/Material Passives
             CustomCard.BuildCard<GunPartsCard>();
             CustomCard.BuildCard<MedicalPartsCard>();
 
@@ -92,12 +100,16 @@ namespace GearUpCards
 
             // Adding hooks
             GameModeManager.AddHook(GameModeHooks.HookGameStart, GameStart);
-            // GameModeManager.AddHook(GameModeHooks.HookRoundStart, CardPickEnd);
             GameModeManager.AddHook(GameModeHooks.HookPointEnd, PointEnd);
-            // GameModeManager.AddHook(GameModeHooks.HookPointStart, PointStart);
+
+            // GameModeManager.AddHook(GameModeHooks.HookPointEnd, OnPickStart);
+            // GameModeManager.AddHook(GameModeHooks.HookGameStart, OnPickStart);
+            GameModeManager.AddHook(GameModeHooks.HookPickStart, OnPickStart);
+            GameModeManager.AddHook(GameModeHooks.HookPlayerPickEnd, OnPickEnd);
+            GameModeManager.AddHook(GameModeHooks.HookPointStart, PointStart);
 
             // make cards mutually exclusive
-            this.ExecuteAfterSeconds(1.5f, () =>
+            this.ExecuteAfterFrames(5, () =>
             {
                 if (CardManager.cards.Values.Any(card => card.cardInfo.cardName == "Size Difference"))
                 {
@@ -124,6 +136,25 @@ namespace GearUpCards
                     otherCard.categories = newList.ToArray();
                 }
             });
+        }
+
+        void Update()
+        {
+            if (isCardPickingPhase)
+            {
+                if (lastPickerID != CardChoice.instance.pickrID)
+                {
+                    // CardUtils.RestoreGearUpCardRarity();
+
+                    if (CardChoice.instance.pickrID >= 0)
+                    {
+                        CardUtils.ModifyPerPlayerCardRarity(CardChoice.instance.pickrID);
+                    }
+
+                    lastPickerID = CardChoice.instance.pickrID;
+                }
+            }
+
         }
 
         // initial card blacklist/whitelist at game start
@@ -166,25 +197,45 @@ namespace GearUpCards
 
                 // player.gameObject.GetOrAddComponent<CardHandResolveMono>();
             }
+            CardUtils.raritySnapshot = new Dictionary<string, float>();
+
+            yield break;
+        }
+
+        IEnumerator OnPickStart(IGameModeHandler gm)
+        {
+            Miscs.Log("\n[GearUpCard] OnPickStart()");
+            CardUtils.SaveCardRarity();
+            isCardPickingPhase = true;
+
+            yield break;
+        }
+
+        IEnumerator OnPickEnd(IGameModeHandler gm)
+        {
+            Miscs.Log("\n[GearUpCard] OnPickEnd()");
+            CardUtils.RestoreGearUpCardRarity();
+            // isCardPickingPhase = false;
+
             yield break;
         }
 
         // I'd love to have this redundancy running but it can make thing worse, leave it for later lel
-        IEnumerator CardPickEnd(IGameModeHandler gm)
-        {
-            // UnityEngine.Debug.Log($"[GearUp Main] CardPickEnd Call");
-
-            yield return new WaitForSecondsRealtime(.25f);
-
-            foreach (var player in PlayerManager.instance.players)
-            {
-                // UnityEngine.Debug.Log($"[GearUp Main] Resolving player[{player.playerID}]");
-                StartCoroutine(PlayerCardResolver.Resolve(player));
-                yield return new WaitForSecondsRealtime(.1f);
-            }
-
-            yield break;
-        }
+        // IEnumerator CardPickEnd(IGameModeHandler gm)
+        // {
+        //     // UnityEngine.Debug.Log($"[GearUp Main] CardPickEnd Call");
+        // 
+        //     yield return new WaitForSecondsRealtime(.25f);
+        // 
+        //     foreach (var player in PlayerManager.instance.players)
+        //     {
+        //         // UnityEngine.Debug.Log($"[GearUp Main] Resolving player[{player.playerID}]");
+        //         StartCoroutine(PlayerCardResolver.Resolve(player));
+        //         yield return new WaitForSecondsRealtime(.1f);
+        //     }
+        // 
+        //     yield break;
+        // }
 
         IEnumerator PointEnd(IGameModeHandler gm)
         {
@@ -193,12 +244,12 @@ namespace GearUpCards
             yield break;
         }
 
-        // IEnumerator PointStart(IGameModeHandler gm)
-        // {
-        //     MapUtils.ClearMapObjectsList();
-        // 
-        //     yield break;
-        // }
+        IEnumerator PointStart(IGameModeHandler gm)
+        {
+            isCardPickingPhase = false;
+        
+            yield break;
+        }
 
         // Assets loader
         public static readonly AssetBundle VFXBundle = Jotunn.Utils.AssetUtils.LoadAssetBundleFromResources("gearup_asset", typeof(GearUpCards).Assembly);

@@ -8,7 +8,9 @@
   <ItemGroup>
     <Compile Remove="Cards\ShardSlinger.cs" />
     <Compile Remove="Cards\Template.cs" />
+    <Compile Remove="MonoBehaviours\BulletModifiers\Class1.cs" />
     <Compile Remove="MonoBehaviours\CrystalShardModifier.cs" />
+    <Compile Remove="Patches\CardPickPatch.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,8 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Cards\ShardSlinger.cs" />
-    <None Include="MonoBehaviours\CrystalShardModifier.cs" />
+    <None Include="MonoBehaviours\BulletModifiers\Class1.cs" />
+    <None Include="Patches\CardPickPatch.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -62,6 +64,9 @@
     </Reference>
     <Reference Include="PhotonWebSocket">
       <HintPath>..\..\..\..\SteamLibrary\steamapps\common\ROUNDS\Rounds_Data\Managed\PhotonWebSocket.dll</HintPath>
+    </Reference>
+    <Reference Include="RarityLib">
+      <HintPath>..\..\Toolkit\Modding Libraries\RarityLib.dll</HintPath>
     </Reference>
     <Reference Include="UnboundLib">
       <HintPath>..\..\Toolkit\Modding Libraries\willis81808-UnboundLib\UnboundLib.dll</HintPath>

@@ -1,49 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using UnityEngine;
 
 using UnboundLib;
-using UnboundLib.Utils;
 using UnboundLib.Cards;
-using UnboundLib.Networking;
+using CardChoiceSpawnUniqueCardPatch.CustomCategories;
+
+using UnityEngine;
 
 using GearUpCards.MonoBehaviours;
+using GearUpCards.Utils;
 using GearUpCards.Extensions;
 using static GearUpCards.Utils.CardUtils;
 
 namespace GearUpCards.Cards
 {
-    class TacticalScannerCard : CustomCard
+    class GlyphCADModuleCard : CustomCard
     {
-        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_TacticalScanner");
+        internal static GameObject cardArt = null; // GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_ArcOfBullets");
 
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            
+            cardInfo.allowMultiple = false;
+            // cardInfo.categories = new CardCategory[]
+            // {
+            //     GearCategory.tagSpellOnlyAugment
+            // };
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            block.cdAdd += 0.25f;
-            player.gameObject.GetOrAddComponent<TacticalScannerEffect>();
-            characterStats.GetGearData().tacticalScannerStack += 1;
+            // black/whitelisting
+            // ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.typeUniqueGunSpread);
 
-            CooldownUIMono cooldownUI = player.gameObject.GetOrAddComponent<CooldownUIMono>();
-            // cooldownUI.FetchAbilities();
+            player.gameObject.GetOrAddComponent<CADModulesEffect>();
+            characterStats.GetGearData().addOnList.Add(GearUpConstants.AddOnType.cadModuleGlyph);
+
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
 
-            // UnityEngine.Debug.Log($"[{GearUpCards.ModInitials}][Card] {GetTitle()} has been removed to player {player.playerID}.");
         }
         protected override string GetTitle()
         {
-            return "Tactical Scanner";
+            return "Glyph CAD Module";
         }
         protected override string GetDescription()
         {
-            return "Blocking scans nearby players, amplifies Healing/DMG done and reduce enemy's delayed damage time temporary (if any).";
+            return "Your Gun and Block benefit <b>TWICE</b> the bonus from Glyphs and boost the chance of finding Spell and more Glyphs";
         }
         protected override GameObject GetCardArt()
         {
@@ -60,31 +63,24 @@ namespace GearUpCards.Cards
                 // new CardInfoStat()
                 // {
                 //     positive = true,
-                //     stat = "DMG/Heal AMP",
-                //     amount = "+50%",
+                //     stat = "Projectiles",
+                //     amount = "+4",
                 //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 // },
                 // new CardInfoStat()
                 // {
-                //     positive = true,
-                //     stat = "Duration",
-                //     amount = "6s",
+                //     positive = false,
+                //     stat = "Spread",
+                //     amount = "+60 deg",
                 //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 // },
-                new CardInfoStat()
-                {
-                    positive = false,
-                    stat = "Block CD",
-                    amount = "+0.25s",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
-                new CardInfoStat()
-                {
-                    positive = false,
-                    stat = "Gear CD",
-                    amount = "9s",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                }
+                // new CardInfoStat()
+                // {
+                //     positive = false,
+                //     stat = "DMG",
+                //     amount = "-35%",
+                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                // }
             };
         }
         protected override CardThemeColor.CardThemeColorType GetTheme()
@@ -97,7 +93,7 @@ namespace GearUpCards.Cards
         }
         public override void Callback()
         {
-            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Gear\nBlock";
+            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "CAD\nModule";
         }
     }
 }

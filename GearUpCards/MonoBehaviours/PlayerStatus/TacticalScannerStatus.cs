@@ -26,9 +26,11 @@ namespace GearUpCards.MonoBehaviours
         private static GameObject scanDataUIPrefab = GearUpCards.VFXBundle.LoadAsset<GameObject>("ScanDataUI");
 
         // to be assigned by TacticalScannerEffect Monobehavior
-        private float scannerAmpFactor = .20f;
+        private float scannerAmpFactor = 0.5f;
         private float scannerDuration = 6.0f;
         private bool isFriendly = false;
+
+        private float scannerDecayReductionFactor = 0.75f;
         // ===
 
         private const float procTime = .10f;
@@ -266,6 +268,15 @@ namespace GearUpCards.MonoBehaviours
             if (duration > this.scannerDuration)    this.scannerDuration = duration;
             this.isFriendly = isFriendly;
             this.statusEnable = true;
+
+            if (!isFriendly)
+            {
+                characterStatModifiersModifier.secondsToTakeDamageOver_mult = 1 - scannerDecayReductionFactor;
+            }
+            else
+            {
+                characterStatModifiersModifier.secondsToTakeDamageOver_mult = 1;
+            }
 
             timeApplied = Time.time;
         }

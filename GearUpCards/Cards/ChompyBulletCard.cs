@@ -18,13 +18,14 @@ namespace GearUpCards.Cards
 
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            gun.attackSpeed = 1.0f / 0.85f;
+            // gun.attackSpeed = 1.0f / 0.85f;
         }
 
         // "attackSpeed" is technically a gunfire cooldown between shots >> Less is more rapid firing
         // 'attackSpeedMultiplier' works as intended >> More is more rapid firing
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
+            gun.attackSpeed *= 1.0f / 0.85f;
             gun.damage *= .85f;
             gunAmmo.reloadTimeMultiplier += .15f;
             gun.projectileColor = new Color(1f, 0.0f, 0.0f, 1f);
@@ -59,7 +60,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Bullets deal more damage based on target's current HP. Scales inversely with firerate.";
+            return "Bullets deal more damage based on target's current HP. Effect dilutes with high firerate.";
         }
         protected override GameObject GetCardArt()
         {

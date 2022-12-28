@@ -133,6 +133,7 @@ namespace GearUpCards.MonoBehaviours
 
                 Action doNothing = () => { };
                 Traverse.Create(orbDummyGun).Field("attackAction").SetValue((Action) doNothing);
+                orbDummyGun.ShootPojectileAction = new Action<GameObject>((GameObject _) => { });
 
                 // disable unused/unrelated stats
                 orbDummyGun.useCharge = false;
@@ -636,7 +637,7 @@ namespace GearUpCards.MonoBehaviours
             {
                 // stats calculation
                 float cooldown = Mathf.Clamp(8.0f - (magickFragment * 1.0f), 3.0f, 15.0f);
-                float burstTime = Mathf.Clamp(0.3f - (magickFragment * 0.05f), 0.1f, 0.75f);
+                float burstTime = Mathf.Clamp(0.3f - (magickFragment * 0.05f), 0.1f, 0.5f);
                 int orbCount = Mathf.FloorToInt((2.1f + stats.GetGearData().orbObliterationStack) / 2.0f);
                 int bounceCount = glyphGeometric;  //Mathf.FloorToInt((3.1f + glyphGeometric) / 2.0f);
                 float orbVelocity = 0.5f + (glyphDivination * 0.25f);
@@ -655,15 +656,23 @@ namespace GearUpCards.MonoBehaviours
                     {
                         typeof(ObliterationModifier)
                     });
+                    GameObject orbModifier2 = new GameObject("BulletNoClipModifier", new Type[]
+                    {
+                        typeof(BulletNoClipModifier)
+                    });
+                    orbModifier2.GetComponent<BulletNoClipModifier>().SetPersistentOverride(true);
 
                     checkIndex = InsertOrbSpell(newOrbSpell);
 
                     ObjectsToSpawn[] objectsToSpawn = new ObjectsToSpawn[]
                     {
-                        new ObjectsToSpawn
-                        {
-                            AddToProjectile = orbModifier
-                        }
+                        // new ObjectsToSpawn
+                        // {
+                        //     AddToProjectile = orbModifier
+                        // }
+                        new ObjectsToSpawn { AddToProjectile = orbModifier },
+                        new ObjectsToSpawn { AddToProjectile = orbModifier2 }
+
                     };
 
                     orbSpells[checkIndex].SetupOrbSpell(OrbSpellType.obliteration, objectsToSpawn, cooldown, orbCount, 10);

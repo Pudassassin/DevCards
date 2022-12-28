@@ -10,7 +10,7 @@ namespace GearUpCards.MonoBehaviours
     {
         // value per stack at around default bullet per second >>> each bullet at [3.0] BPS deal this much value
         // [!] This card can be dreadful to someone who managed to get *2* or more [Pristine Perserverence]
-        private const float healthCullBaseFactor = 0.80f;
+        private const float healthCullBaseFactor = 0.75f;
         private float healthCullPercentage;
 
         public override HasToReturn DoHitEffect(HitInfo hit)
@@ -44,7 +44,7 @@ namespace GearUpCards.MonoBehaviours
                 float bps = StatsMath.GetGunBPS(shooterGun);
 
                 // do damage to victim
-                float chompDamage = hpToDamageScale / Mathf.Clamp(bps/2.0f - 0.5f, 1.0f, 50.0f) * victim.health;
+                float chompDamage = hpToDamageScale / Mathf.Clamp(bps/2.0f - 0.5f, 0.75f, 50.0f) * victim.health;
                 victim.healthHandler.RPCA_SendTakeDamage(new Vector2(chompDamage, 0.0f), this.transform.position, playerID: shooterGun.player.playerID);
                 // victim.healthHandler.TakeDamage(new Vector2(chompDamage, 0.0f), Vector2.zero, new Color(1.0f, 0.0f, 0.0f, 0.85f));
 
