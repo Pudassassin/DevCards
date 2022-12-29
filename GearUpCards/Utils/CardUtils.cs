@@ -12,6 +12,7 @@ using UnityEngine;
 using TMPro;
 using RarityLib.Utils;
 using GearUpCards.Extensions;
+using UnboundLib.Utils;
 
 namespace GearUpCards.Utils
 {
@@ -111,7 +112,7 @@ namespace GearUpCards.Utils
         public static CardInfo GetCardInfo(string modInitial, string cardNameExact)
         {
             string queryText = $"__{modInitial}__{cardNameExact}";
-            List<CardInfo> cardInfoList = CardChoice.instance.cards.ToList();
+            List<CardInfo> cardInfoList = CardManager.cards.Values.Select(c => c.cardInfo).ToList();
 
             // Miscs.Log("GetCardInfo(exact) " + queryText);
             CardInfo result = null;
@@ -124,14 +125,14 @@ namespace GearUpCards.Utils
                 }
             }
 
-            if (result == null)
-            {
-                Miscs.LogWarn("Cannot find: " + queryText);
-            }
-            else
-            {
-                Miscs.Log("Found: " + result.name);
-            }
+            // if (result == null)
+            // {
+            //     Miscs.LogWarn("Cannot find: " + queryText);
+            // }
+            // else
+            // {
+            //     Miscs.Log("Found: " + result.name);
+            // }
             return result;
         }
 
@@ -168,14 +169,14 @@ namespace GearUpCards.Utils
 
             query = query.Replace(" ", "").ToLower();
             string cardName;
-            List<CardInfo> cardInfoList = CardChoice.instance.cards.ToList();
+            List<CardInfo> cardInfoList = CardManager.cards.Values.Select(c => c.cardInfo).ToList();
 
             // if (!query.Contains("__"))
             // {
             //     searchVanillaOnly = true;
             // }
 
-            Miscs.Log("GetCardInfo(query) " + query);
+            // Miscs.Log("GetCardInfo(query) " + query);
             CardInfo result = null;
             int matchScore = 0;
             foreach (CardInfo item in cardInfoList)
@@ -202,14 +203,14 @@ namespace GearUpCards.Utils
                 }
             }
 
-            if (result == null)
-            {
-                Miscs.LogWarn("Cannot find: " + query);
-            }
-            else
-            {
-                Miscs.Log($"Found: {result.gameObject.name} [{matchScore}]");
-            }
+            // if (result == null)
+            // {
+            //     Miscs.LogWarn("Cannot find: " + query);
+            // }
+            // else
+            // {
+            //     Miscs.Log($"Found: {result.gameObject.name} [{matchScore}]");
+            // }
             return result;
         }
 
@@ -496,7 +497,7 @@ namespace GearUpCards.Utils
                 RarityUtils.AjustCardRarityModifier
                 (
                     GetCardInfo(GearUpCards.ModInitials, "Glyph CAD Module"),
-                    mul: tempModifier * 1.50f
+                    mul: tempModifier * 1.50f - 0.75f
                 );
             }
             BatchAdjustCardRarity(cardListSpells, mul: tempModifier);
@@ -524,23 +525,23 @@ namespace GearUpCards.Utils
             // blocking ability boosting>> [Empower] + [Shield Battery] find chance
             List<PlayerCardData> tempList = GetPlayerCardsWithStringList(targerPlayer, cardListVanillaBlocks);
 
-            Miscs.Log($"Player has vanilla blocks:");
-            foreach (PlayerCardData item in tempList)
-            {
-                Miscs.Log($"> {item.cardInfo.gameObject.name} @ {item.index}");
-            }
+            // Miscs.Log($"Player has vanilla blocks:");
+            // foreach (PlayerCardData item in tempList)
+            // {
+            //     Miscs.Log($"> {item.cardInfo.gameObject.name} @ {item.index}");
+            // }
 
-            tempModifier = (float)(tempList.Count) * 0.35f;
+            tempModifier = (float)(tempList.Count) * 0.25f;
 
             tempList = GetPlayerCardsWithStringList(targerPlayer, cardListModdedBlocks);
 
-            Miscs.Log($"Player has modded blocks:");
-            foreach (PlayerCardData item in tempList)
-            {
-                Miscs.Log($"> {item.cardInfo.gameObject.name} @ {item.index}");
-            }
+            // Miscs.Log($"Player has modded blocks:");
+            // foreach (PlayerCardData item in tempList)
+            // {
+            //     Miscs.Log($"> {item.cardInfo.gameObject.name} @ {item.index}");
+            // }
 
-            tempModifier += (float)(tempList.Count) * 0.20f;
+            tempModifier += (float)(tempList.Count) * 0.10f;
 
             RarityUtils.AjustCardRarityModifier
             (

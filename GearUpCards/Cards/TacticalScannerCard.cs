@@ -43,7 +43,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Blocking scans nearby players, amplifies Healing/DMG done and reduce enemy's delayed damage time temporary (if any).";
+            return "Blocking temporary amplify nearby Heal/Dmg done and shorten enemy's delayed damage time.";
         }
         protected override GameObject GetCardArt()
         {

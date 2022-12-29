@@ -69,7 +69,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Your gun now fire bundled shell that detonate into shrapnels after 1.5s, or immediately after <i>directly hitting</i> someone.";
+            return "Your gun fire bundled shells that split into shrapnels after 1s that also have bullet effects!"; //, or immediately after <i>directly hitting</i> someone.";
         }
         protected override GameObject GetCardArt()
         {
@@ -83,20 +83,20 @@ namespace GearUpCards.Cards
         {
             return new CardInfoStat[]
             {
-                // new CardInfoStat()
-                // {
-                //     positive = true,
-                //     stat = "Projectiles",
-                //     amount = "+4",
-                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                // },
-                // new CardInfoStat()
-                // {
-                //     positive = false,
-                //     stat = "Spread",
-                //     amount = "+60 deg",
-                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                // },
+                new CardInfoStat()
+                {
+                    positive = false,
+                    stat = "Bursts",
+                    amount = "1/2 total",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                },
+                new CardInfoStat()
+                {
+                    positive = false,
+                    stat = "Shell Projs.",
+                    amount = "1/10 total",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                },
                 // new CardInfoStat()
                 // {
                 //     positive = false,

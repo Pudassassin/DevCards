@@ -24,6 +24,8 @@ namespace GearUpCards.MonoBehaviours
     internal class TacticalScannerStatus : ReversibleEffect
     {
         private static GameObject scanDataUIPrefab = GearUpCards.VFXBundle.LoadAsset<GameObject>("ScanDataUI");
+        private const float defaultOrthoSize = 20.0f;
+        private float mapEmbiggenerScale = 1.0f;
 
         // to be assigned by TacticalScannerEffect Monobehavior
         private float scannerAmpFactor = 0.5f;
@@ -33,13 +35,14 @@ namespace GearUpCards.MonoBehaviours
         private float scannerDecayReductionFactor = 0.75f;
         // ===
 
-        private const float procTime = .10f;
+        private const float procTickTime = .10f;
 
-        internal float timer = 0.0f;
+        internal float procTimer = 0.0f;
+        internal float effectTimer = 0.0f;
         internal bool statusEnable = false;
         internal int proc_count = 0;
 
-        internal float timeApplied = 0.0f;
+        // internal float timeApplied = 0.0f;
 
         internal float previousHealth = 0.0f;
         internal float previousMaxHealth = 0.0f;
@@ -84,6 +87,14 @@ namespace GearUpCards.MonoBehaviours
 
             // GameModeManager.AddHook(GameModeHooks.HookPointEnd, OnPointEnd);
 
+            Camera gameCamera = GameObject.Find("SpotlightCam").GetComponent<Camera>();
+            if (gameCamera != null)
+            {
+                float cameraOrthoSizeGameplay = gameCamera.orthographicSize;
+
+                mapEmbiggenerScale = cameraOrthoSizeGameplay / defaultOrthoSize;
+            }
+
             SpawnScanDataUI();
         }
 
@@ -94,55 +105,19 @@ namespace GearUpCards.MonoBehaviours
 
         override public void OnUpdate()
         {
-            timer += TimeHandler.deltaTime;
-
-            // Legacy codes
-            // moving over to relay AMPs to patches
+            procTimer += TimeHandler.deltaTime;
+            effectTimer += TimeHandler.deltaTime;
 
             float healthDelta = player.data.health - previousHealth;
             previousHealth = player.data.health;
             healthDeltaTotal += healthDelta;
-            // 
-            // float flagPristineLoss = (previousMaxHealth) / player.data.maxHealth;
-            // float flagPristineGain = (player.data.maxHealth) / previousMaxHealth;
-            // 
-            // if (isFriendly && healthDelta > 0)
-            // {
-            //     if (flagPristineGain >= 2.5f) healthDelta /= flagPristineGain;
-            //     scannerAmpAmount += healthDelta;
-            // }
-            // else if (!isFriendly && healthDelta < 0)
-            // {
-            //     if (flagPristineLoss >= 2.5f) healthDelta /= flagPristineLoss;
-            //     scannerAmpAmount += -healthDelta;
-            // }
 
-            if (timer >= procTime)
+            if (procTimer >= procTickTime)
             {
                 proc_count++;
 
                 if (statusEnable)
                 {
-                    // Resolve AMP
-
-                    // if (scannerAmpAmount > 0.0f)
-                    // {
-                    //     if (isFriendly)
-                    //     {
-                    //         player.data.healthHandler.Heal(scannerAmpAmount * scannerAmpFactor);
-                    //     }
-                    //     else
-                    //     {
-                    //         player.data.healthHandler.RPCA_SendTakeDamage(new Vector2(scannerAmpAmount * scannerAmpFactor, 0.0f), player.transform.position);
-                    //     }
-                    // 
-                    //     scannerAmpAmount = scannerAmpAmount * scannerAmpFactor * -1.0f;
-                    // }
-                    // else
-                    // {
-                    //     scannerAmpAmount = 0.0f;
-                    // }
-
                     // update ScanDataUI
                     UpdateScanDataUI();
 
@@ -154,10 +129,10 @@ namespace GearUpCards.MonoBehaviours
                     }
                 }
 
-                timer -= procTime;
+                procTimer -= procTickTime;
             }
 
-            if (Time.time - this.timeApplied >= scannerDuration)
+            if (effectTimer > scannerDuration)
             {
                 PurgeStatus();
             }
@@ -190,6 +165,7 @@ namespace GearUpCards.MonoBehaviours
                 scanDataUI = Instantiate(scanDataUIPrefab, this.player.transform.position, Quaternion.identity);
                 scanDataUI.name = "ScanDataUICopy";
 
+                scanDataUI.transform.localScale = Vector3.one * mapEmbiggenerScale;
                 scanDataUI.transform.localPosition += new Vector3(0.0f, 0.0f, 50.0f);
                 scanDataUI.GetComponent<Canvas>().sortingLayerName = "MostFront";
 
@@ -264,8 +240,18 @@ namespace GearUpCards.MonoBehaviours
 
         public void ApplyStatus(float ampFactor, float duration, bool isFriendly)
         {
-            if (ampFactor > this.scannerAmpFactor)  this.scannerAmpFactor = ampFactor;
-            if (duration > this.scannerDuration)    this.scannerDuration = duration;
+            // if (ampFactor > this.scannerAmpFactor)  this.scannerAmpFactor = ampFactor;
+            if (isFriendly != this.isFriendly)
+            {
+                this.scannerAmpFactor = ampFactor;
+                this.scannerDuration = duration;
+            }
+            else
+            {
+                if (ampFactor > this.scannerAmpFactor) this.scannerAmpFactor = ampFactor;
+                if (duration > this.scannerDuration) this.scannerDuration = duration;
+            }
+
             this.isFriendly = isFriendly;
             this.statusEnable = true;
 
@@ -278,7 +264,7 @@ namespace GearUpCards.MonoBehaviours
                 characterStatModifiersModifier.secondsToTakeDamageOver_mult = 1;
             }
 
-            timeApplied = Time.time;
+            effectTimer = 0.0f;
         }
 
         private void PurgeStatus()

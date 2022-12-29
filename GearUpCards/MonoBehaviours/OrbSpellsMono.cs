@@ -34,7 +34,10 @@ namespace GearUpCards.MonoBehaviours
         public enum OrbSpellType
         {
             none = 0,
-            obliteration
+            obliteration,
+            lifeforceDuality,
+            lifeforceBlast,
+            rollingBulwark
         }
 
         public class OrbSpellStats
@@ -654,28 +657,20 @@ namespace GearUpCards.MonoBehaviours
                     OrbSpellStats newOrbSpell = new OrbSpellStats(gun, player);
                     GameObject orbModifier = new GameObject("OrbObliterationModifier", new Type[]
                     {
-                        typeof(ObliterationModifier)
-                    });
-                    GameObject orbModifier2 = new GameObject("BulletNoClipModifier", new Type[]
-                    {
+                        typeof(ObliterationModifier),
                         typeof(BulletNoClipModifier)
                     });
-                    orbModifier2.GetComponent<BulletNoClipModifier>().SetPersistentOverride(true);
+                    orbModifier.GetComponent<BulletNoClipModifier>().SetPersistentOverride(true);
 
                     checkIndex = InsertOrbSpell(newOrbSpell);
 
                     ObjectsToSpawn[] objectsToSpawn = new ObjectsToSpawn[]
                     {
-                        // new ObjectsToSpawn
-                        // {
-                        //     AddToProjectile = orbModifier
-                        // }
-                        new ObjectsToSpawn { AddToProjectile = orbModifier },
-                        new ObjectsToSpawn { AddToProjectile = orbModifier2 }
-
+                        new ObjectsToSpawn { AddToProjectile = orbModifier }
                     };
 
                     orbSpells[checkIndex].SetupOrbSpell(OrbSpellType.obliteration, objectsToSpawn, cooldown, orbCount, 10);
+                    orbSpells[checkIndex].orbDummyGun.name = "OrbSpell_Obliteration";
                 }
 
                 orbSpells[checkIndex].orbDummyGun.projectileColor = new Color(0.4f, 0.0f, 0.4f, 1.0f);

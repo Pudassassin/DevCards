@@ -345,8 +345,8 @@ namespace GearUpCards.MonoBehaviours
             Miscs.Log("ApplySpreadFlak()");
             Miscs.CopyGunStats(playerOldGun, newSpreadGun);
 
-            newSpreadGun.bursts = Mathf.RoundToInt((float)playerOldGun.bursts / 4.0f);
-            newSpreadGun.timeBetweenBullets = 0.25f;
+            newSpreadGun.bursts = 1 + Mathf.RoundToInt((float)playerOldGun.bursts / 2.0f);
+            newSpreadGun.timeBetweenBullets = 0.10f + Mathf.Clamp(playerOldGun.timeBetweenBullets * 1.50f, 0.0f, 0.65f);
 
             newSpreadGun.numberOfProjectiles = 1 + Mathf.RoundToInt((float)playerOldGun.numberOfProjectiles / 10.0f);
 
@@ -360,7 +360,7 @@ namespace GearUpCards.MonoBehaviours
             newSpreadGun.drag = 0.0f;
             newSpreadGun.dragMinSpeed = 1.0f;
 
-            newSpreadGun.reflects = 9;
+            newSpreadGun.reflects = 24;
 
             newSpreadGun.attackSpeed = 0.20f + playerOldGun.attackSpeed;
             newSpreadGun.attackSpeedMultiplier = 0.5f + (playerOldGun.attackSpeedMultiplier - 0.5f) * 1.25f;
@@ -375,7 +375,7 @@ namespace GearUpCards.MonoBehaviours
             // dummySpreadGun.holdable = null;
             // dummySpreadGun.player = null;
 
-            dummySpreadGun.bursts = Mathf.RoundToInt((float)playerOldGun.bursts / 4.0f);
+            dummySpreadGun.bursts = 1 + Mathf.RoundToInt((float)playerOldGun.bursts / 4.0f);
             dummySpreadGun.timeBetweenBullets = 0.15f;
 
             dummySpreadGun.numberOfProjectiles = flakProjectileAdd + Mathf.RoundToInt((float)playerOldGun.numberOfProjectiles / 4.0f);
@@ -584,7 +584,7 @@ namespace GearUpCards.MonoBehaviours
 
     class FlakShellModifier : RayHitEffect
     {
-        public static float delayTime = 1.0f;
+        public static float defaultDelayTime = 0.75f;
         private float timer = 0.0f;
          
         private Player shooterPlayer;
@@ -595,9 +595,16 @@ namespace GearUpCards.MonoBehaviours
         public bool checkFlakShell = false;
 
         private Vector3 playerPrevPos;
+        private float delayTime = defaultDelayTime;
+
+        public void Start()
+        {
+            delayTime = defaultDelayTime;
+        }
 
         public void Setup()
         {
+            delayTime = defaultDelayTime;
             shooterPlayer = gameObject.GetComponentInParent<ProjectileHit>().ownPlayer;
             gunSpreadMono = shooterPlayer.gameObject.GetComponent<UniqueGunSpreadMono>();
             dummyGun = gunSpreadMono.dummySpreadGun;
@@ -654,9 +661,15 @@ namespace GearUpCards.MonoBehaviours
 
         public override HasToReturn DoHitEffect(HitInfo hit)
         {
+            if (hit.transform != null)
+            {
+                Miscs.Log("[GearUp] FlakShellModifier hit: " + hit.transform.gameObject.name);
+            }
+
             if (hit.transform.GetComponent<Player>())
             {
                 // explode immediately
+                Miscs.Log("> Direct Hit!");
                 FlakExplode();
             }
             if (hit.transform == null)
@@ -708,7 +721,7 @@ namespace GearUpCards.MonoBehaviours
 
     class BulletSpeedLimiter : MonoBehaviour
     {
-        public const float defaultMinVelocity = 10.0f;
+        public const float defaultMinVelocity = 2.5f;
         public const float defaultMaxVelocity = 1000.0f;
         public const float defaultMinSimSpeed = 0.05f;
         public const float defaultMaxSimSpeed = 10.0f;

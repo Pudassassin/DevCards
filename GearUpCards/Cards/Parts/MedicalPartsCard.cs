@@ -26,7 +26,10 @@ namespace GearUpCards.Cards
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
             data.maxHealth *= 1.5f;
-            data.healthHandler.regeneration += 2.0f;
+            data.healthHandler.regeneration += 5.0f;
+
+            GearUpRegenEffects mono = player.gameObject.GetOrAddComponent<GearUpRegenEffects>();
+            characterStats.GetGearData().hpPercentageRegen += 0.01f;
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -62,8 +65,8 @@ namespace GearUpCards.Cards
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "HP Regen",
-                    amount = "+2",
+                    stat = "HP Regen/s",
+                    amount = "+5 & +1%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };

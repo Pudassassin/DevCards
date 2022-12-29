@@ -64,6 +64,8 @@ namespace GearUpCards.Extensions
 
         public int magickFragmentStack;
 
+        public float hpPercentageRegen;
+
         public GearUpConstants.ModType gunMod;
         public GearUpConstants.ModType gunSpreadMod;
         public GearUpConstants.ModType blockMod;
@@ -93,6 +95,9 @@ namespace GearUpCards.Extensions
             glyphPiercing = 0;
 
             orbObliterationStack = 0;
+
+            // 1.0f being 100%/s!!
+            hpPercentageRegen = 0.0f;
 
             gunMod = GearUpConstants.ModType.none;
             gunSpreadMod = GearUpConstants.ModType.none;
@@ -146,6 +151,8 @@ namespace GearUpCards.Extensions
             __instance.GetGearData().glyphPiercing = 0;
 
             __instance.GetGearData().orbObliterationStack = 0;
+
+            __instance.GetGearData().hpPercentageRegen = 0.0f;
 
             __instance.GetGearData().gunMod = GearUpConstants.ModType.none;
             __instance.GetGearData().gunSpreadMod = GearUpConstants.ModType.none;
