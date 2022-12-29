@@ -69,7 +69,7 @@ namespace GearUpCards.MonoBehaviours
                 orbDummyGunHolder.transform.localPosition = Vector3.zero;
 
                 orbDummyGun = orbDummyGunHolder.GetOrAddComponent<Gun>();
-                Miscs.CopyGunStats(playerGun, orbDummyGun);
+                Miscs.CopyGunStatsNoActions(playerGun, orbDummyGun);
 
                 // orbDummyGun.name = "OrbCaster_";
 
@@ -131,9 +131,9 @@ namespace GearUpCards.MonoBehaviours
                 // Traverse.Create(gunAmmo).Field("reloadTimeMultiplier").SetValue((float) 0.0f);
                 // Traverse.Create(gunAmmo).Field("reloadTimeAdd").SetValue((float) 0.0f);
 
-                Action doNothing = () => { };
-                Traverse.Create(orbDummyGun).Field("attackAction").SetValue((Action) doNothing);
-                orbDummyGun.ShootPojectileAction = new Action<GameObject>((GameObject _) => { });
+                // Action doNothing = () => { };
+                // Traverse.Create(orbDummyGun).Field("attackAction").SetValue((Action) doNothing);
+                // orbDummyGun.ShootPojectileAction = new Action<GameObject>((GameObject _) => { });
 
                 // disable unused/unrelated stats
                 orbDummyGun.useCharge = false;

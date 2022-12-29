@@ -104,6 +104,51 @@ namespace GearUpCards.Utils
 		// Credits to Pykess
 		public static void CopyGunStats(Gun copyFromGun, Gun copyToGun)
 		{
+			Miscs.Log("CopyGunStats() : calling base");
+			CopyGunStatsBase(copyFromGun, copyToGun);
+
+			Miscs.Log("CopyGunStats() : cloning ShootPojectileAction");
+            if (copyFromGun.ShootPojectileAction != null)
+            {
+				copyToGun.ShootPojectileAction = (Action<GameObject>)copyFromGun.ShootPojectileAction.Clone();
+			}
+			copyToGun.shootPosition = copyFromGun.shootPosition;
+
+			// dealing with private fields
+			Miscs.Log("CopyGunStats() : cloning attackAction");
+			Action action = Traverse.Create(copyFromGun).Field("attackAction").GetValue<Action>();
+			if (action != null)
+			{
+				Traverse.Create(copyToGun).Field("attackAction").SetValue((Action)action.Clone());
+			}
+
+			Miscs.Log("CopyGunStats() : finishing");
+			// Traverse.Create(copyToGun).Field("gunAmmo").SetValue((GunAmmo)Traverse.Create(copyFromGun).Field("gunAmmo").GetValue());
+			// Traverse.Create(copyToGun).Field("gunID").SetValue((int)Traverse.Create(copyFromGun).Field("gunID").GetValue());
+
+			Traverse.Create(copyToGun).Field("spreadOfLastBullet").SetValue((float)Traverse.Create(copyFromGun).Field("spreadOfLastBullet").GetValue());
+			Traverse.Create(copyToGun).Field("forceShootDir").SetValue((Vector3)Traverse.Create(copyFromGun).Field("forceShootDir").GetValue());
+		}
+		public static void CopyGunStatsNoActions(Gun copyFromGun, Gun copyToGun)
+		{
+			CopyGunStatsBase(copyFromGun, copyToGun);
+
+			copyToGun.holdable = null;
+			copyToGun.ShootPojectileAction = null;
+
+			// dealing with private fields
+			// Traverse.Create(copyToGun).Field("attackAction").SetValue((Action)Traverse.Create(copyFromGun).Field("attackAction").GetValue());
+			Traverse.Create(copyToGun).Field("attackAction").SetValue(null);
+
+			// Traverse.Create(copyToGun).Field("gunAmmo").SetValue(null);
+			// Traverse.Create(copyToGun).Field("gunID").SetValue((int)Traverse.Create(copyFromGun).Field("gunID").GetValue());
+
+			Traverse.Create(copyToGun).Field("spreadOfLastBullet").SetValue((float)Traverse.Create(copyFromGun).Field("spreadOfLastBullet").GetValue());
+			Traverse.Create(copyToGun).Field("forceShootDir").SetValue((Vector3)Traverse.Create(copyFromGun).Field("forceShootDir").GetValue());
+		}
+
+		public static void CopyGunStatsBase(Gun copyFromGun, Gun copyToGun)
+        {
 			copyToGun.ammo = copyFromGun.ammo;
 			copyToGun.ammoReg = copyFromGun.ammoReg;
 			copyToGun.attackID = copyFromGun.attackID;
@@ -135,7 +180,7 @@ namespace GearUpCards.Utils
 			copyToGun.forceSpecificShake = copyFromGun.forceSpecificShake;
 			copyToGun.gravity = copyFromGun.gravity;
 			copyToGun.hitMovementMultiplier = copyFromGun.hitMovementMultiplier;
-			//copyToGun.holdable = copyFromGun.holdable;
+			// copyToGun.holdable = copyFromGun.holdable;
 			copyToGun.ignoreWalls = copyFromGun.ignoreWalls;
 			copyToGun.isProjectileGun = copyFromGun.isProjectileGun;
 			copyToGun.isReloading = copyFromGun.isReloading;
@@ -143,7 +188,7 @@ namespace GearUpCards.Utils
 			copyToGun.lockGunToDefault = copyFromGun.lockGunToDefault;
 			copyToGun.multiplySpread = copyFromGun.multiplySpread;
 			copyToGun.numberOfProjectiles = copyFromGun.numberOfProjectiles;
-			copyToGun.objectsToSpawn = copyFromGun.objectsToSpawn;
+			// copyToGun.objectsToSpawn = copyFromGun.objectsToSpawn;
 			copyToGun.overheatMultiplier = copyFromGun.overheatMultiplier;
 			copyToGun.percentageDamage = copyFromGun.percentageDamage;
 			copyToGun.player = copyFromGun.player;
@@ -160,7 +205,7 @@ namespace GearUpCards.Utils
 			copyToGun.reloadTimeAdd = copyFromGun.reloadTimeAdd;
 			copyToGun.shake = copyFromGun.shake;
 			copyToGun.shakeM = copyFromGun.shakeM;
-			copyToGun.ShootPojectileAction = copyFromGun.ShootPojectileAction;
+			//copyToGun.ShootPojectileAction = copyFromGun.ShootPojectileAction;
 			//copyToGun.shootPosition = copyFromGun.shootPosition;
 			copyToGun.sinceAttack = copyFromGun.sinceAttack;
 			copyToGun.size = copyFromGun.size;
@@ -180,12 +225,49 @@ namespace GearUpCards.Utils
 			copyToGun.useCharge = copyFromGun.useCharge;
 			copyToGun.waveMovement = copyFromGun.waveMovement;
 
-			Traverse.Create(copyToGun).Field("attackAction").SetValue((Action)Traverse.Create(copyFromGun).Field("attackAction").GetValue());
-			//Traverse.Create(copyToGun).Field("gunAmmo").SetValue((GunAmmo)Traverse.Create(copyFromGun).Field("gunAmmo").GetValue());
-			Traverse.Create(copyToGun).Field("gunID").SetValue((int)Traverse.Create(copyFromGun).Field("gunID").GetValue());
-			Traverse.Create(copyToGun).Field("spreadOfLastBullet").SetValue((float)Traverse.Create(copyFromGun).Field("spreadOfLastBullet").GetValue());
+			// duping objectsToSpawn
+			copyToGun.objectsToSpawn = copyFromGun.objectsToSpawn;
 
-			Traverse.Create(copyToGun).Field("forceShootDir").SetValue((Vector3)Traverse.Create(copyFromGun).Field("forceShootDir").GetValue());
+			// List<ObjectsToSpawn> listObjects = new List<ObjectsToSpawn>();
+			// ObjectsToSpawn objectsToSpawn;
+			// 
+			// foreach (ObjectsToSpawn item in copyFromGun.objectsToSpawn)
+			// {
+			// 	objectsToSpawn = new ObjectsToSpawn();
+			// 
+			// 	if (objectsToSpawn.AddToProjectile != null)
+			// 	{
+			// 		objectsToSpawn.AddToProjectile = GameObject.Instantiate(item.AddToProjectile);
+			// 	}
+			// 	if (objectsToSpawn.effect != null)
+			// 	{
+			// 		objectsToSpawn.effect = GameObject.Instantiate(item.effect);
+			// 	}
+			// 	objectsToSpawn.direction = item.direction;
+			// 	objectsToSpawn.spawnOn = ObjectsToSpawn.SpawnOn.notPlayer;
+			// 	objectsToSpawn.spawnAsChild = item.spawnAsChild;
+			// 	objectsToSpawn.numberOfSpawns = item.numberOfSpawns;
+			// 	objectsToSpawn.normalOffset = item.normalOffset;
+			// 	objectsToSpawn.stickToBigTargets = item.stickToBigTargets;
+			// 	objectsToSpawn.stickToAllTargets = item.stickToAllTargets;
+			// 	objectsToSpawn.zeroZ = item.zeroZ;
+			// 	objectsToSpawn.removeScriptsFromProjectileObject = item.removeScriptsFromProjectileObject;
+			// 	objectsToSpawn.scaleStacks = item.scaleStacks;
+			// 	objectsToSpawn.scaleStackM = item.scaleStackM;
+			// 	objectsToSpawn.scaleFromDamage = item.scaleFromDamage;
+			// 	objectsToSpawn.stacks = item.stacks;
+			// 
+			// 	listObjects.Add(objectsToSpawn);
+			// }
+			// 
+			// copyToGun.objectsToSpawn = listObjects.ToArray();
+
+			// dealing with private fields
+			// Traverse.Create(copyToGun).Field("attackAction").SetValue((Action)Traverse.Create(copyFromGun).Field("attackAction").GetValue());
+			// Traverse.Create(copyToGun).Field("gunAmmo").SetValue((GunAmmo)Traverse.Create(copyFromGun).Field("gunAmmo").GetValue());
+			// Traverse.Create(copyToGun).Field("gunID").SetValue((int)Traverse.Create(copyFromGun).Field("gunID").GetValue());
+			// Traverse.Create(copyToGun).Field("spreadOfLastBullet").SetValue((float)Traverse.Create(copyFromGun).Field("spreadOfLastBullet").GetValue());
+			// Traverse.Create(copyToGun).Field("forceShootDir").SetValue((Vector3)Traverse.Create(copyFromGun).Field("forceShootDir").GetValue());
 		}
 	}
 }

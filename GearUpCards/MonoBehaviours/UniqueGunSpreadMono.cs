@@ -19,6 +19,7 @@ namespace GearUpCards.MonoBehaviours
     internal class UniqueGunSpreadMono : MonoBehaviour
     {
         private const float procTime = 0.1f;
+        public static int flakProjectileAdd = 1;
 
         internal Player player;
         internal Gun gun;
@@ -39,6 +40,7 @@ namespace GearUpCards.MonoBehaviours
         internal Action<GameObject> shootAction;
 
         private GameObject oldGunObject, newGunObject, dummyGunObject;
+        private GameObject gameObjectToAdd;
         private Gun playerOldGun, newSpreadGun;
         public Gun dummySpreadGun = null;
         internal bool isGunReplaced = false;
@@ -71,13 +73,13 @@ namespace GearUpCards.MonoBehaviours
 
         public void Start()
         {
-            this.playerOldGun = new Gun();
+            // this.playerOldGun = new Gun();
 
             this.attackAction = new Action(this.GetDoAttackAction(this.player, this.gun));
             // this.gun.AddAttackAction(this.attackAction);
 
             this.shootAction = new Action<GameObject>(this.GetDoShootAction(this.player, this.gun));
-            this.gun.ShootPojectileAction = (Action<GameObject>)Delegate.Combine(this.gun.ShootPojectileAction, this.shootAction);
+            // this.gun.ShootPojectileAction = (Action<GameObject>)Delegate.Combine(this.gun.ShootPojectileAction, this.shootAction);
         }
 
         public void Update()
@@ -181,22 +183,25 @@ namespace GearUpCards.MonoBehaviours
             // triggers on firing EACH bullet
             return delegate (GameObject bulletFired)
             {
-                try
+                this.ExecuteAfterFrames(1, () =>
                 {
-                    switch (stats.GetGearData().gunSpreadMod)
+                    try
                     {
-                        case GearUpConstants.ModType.gunSpreadFlak:
-                            bulletFired.GetOrAddComponent<FlakShellModifier>().Setup();
-                            break;
-                        default:
-                            break;
+                        switch (stats.GetGearData().gunSpreadMod)
+                        {
+                            case GearUpConstants.ModType.gunSpreadFlak:
+                                bulletFired.GetOrAddComponent<FlakShellModifier>();
+                                break;
+                            default:
+                                break;
+                        }
                     }
-                }
-                catch (Exception exception)
-                {
-                    UnityEngine.Debug.LogError($"[UniqueGunSpreadMono] ShootAction failed! [{player.playerID}]");
-                    UnityEngine.Debug.LogWarning(exception);
-                }
+                    catch (Exception exception)
+                    {
+                        UnityEngine.Debug.LogError($"[UniqueGunSpreadMono] ShootAction failed! [{player.playerID}]");
+                        UnityEngine.Debug.LogWarning(exception);
+                    }
+                });
             };
         }
 
@@ -224,7 +229,7 @@ namespace GearUpCards.MonoBehaviours
                 isGunReplaced = false;
             }
 
-
+            gun.ShootPojectileAction = (Action<GameObject>)Delegate.RemoveAll(gun.ShootPojectileAction, shootAction);
         }
 
         private void RemoveModifier()
@@ -243,6 +248,8 @@ namespace GearUpCards.MonoBehaviours
                 gun.evenSpread = prevEvenSpread;
                 gun.multiplySpread = prevSpreadMul;
                 gun.gravity = prevGravity;
+
+                gun.ShootPojectileAction = (Action<GameObject>)Delegate.RemoveAll(gun.ShootPojectileAction, shootAction);
 
                 Miscs.Log("[GearUP] UniqueGunSpread: removed");
             }
@@ -335,6 +342,7 @@ namespace GearUpCards.MonoBehaviours
         private void ApplySpreadFlak()
         {
             // flak cannon stats
+            Miscs.Log("ApplySpreadFlak()");
             Miscs.CopyGunStats(playerOldGun, newSpreadGun);
 
             newSpreadGun.bursts = Mathf.RoundToInt((float)playerOldGun.bursts / 4.0f);
@@ -352,7 +360,7 @@ namespace GearUpCards.MonoBehaviours
             newSpreadGun.drag = 0.0f;
             newSpreadGun.dragMinSpeed = 1.0f;
 
-            newSpreadGun.reflects = 99;
+            newSpreadGun.reflects = 9;
 
             newSpreadGun.attackSpeed = 0.20f + playerOldGun.attackSpeed;
             newSpreadGun.attackSpeedMultiplier = 0.5f + (playerOldGun.attackSpeedMultiplier - 0.5f) * 1.25f;
@@ -361,12 +369,16 @@ namespace GearUpCards.MonoBehaviours
             newSpreadGun.recoil = playerOldGun.recoil * 0.05f;
 
             // fragmentation stats (to be fired 4 times)
-            Miscs.CopyGunStats(playerOldGun, dummySpreadGun);
+            Miscs.Log("ApplySpreadFlak() : dummySpreadGun");
+            Miscs.CopyGunStatsNoActions(playerOldGun, dummySpreadGun);
+
+            // dummySpreadGun.holdable = null;
+            // dummySpreadGun.player = null;
 
             dummySpreadGun.bursts = Mathf.RoundToInt((float)playerOldGun.bursts / 4.0f);
             dummySpreadGun.timeBetweenBullets = 0.15f;
 
-            dummySpreadGun.numberOfProjectiles = 8 + Mathf.RoundToInt((float)playerOldGun.numberOfProjectiles / 4.0f);
+            dummySpreadGun.numberOfProjectiles = flakProjectileAdd + Mathf.RoundToInt((float)playerOldGun.numberOfProjectiles / 4.0f);
 
             dummySpreadGun.damage = playerOldGun.damage * 0.5f;
 
@@ -377,12 +389,40 @@ namespace GearUpCards.MonoBehaviours
             dummySpreadGun.spread = 1.0f;
             dummySpreadGun.multiplySpread = 1.0f;
 
-            Action doNothing = () => { };
-            Traverse.Create(dummySpreadGun).Field("attackAction").SetValue((Action)doNothing);
-            dummySpreadGun.ShootPojectileAction = new Action<GameObject>((GameObject _) => { });
+            // List<ObjectsToSpawn> objectsToSpawns = dummySpreadGun.objectsToSpawn.ToList();
+            // GameObject gameObject = new GameObject("FlakNoRecursion", new Type[]
+            // {
+            //     typeof(NoFlakRecursion)
+            // });
+            // objectsToSpawns.Add(new ObjectsToSpawn
+            // {
+            //     AddToProjectile = gameObject
+            // });
+            // dummySpreadGun.objectsToSpawn = objectsToSpawns.ToArray();
 
+            // Miscs.Log("ApplySpreadFlak() : clear up dummySpreadGun Flak");
+            // for (int i = 0; i < dummySpreadGun.objectsToSpawn.Length; i++)
+            // {
+            //     if (dummySpreadGun.objectsToSpawn[i].AddToProjectile != null)
+            //     {
+            //         if (dummySpreadGun.objectsToSpawn[i].AddToProjectile.name.Equals("FlakCannonModifier"))
+            //         {
+            //             Miscs.Log("ApplySpreadFlak() : found it");
+            //             Destroy(dummySpreadGun.objectsToSpawn[i].AddToProjectile.GetComponent<FlakShellModifier>());
+            //         }
+            //     }
+            // }
+
+            // Action doNothing = () => { };
+            // Traverse.Create(dummySpreadGun).Field("attackAction").SetValue((Action) doNothing);
+            // dummySpreadGun.ShootPojectileAction = new Action<GameObject>((_) => { });
+
+            Miscs.Log("ApplySpreadFlak() : replacing gun");
             Miscs.CopyGunStats(newSpreadGun, gun);
             isGunReplaced = true;
+
+            Miscs.Log("ApplySpreadFlak() : combine delegate");
+            this.gun.ShootPojectileAction = (Action<GameObject>)Delegate.Combine(this.gun.ShootPojectileAction, this.shootAction);
         }
     }
 
@@ -544,27 +584,56 @@ namespace GearUpCards.MonoBehaviours
 
     class FlakShellModifier : RayHitEffect
     {
-        public static float delayTime = 1.5f;
+        public static float delayTime = 1.0f;
         private float timer = 0.0f;
          
-        private Gun shrapnelDummyGun = null;
         private Player shooterPlayer;
+        private UniqueGunSpreadMono gunSpreadMono;
+        private Gun dummyGun;
 
         public bool effectEnable = false;
+        public bool checkFlakShell = false;
+
+        private Vector3 playerPrevPos;
 
         public void Setup()
         {
-            shooterPlayer = gameObject.GetComponent<ProjectileHit>().ownPlayer;
-            shrapnelDummyGun = gameObject.AddComponent<Gun>();
-            Miscs.CopyGunStats(shooterPlayer.gameObject.GetComponent<UniqueGunSpreadMono>().dummySpreadGun, shrapnelDummyGun);
+            shooterPlayer = gameObject.GetComponentInParent<ProjectileHit>().ownPlayer;
+            gunSpreadMono = shooterPlayer.gameObject.GetComponent<UniqueGunSpreadMono>();
+            dummyGun = gunSpreadMono.dummySpreadGun;
+            // shrapnelDummyGun = gameObject.AddComponent<Gun>();
+            // Miscs.CopyGunStats(shooterPlayer.gameObject.GetComponent<UniqueGunSpreadMono>().dummySpreadGun, shrapnelDummyGun);
 
-            effectEnable = true;
+            // effectEnable = true;
         }
 
         public void Update()
         {
             if (effectEnable)
             {
+                // if (!checkFlakShell)
+                // {
+                //     bool isFlakShell = true;
+                //     NoFlakRecursion[] stopRecursionFlag = gameObject.GetComponentsInChildren<NoFlakRecursion>();
+                //     foreach (NoFlakRecursion item in stopRecursionFlag)
+                //     {
+                //         if (item.gameObject.name == "FlakNoRecursion")
+                //         {
+                //             isFlakShell = false;
+                //             break;
+                //         }
+                //     }
+                // 
+                //     if (isFlakShell)
+                //     {
+                //         checkFlakShell = true;
+                //     }
+                //     else
+                //     {
+                //         Destroy(this);
+                //     }
+                // }
+
                 timer += TimeHandler.deltaTime;
                 if (timer >= delayTime)
                 {
@@ -572,11 +641,24 @@ namespace GearUpCards.MonoBehaviours
                     FlakExplode();
                 }
             }
+            else
+            {
+                MoveTransform moveTransform = GetComponentInParent<MoveTransform>();
+                if (moveTransform != null)
+                {
+                    Setup();
+                    effectEnable = true;
+                }
+            }
         }
 
         public override HasToReturn DoHitEffect(HitInfo hit)
         {
-
+            if (hit.transform.GetComponent<Player>())
+            {
+                // explode immediately
+                FlakExplode();
+            }
             if (hit.transform == null)
             {
                 return HasToReturn.canContinue;
@@ -586,30 +668,30 @@ namespace GearUpCards.MonoBehaviours
                 return HasToReturn.canContinue;
             }
 
-            if (hit.transform.GetComponent<Player>())
-            {
-                // explode immediately
-                FlakExplode();
-            }
-
             return HasToReturn.canContinue;
         }
 
         public void FlakExplode()
         {
-            if (shrapnelDummyGun != null)
+            if (dummyGun != null)
             {
-                Traverse.Create(shrapnelDummyGun).Field("forceShootDir").SetValue((Vector3) new Vector3(1.0f, 0.0f, 0.0f));
-                shrapnelDummyGun.Attack(0.0f, true, useAmmo: false);
+                // playerPrevPos = shooterPlayer.transform.position;
+                // shooterPlayer.transform.position = transform.position;
+                dummyGun.gameObject.transform.position = transform.position;
 
-                Traverse.Create(shrapnelDummyGun).Field("forceShootDir").SetValue((Vector3)new Vector3(-1.0f, 0.0f, 0.0f));
-                shrapnelDummyGun.Attack(0.0f, true, useAmmo: false);
+                Traverse.Create(dummyGun).Field("forceShootDir").SetValue((Vector3) new Vector3(1.0f, 0.0f, 0.0f));
+                dummyGun.Attack(0.0f, true, useAmmo: false);
 
-                Traverse.Create(shrapnelDummyGun).Field("forceShootDir").SetValue((Vector3)new Vector3(0.0f, 1.0f, 0.0f));
-                shrapnelDummyGun.Attack(0.0f, true, useAmmo: false);
+                Traverse.Create(dummyGun).Field("forceShootDir").SetValue((Vector3)new Vector3(-1.0f, 0.0f, 0.0f));
+                dummyGun.Attack(0.0f, true, useAmmo: false);
 
-                Traverse.Create(shrapnelDummyGun).Field("forceShootDir").SetValue((Vector3)new Vector3(0.0f, -1.0f, 0.0f));
-                shrapnelDummyGun.Attack(0.0f, true, useAmmo: false);
+                Traverse.Create(dummyGun).Field("forceShootDir").SetValue((Vector3)new Vector3(0.0f, 1.0f, 0.0f));
+                dummyGun.Attack(0.0f, true, useAmmo: false);
+
+                Traverse.Create(dummyGun).Field("forceShootDir").SetValue((Vector3)new Vector3(0.0f, -1.0f, 0.0f));
+                dummyGun.Attack(0.0f, true, useAmmo: false);
+
+                // shooterPlayer.transform.position = playerPrevPos;
             }
             else
             {
@@ -623,4 +705,88 @@ namespace GearUpCards.MonoBehaviours
             });
         }
     }
+
+    class BulletSpeedLimiter : MonoBehaviour
+    {
+        public const float defaultMinVelocity = 10.0f;
+        public const float defaultMaxVelocity = 1000.0f;
+        public const float defaultMinSimSpeed = 0.05f;
+        public const float defaultMaxSimSpeed = 10.0f;
+
+        private float minVelocity, maxVelocity, minSimSpeed, maxSimSpeed;
+        private MoveTransform moveTransform = null;
+
+        internal Vector3 directionNorm;
+        internal float speed, simSpeed;
+
+        public void Start()
+        {
+            Setup();
+        }
+
+        public void Update()
+        {
+            if (moveTransform == null)
+            {
+                moveTransform = GetComponentInParent<MoveTransform>();
+            }
+            else
+            {
+                speed = moveTransform.velocity.magnitude;
+                directionNorm = moveTransform.velocity;
+                directionNorm.z = 0.0f;
+                directionNorm = directionNorm.normalized;
+
+                speed = Mathf.Clamp(speed, minVelocity, maxVelocity);
+                moveTransform.velocity = speed * directionNorm;
+
+                // moveTransform.dragMinSpeed = minVelocity;
+
+                simSpeed = Traverse.Create(moveTransform).Field("simulationSpeed").GetValue<float>();
+                simSpeed = Mathf.Clamp(simSpeed, minSimSpeed, maxSimSpeed);
+                Traverse.Create(moveTransform).Field("simulationSpeed").SetValue((float)simSpeed);
+            }
+        }
+
+        public void Setup(float inMinVelo = defaultMinVelocity, float inMaxVelo = defaultMaxVelocity, float inMinSimSpeed = defaultMinSimSpeed, float inMaxSimSpeed = defaultMaxSimSpeed)
+        {
+            minVelocity = inMinVelo;
+            maxVelocity = inMaxVelo;
+            minSimSpeed = inMinSimSpeed;
+            maxSimSpeed = inMaxSimSpeed;
+        }
+    }
+
+    // class NoFlakRecursion : MonoBehaviour
+    // {
+    //     public void Start()
+    //     {
+    //         ClearMono();
+    //     }
+    // 
+    //     public void Awake()
+    //     {
+    //         ClearMono();
+    //     }
+    // 
+    //     public void OnEnable()
+    //     {
+    //         ClearMono();
+    //     }
+    // 
+    //     public void ClearMono()
+    //     {
+    //         FlakShellModifier[] mono = gameObject.GetComponentsInChildren<FlakShellModifier>();
+    //         for (int i = mono.Length - 1; i >= 0; i--)
+    //         {
+    //             Destroy(mono[i]);
+    //         }
+    // 
+    //         mono = gameObject.GetComponentsInParent<FlakShellModifier>();
+    //         for (int i = mono.Length - 1; i >= 0; i--)
+    //         {
+    //             Destroy(mono[i]);
+    //         }
+    //     }
+    // }
 }

@@ -49,6 +49,7 @@ namespace GearUpCards.Cards
             GameObject gameObject = new GameObject("FlakCannonModifier", new Type[]
             {
                 // typeof(FlakShellModifier),
+                typeof(BulletSpeedLimiter),
                 typeof(BulletNoClipModifier)
             });
             list.Add(new ObjectsToSpawn
