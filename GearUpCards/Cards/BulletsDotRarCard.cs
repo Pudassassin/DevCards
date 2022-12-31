@@ -15,21 +15,18 @@ using static GearUpCards.Utils.CardUtils;
 
 namespace GearUpCards.Cards
 {
-    class MedicalPartsCard : CustomCard
+    class BulletsDotRarCard : CustomCard
     {
-        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_MedicalParts");
+        internal static GameObject cardArt = null; // GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_GunParts");
 
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            
+            cardInfo.allowMultiple = false;
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            data.maxHealth *= 1.5f;
-            data.healthHandler.regeneration += 5.0f;
-
             GearUpPreRoundEffects mono = player.gameObject.GetOrAddComponent<GearUpPreRoundEffects>();
-            characterStats.GetGearData().hpPercentageRegen += 0.01f;
+            characterStats.GetGearData().addOnList.Add(GearUpConstants.AddOnType.gunBulletsDotRar);
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -37,11 +34,11 @@ namespace GearUpCards.Cards
         }
         protected override string GetTitle()
         {
-            return "Medical Parts";
+            return "Bullets.rar";
         }
         protected override string GetDescription()
         {
-            return "Some hearty doodads to help you survive longer.";
+            return "Compress number of projectiles you shoot down 1/3, each dealing <i>up to 5x DMG!</i>*";
         }
         protected override GameObject GetCardArt()
         {
@@ -49,7 +46,7 @@ namespace GearUpCards.Cards
         }
         protected override CardInfo.Rarity GetRarity()
         {
-            return CardInfo.Rarity.Common;
+            return CardInfo.Rarity.Uncommon;
         }
         protected override CardInfoStat[] GetStats()
         {
@@ -58,22 +55,22 @@ namespace GearUpCards.Cards
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "HP",
-                    amount = "+50%",
+                    stat = "Burst Delay",
+                    amount = "1/3 total",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
-                    positive = true,
-                    stat = "HP Regen/s",
-                    amount = "+5 & +1%",
+                    positive = false,
+                    stat = "Max Ammo",
+                    amount = "1/2 total",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };
         }
         protected override CardThemeColor.CardThemeColorType GetTheme()
         {
-            return CardThemeColor.CardThemeColorType.PoisonGreen;
+            return CardThemeColor.CardThemeColorType.FirepowerYellow;
         }
         public override string GetModName()
         {
@@ -81,7 +78,7 @@ namespace GearUpCards.Cards
         }
         public override void Callback()
         {
-            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Health\nMaterial";
+            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Gun\nPassive";
         }
     }
 }

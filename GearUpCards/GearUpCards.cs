@@ -41,7 +41,7 @@ namespace GearUpCards
     {
         private const string ModId = "com.pudassassin.rounds.GearUpCards";
         private const string ModName = "GearUpCards";
-        public const string Version = "0.2.21"; //build #172 / Release 0-2-1
+        public const string Version = "0.2.24"; //build #176 / Release 0-2-1
 
         public const string ModInitials = "GearUP";
 
@@ -64,6 +64,7 @@ namespace GearUpCards
             CustomCard.BuildCard<ChompyBulletCard>();
             CustomCard.BuildCard<TacticalScannerCard>();
             CustomCard.BuildCard<SizeNormalizerCard>();
+            CustomCard.BuildCard<BulletsDotRarCard>();
 
             // Tiberium card series
             CustomCard.BuildCard<TiberiumBulletCard>();

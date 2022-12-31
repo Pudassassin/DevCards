@@ -69,6 +69,8 @@ namespace GearUpCards.MonoBehaviours
             GameModeManager.AddHook(GameModeHooks.HookPointStart, OnPointStart);
             GameModeManager.AddHook(GameModeHooks.HookRoundStart, OnRoundStart);
             GameModeManager.AddHook(GameModeHooks.HookPointEnd, OnPointEnd);
+
+            GameModeManager.AddHook(GameModeHooks.HookGameStart, OnRematch);
         }
 
         public void Start()
@@ -132,6 +134,12 @@ namespace GearUpCards.MonoBehaviours
             yield break;
         }
 
+        private IEnumerator OnRematch(IGameModeHandler gm)
+        {
+            Destroy(this);
+            yield break;
+        }
+
         public void OnDisable()
         {
             bool isRespawning = player.data.healthHandler.isRespawning;
@@ -159,6 +167,8 @@ namespace GearUpCards.MonoBehaviours
             GameModeManager.RemoveHook(GameModeHooks.HookRoundStart, OnRoundStart);
 
             this.gun.ShootPojectileAction = (Action<GameObject>)Delegate.Remove(this.gun.ShootPojectileAction, this.shootAction);
+
+            GameModeManager.RemoveHook(GameModeHooks.HookGameStart, OnRematch);
         }
 
         public Action GetDoAttackAction(Player player, Gun gun)
@@ -345,8 +355,10 @@ namespace GearUpCards.MonoBehaviours
             Miscs.Log("ApplySpreadFlak()");
             Miscs.CopyGunStats(playerOldGun, newSpreadGun);
 
+            newSpreadGun.attackID = player.playerID;
+
             newSpreadGun.bursts = 1 + Mathf.RoundToInt((float)playerOldGun.bursts / 2.0f);
-            newSpreadGun.timeBetweenBullets = 0.10f + Mathf.Clamp(playerOldGun.timeBetweenBullets * 1.50f, 0.0f, 0.65f);
+            newSpreadGun.timeBetweenBullets = 0.03f + Mathf.Clamp(playerOldGun.timeBetweenBullets * 1.50f, 0.0f, 1.0f);
 
             newSpreadGun.numberOfProjectiles = 1 + Mathf.RoundToInt((float)playerOldGun.numberOfProjectiles / 10.0f);
 
@@ -355,14 +367,14 @@ namespace GearUpCards.MonoBehaviours
             newSpreadGun.dmgMOnBounce = 1.0f;
             newSpreadGun.percentageDamage = 0.0f;
 
-            newSpreadGun.projectileSpeed = Mathf.Clamp(playerOldGun.projectileSpeed * 0.25f, 1.5f, 10.0f);
-            newSpreadGun.projectielSimulatonSpeed = Mathf.Clamp(playerOldGun.projectielSimulatonSpeed, 0.25f, 10.0f);
+            newSpreadGun.projectileSpeed = Mathf.Clamp(playerOldGun.projectileSpeed * 0.75f, 0.25f, 7.5f);
+            newSpreadGun.projectielSimulatonSpeed = Mathf.Clamp(playerOldGun.projectielSimulatonSpeed, 0.05f, 5.0f);
             newSpreadGun.drag = 0.0f;
             newSpreadGun.dragMinSpeed = 1.0f;
 
             newSpreadGun.reflects = 24;
 
-            newSpreadGun.attackSpeed = 0.20f + playerOldGun.attackSpeed;
+            newSpreadGun.attackSpeed = 0.10f + playerOldGun.attackSpeed;
             newSpreadGun.attackSpeedMultiplier = 0.5f + (playerOldGun.attackSpeedMultiplier - 0.5f) * 1.25f;
 
             newSpreadGun.knockback = playerOldGun.knockback * 1.5f;
@@ -372,13 +384,12 @@ namespace GearUpCards.MonoBehaviours
             Miscs.Log("ApplySpreadFlak() : dummySpreadGun");
             Miscs.CopyGunStatsNoActions(playerOldGun, dummySpreadGun);
 
-            // dummySpreadGun.holdable = null;
-            // dummySpreadGun.player = null;
+            dummySpreadGun.attackID = player.playerID;
 
             dummySpreadGun.bursts = 1 + Mathf.RoundToInt((float)playerOldGun.bursts / 4.0f);
             dummySpreadGun.timeBetweenBullets = 0.15f;
 
-            dummySpreadGun.numberOfProjectiles = flakProjectileAdd + Mathf.RoundToInt((float)playerOldGun.numberOfProjectiles / 4.0f);
+            dummySpreadGun.numberOfProjectiles = flakProjectileAdd + Mathf.RoundToInt((float)playerOldGun.numberOfProjectiles / 5.0f);
 
             dummySpreadGun.damage = playerOldGun.damage * 0.5f;
 
@@ -388,34 +399,6 @@ namespace GearUpCards.MonoBehaviours
             dummySpreadGun.evenSpread = 0.0f;
             dummySpreadGun.spread = 1.0f;
             dummySpreadGun.multiplySpread = 1.0f;
-
-            // List<ObjectsToSpawn> objectsToSpawns = dummySpreadGun.objectsToSpawn.ToList();
-            // GameObject gameObject = new GameObject("FlakNoRecursion", new Type[]
-            // {
-            //     typeof(NoFlakRecursion)
-            // });
-            // objectsToSpawns.Add(new ObjectsToSpawn
-            // {
-            //     AddToProjectile = gameObject
-            // });
-            // dummySpreadGun.objectsToSpawn = objectsToSpawns.ToArray();
-
-            // Miscs.Log("ApplySpreadFlak() : clear up dummySpreadGun Flak");
-            // for (int i = 0; i < dummySpreadGun.objectsToSpawn.Length; i++)
-            // {
-            //     if (dummySpreadGun.objectsToSpawn[i].AddToProjectile != null)
-            //     {
-            //         if (dummySpreadGun.objectsToSpawn[i].AddToProjectile.name.Equals("FlakCannonModifier"))
-            //         {
-            //             Miscs.Log("ApplySpreadFlak() : found it");
-            //             Destroy(dummySpreadGun.objectsToSpawn[i].AddToProjectile.GetComponent<FlakShellModifier>());
-            //         }
-            //     }
-            // }
-
-            // Action doNothing = () => { };
-            // Traverse.Create(dummySpreadGun).Field("attackAction").SetValue((Action) doNothing);
-            // dummySpreadGun.ShootPojectileAction = new Action<GameObject>((_) => { });
 
             Miscs.Log("ApplySpreadFlak() : replacing gun");
             Miscs.CopyGunStats(newSpreadGun, gun);
@@ -586,16 +569,22 @@ namespace GearUpCards.MonoBehaviours
     {
         public static float defaultDelayTime = 0.75f;
         private float timer = 0.0f;
-         
+
+        private ProjectileHit projectileHit;
         private Player shooterPlayer;
         private UniqueGunSpreadMono gunSpreadMono;
         private Gun dummyGun;
+        CharacterStatModifiers shooterStats;
 
         public bool effectEnable = false;
+        public bool effectTriggered = false;
         public bool checkFlakShell = false;
 
         private Vector3 playerPrevPos;
         private float delayTime = defaultDelayTime;
+        private ProjectileHitEmpower empowerShotMono = null;
+
+        float dmgMul = 1.0f;
 
         public void Start()
         {
@@ -605,9 +594,21 @@ namespace GearUpCards.MonoBehaviours
         public void Setup()
         {
             delayTime = defaultDelayTime;
-            shooterPlayer = gameObject.GetComponentInParent<ProjectileHit>().ownPlayer;
+            projectileHit = gameObject.GetComponentInParent<ProjectileHit>();
+            shooterPlayer = projectileHit.ownPlayer;
             gunSpreadMono = shooterPlayer.gameObject.GetComponent<UniqueGunSpreadMono>();
+            shooterStats = shooterPlayer.gameObject.GetComponent<CharacterStatModifiers>();
             dummyGun = gunSpreadMono.dummySpreadGun;
+
+            empowerShotMono = GetComponentInChildren<ProjectileHitEmpower>();
+            if (empowerShotMono != null)
+            {
+                if (shooterStats.GetGearData().shieldBatteryStack == 0)
+                {
+                    dmgMul *= 1.5f;
+                }
+            }
+
             // shrapnelDummyGun = gameObject.AddComponent<Gun>();
             // Miscs.CopyGunStats(shooterPlayer.gameObject.GetComponent<UniqueGunSpreadMono>().dummySpreadGun, shrapnelDummyGun);
 
@@ -616,45 +617,25 @@ namespace GearUpCards.MonoBehaviours
 
         public void Update()
         {
-            if (effectEnable)
+            if (!effectTriggered)
             {
-                // if (!checkFlakShell)
-                // {
-                //     bool isFlakShell = true;
-                //     NoFlakRecursion[] stopRecursionFlag = gameObject.GetComponentsInChildren<NoFlakRecursion>();
-                //     foreach (NoFlakRecursion item in stopRecursionFlag)
-                //     {
-                //         if (item.gameObject.name == "FlakNoRecursion")
-                //         {
-                //             isFlakShell = false;
-                //             break;
-                //         }
-                //     }
-                // 
-                //     if (isFlakShell)
-                //     {
-                //         checkFlakShell = true;
-                //     }
-                //     else
-                //     {
-                //         Destroy(this);
-                //     }
-                // }
-
-                timer += TimeHandler.deltaTime;
-                if (timer >= delayTime)
+                if (effectEnable)
                 {
-                    // explode after timer
-                    FlakExplode();
+                    timer += TimeHandler.deltaTime;
+                    if (timer >= delayTime)
+                    {
+                        // explode after timer
+                        FlakExplode();
+                    }
                 }
-            }
-            else
-            {
-                MoveTransform moveTransform = GetComponentInParent<MoveTransform>();
-                if (moveTransform != null)
+                else
                 {
-                    Setup();
-                    effectEnable = true;
+                    MoveTransform moveTransform = GetComponentInParent<MoveTransform>();
+                    if (moveTransform != null)
+                    {
+                        Setup();
+                        effectEnable = true;
+                    }
                 }
             }
         }
@@ -686,6 +667,9 @@ namespace GearUpCards.MonoBehaviours
 
         public void FlakExplode()
         {
+            // empty shell's dmg
+            projectileHit.damage = 0.25f;
+            
             if (dummyGun != null)
             {
                 // playerPrevPos = shooterPlayer.transform.position;
@@ -693,16 +677,25 @@ namespace GearUpCards.MonoBehaviours
                 dummyGun.gameObject.transform.position = transform.position;
 
                 Traverse.Create(dummyGun).Field("forceShootDir").SetValue((Vector3) new Vector3(1.0f, 0.0f, 0.0f));
-                dummyGun.Attack(0.0f, true, useAmmo: false);
+                dummyGun.Attack(0.0f, true, useAmmo: false, damageM:  dmgMul);
 
-                Traverse.Create(dummyGun).Field("forceShootDir").SetValue((Vector3)new Vector3(-1.0f, 0.0f, 0.0f));
-                dummyGun.Attack(0.0f, true, useAmmo: false);
+                this.ExecuteAfterFrames(1, () =>
+                {
+                    Traverse.Create(dummyGun).Field("forceShootDir").SetValue((Vector3)new Vector3(-1.0f, 0.0f, 0.0f));
+                    dummyGun.Attack(0.0f, true, useAmmo: false, damageM: dmgMul);
+                });
 
-                Traverse.Create(dummyGun).Field("forceShootDir").SetValue((Vector3)new Vector3(0.0f, 1.0f, 0.0f));
-                dummyGun.Attack(0.0f, true, useAmmo: false);
+                this.ExecuteAfterFrames(2, () =>
+                {
+                    Traverse.Create(dummyGun).Field("forceShootDir").SetValue((Vector3)new Vector3(0.0f, 1.0f, 0.0f));
+                    dummyGun.Attack(0.0f, true, useAmmo: false, damageM: dmgMul);
+                });
 
-                Traverse.Create(dummyGun).Field("forceShootDir").SetValue((Vector3)new Vector3(0.0f, -1.0f, 0.0f));
-                dummyGun.Attack(0.0f, true, useAmmo: false);
+                this.ExecuteAfterFrames(3, () =>
+                {
+                    Traverse.Create(dummyGun).Field("forceShootDir").SetValue((Vector3)new Vector3(0.0f, -1.0f, 0.0f));
+                    dummyGun.Attack(0.0f, true, useAmmo: false, damageM: dmgMul);
+                });
 
                 // shooterPlayer.transform.position = playerPrevPos;
             }
@@ -711,11 +704,26 @@ namespace GearUpCards.MonoBehaviours
                 Miscs.LogWarn("[GearUp] FlakShellModifier: Dummy Gun is NULL!");
             }
 
-            this.ExecuteAfterFrames(1, () =>
+            this.ExecuteAfterFrames(5, () =>
             {
-                // Miscs.Log("Boom!");
-                Destroy(gameObject);
+                RayHitReflect rayHitReflect = GetComponentInChildren<RayHitReflect>();
+                if (rayHitReflect != null)
+                {
+                    rayHitReflect.reflects = dummyGun.reflects;
+                }
+
+                if (empowerShotMono == null)
+                {
+                    // Miscs.Log("Boom!");
+                    Destroy(gameObject);
+                }
+                else
+                {
+                    Destroy(this);
+                }
             });
+
+            
         }
     }
 

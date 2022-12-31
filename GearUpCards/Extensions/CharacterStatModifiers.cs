@@ -38,7 +38,9 @@ namespace GearUpCards.Extensions
 
         public enum AddOnType
         {
-            cadModuleGlyph
+            gunBulletsDotRar = 0,
+
+            cadModuleGlyph = 50
         }
     }
 

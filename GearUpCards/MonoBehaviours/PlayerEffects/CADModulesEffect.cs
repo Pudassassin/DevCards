@@ -71,6 +71,8 @@ namespace GearUpCards.MonoBehaviours
             GameModeManager.AddHook(GameModeHooks.HookPointStart, OnPointStart);
             // GameModeManager.AddHook(GameModeHooks.HookPickEnd, OnPickEnd);
             GameModeManager.AddHook(GameModeHooks.HookPointEnd, OnPointEnd);
+
+            GameModeManager.AddHook(GameModeHooks.HookGameStart, OnRematch);
         }
 
         public void Start()
@@ -167,6 +169,12 @@ namespace GearUpCards.MonoBehaviours
             yield break;
         }
 
+        private IEnumerator OnRematch(IGameModeHandler gm)
+        {
+            Destroy(this);
+            yield break;
+        }
+
         public void OnDisable()
         {
 
@@ -181,6 +189,7 @@ namespace GearUpCards.MonoBehaviours
             // GameModeManager.RemoveHook(GameModeHooks.HookBattleStart, OnPickEnd);
             GameModeManager.RemoveHook(GameModeHooks.HookPointEnd, OnPointEnd);
 
+            GameModeManager.RemoveHook(GameModeHooks.HookGameStart, OnRematch);
         }
     }
 }
