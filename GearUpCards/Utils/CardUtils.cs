@@ -167,7 +167,7 @@ namespace GearUpCards.Utils
                 }
             }
 
-            query = query.Replace(" ", "").ToLower();
+            query = CardNameSanitize(query, removeWhitespaces: true);
             string cardName;
             List<CardInfo> cardInfoList = CardManager.cards.Values.Select(c => c.cardInfo).ToList();
 
@@ -181,10 +181,12 @@ namespace GearUpCards.Utils
             int matchScore = 0;
             foreach (CardInfo item in cardInfoList)
             {
-                cardName = item.gameObject.name.Replace(" ", "").ToLower();
+                cardName = CardNameSanitize(item.gameObject.name, removeWhitespaces: true);
                 if (searchVanillaOnly && cardName.Contains("__")) continue;
                 // Logging here is process time-intensive
                 // Miscs.Log($"> Check for [{query}] <-> [{cardName}]");
+
+                cardName = CardNameSanitize(item.cardName, removeWhitespaces: true);
 
                 if (cardName.Equals(query))
                 {
@@ -553,6 +555,42 @@ namespace GearUpCards.Utils
                 GetCardInfo("Empower", true),
                 mul: tempModifier
             );
+        }
+
+        public static string CardNameSanitize(string name, bool removeWhitespaces = false)
+        {
+            string result = name.ToLower();
+            if (removeWhitespaces)
+            {
+                result = result.Replace(" ", "");
+            }
+
+            return result;
+        }
+
+        public static void MakeExclusive(string cardA, string cardB)
+        {
+            CardInfo cardInfoA, cardInfoB;
+            cardInfoA = GetCardInfo(cardA);
+            cardInfoB = GetCardInfo(cardB);
+
+            if (cardInfoA != null && cardInfoB != null)
+            {
+                CustomCardCategories.instance.MakeCardsExclusive(cardInfoA, cardInfoB);
+
+                Miscs.Log($"[GearUp] MakeExclusive: card [{cardA}] and card [{cardB}] made exclusive");
+            }
+            else
+            {
+                if (cardInfoA == null)
+                {
+                    Miscs.LogWarn($"[GearUp] MakeExclusive: card [{cardA}] not found");
+                }
+                if (cardInfoB == null)
+                {
+                    Miscs.LogWarn($"[GearUp] MakeExclusive: card [{cardB}] not found");
+                }
+            }
         }
 
         // extra text (bottom-right) of the card, credit to Pykess

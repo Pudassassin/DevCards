@@ -15,26 +15,38 @@ using static GearUpCards.Utils.CardUtils;
 
 namespace GearUpCards.Cards
 {
-    class GlyphCADModuleCard : CustomCard
+    class RollingBulwarkOrbCard : CustomCard
     {
         internal static GameObject cardArt = null; // GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_ArcOfBullets");
 
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            cardInfo.allowMultiple = false;
-            // cardInfo.categories = new CardCategory[]
-            // {
-            //     GearCategory.tagSpellOnlyAugment
-            // };
+            cardInfo.categories = new CardCategory[]
+            {
+                GearCategory.tagSpell
+            };
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            // black/whitelisting
-            // ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.typeUniqueGunSpread);
+            ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Remove(GearCategory.tagSpellOnlyAugment);
 
-            player.gameObject.GetOrAddComponent<GearUpPreRoundEffects>();
-            characterStats.GetGearData().addOnList.Add(GearUpConstants.AddOnType.cadModuleGlyph);
+            characterStats.GetGearData().orbRollingBulwarkStack += 1;
 
+            // temp prototype
+            List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList<ObjectsToSpawn>();
+
+            GameObject gameObject = new GameObject("RollingBorbwarkModifier", new Type[]
+            {
+                typeof(BulletNoClipModifier),
+                typeof(CustomEmpowerShotModifier)
+            });
+
+            list.Add(new ObjectsToSpawn
+            {
+                AddToProjectile = gameObject
+            });
+
+            gun.objectsToSpawn = list.ToArray();
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -42,11 +54,11 @@ namespace GearUpCards.Cards
         }
         protected override string GetTitle()
         {
-            return "Glyph CAD Module";
+            return "Rolling Borbwark";
         }
         protected override string GetDescription()
         {
-            return "Your Gun and Block benefit <b>TWICE</b> the bonus from Glyphs and boost the chance of finding Spell and more Glyphs";
+            return "";
         }
         protected override GameObject GetCardArt()
         {
@@ -85,7 +97,7 @@ namespace GearUpCards.Cards
         }
         protected override CardThemeColor.CardThemeColorType GetTheme()
         {
-            return CardThemeColor.CardThemeColorType.TechWhite;
+            return CardThemeColor.CardThemeColorType.MagicPink;
         }
         public override string GetModName()
         {
@@ -93,7 +105,7 @@ namespace GearUpCards.Cards
         }
         public override void Callback()
         {
-            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "CAD\nModule";
+            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Orb\nSpell";
         }
     }
 }

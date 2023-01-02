@@ -27,7 +27,7 @@ namespace GearUpCards.MonoBehaviours
         private const string bulletGameObjectName = "Bullet_Base(Clone)";
         private const float spellCooldownBase = 12.0f;
         private const float spellForceReloadTimeAddBase = 3.5f;
-        private const float spellRangeBase = 9.0f;
+        private const float spellRangeBase = 10.0f;
         private const float spellDurationBase = 1.5f;
         private const float spellForceReloadSelfMultiplierBase = 0.5f;
 
@@ -36,7 +36,7 @@ namespace GearUpCards.MonoBehaviours
         public bool spellIsCast = false;
         public BlockTrigger.BlockTriggerType spellTrigger;
 
-        private const float procTime = .025f;
+        private const float procTime = 0.01f;
         private const float warmupTime = 2.0f;
 
         internal Action<BlockTrigger.BlockTriggerType> spellAction;
@@ -51,7 +51,7 @@ namespace GearUpCards.MonoBehaviours
 
 
         internal float spellCooldown = 12.0f;
-        internal float spellRange = 8.0f;
+        internal float spellRange = 10.0f;
         internal float spellForceReloadTimeAdd = 3.5f;
         internal float spellDuration = 1.5f;
         internal float spellForceReloadSelfMultiplier = 0.5f;

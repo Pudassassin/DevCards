@@ -169,6 +169,7 @@ namespace GearUpCards.Utils
 			copyToGun.damage = copyFromGun.damage;
 			copyToGun.damageAfterDistanceMultiplier = copyFromGun.damageAfterDistanceMultiplier;
 			copyToGun.defaultCooldown = copyFromGun.defaultCooldown;
+			copyToGun.destroyBulletAfter = copyFromGun.destroyBulletAfter;
 			copyToGun.dmgMOnBounce = copyFromGun.dmgMOnBounce;
 			copyToGun.dontAllowAutoFire = copyFromGun.dontAllowAutoFire;
 			copyToGun.drag = copyFromGun.drag;

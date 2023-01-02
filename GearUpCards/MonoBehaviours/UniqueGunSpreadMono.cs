@@ -43,14 +43,18 @@ namespace GearUpCards.MonoBehaviours
         private GameObject gameObjectToAdd;
         private Gun playerOldGun, newSpreadGun;
         public Gun dummySpreadGun = null;
+
         internal bool isGunReplaced = false;
         internal GearUpConstants.ModType lastGunSpreadMod = GearUpConstants.ModType.none;
+        internal GameObject bulletLifetimeFixer;
 
         public void Awake()
         {
             this.player = this.gameObject.GetComponent<Player>();
             this.gun = this.gameObject.GetComponent<WeaponHandler>().gun;
             this.stats = this.gameObject.GetComponent<CharacterStatModifiers>();
+
+            bulletLifetimeFixer = new GameObject("BulletLifetimeFixer", typeof(BulletLifetimeFix));
 
             oldGunObject = new GameObject("UniqueGunSpreadHolder_oldGun");
             oldGunObject.transform.parent = player.transform;
@@ -357,20 +361,26 @@ namespace GearUpCards.MonoBehaviours
 
             newSpreadGun.attackID = player.playerID;
 
-            newSpreadGun.bursts = 1 + Mathf.RoundToInt((float)playerOldGun.bursts / 2.0f);
+            newSpreadGun.bursts = Mathf.Clamp(Mathf.RoundToInt((float)playerOldGun.bursts / 2.0f), 1, playerOldGun.bursts);
             newSpreadGun.timeBetweenBullets = 0.03f + Mathf.Clamp(playerOldGun.timeBetweenBullets * 1.50f, 0.0f, 1.0f);
 
             newSpreadGun.numberOfProjectiles = 1 + Mathf.RoundToInt((float)playerOldGun.numberOfProjectiles / 10.0f);
 
-            newSpreadGun.damage = playerOldGun.damage * 2.5f;
+            newSpreadGun.damage = playerOldGun.damage * 1.5f;
+            newSpreadGun.bulletDamageMultiplier = playerOldGun.bulletDamageMultiplier * 1.5f;
+
             newSpreadGun.damageAfterDistanceMultiplier = 1.0f;
             newSpreadGun.dmgMOnBounce = 1.0f;
             newSpreadGun.percentageDamage = 0.0f;
 
+            newSpreadGun.spread = playerOldGun.spread * 0.75f;
+            newSpreadGun.evenSpread = playerOldGun.evenSpread * 0.75f;
+            newSpreadGun.multiplySpread = playerOldGun.multiplySpread * 0.75f;
+
             newSpreadGun.projectileSpeed = Mathf.Clamp(playerOldGun.projectileSpeed * 0.75f, 0.25f, 7.5f);
             newSpreadGun.projectielSimulatonSpeed = Mathf.Clamp(playerOldGun.projectielSimulatonSpeed, 0.05f, 5.0f);
-            newSpreadGun.drag = 0.0f;
-            newSpreadGun.dragMinSpeed = 1.0f;
+            // newSpreadGun.drag = 0.0f;
+            // newSpreadGun.dragMinSpeed = 1.0f;
 
             newSpreadGun.reflects = 24;
 
@@ -380,25 +390,36 @@ namespace GearUpCards.MonoBehaviours
             newSpreadGun.knockback = playerOldGun.knockback * 1.5f;
             newSpreadGun.recoil = playerOldGun.recoil * 0.05f;
 
-            // fragmentation stats (to be fired 4 times)
+            // newSpreadGun.destroyBulletAfter = 0.0f;
+
+            // fragmentation stats (to be fired 8! times)
             Miscs.Log("ApplySpreadFlak() : dummySpreadGun");
             Miscs.CopyGunStatsNoActions(playerOldGun, dummySpreadGun);
 
             dummySpreadGun.attackID = player.playerID;
 
-            dummySpreadGun.bursts = 1 + Mathf.RoundToInt((float)playerOldGun.bursts / 4.0f);
+            dummySpreadGun.bursts = Mathf.Clamp(Mathf.RoundToInt((float)playerOldGun.bursts / 4.0f), 1, playerOldGun.bursts);
             dummySpreadGun.timeBetweenBullets = 0.15f;
 
-            dummySpreadGun.numberOfProjectiles = flakProjectileAdd + Mathf.RoundToInt((float)playerOldGun.numberOfProjectiles / 5.0f);
+            dummySpreadGun.numberOfProjectiles = flakProjectileAdd + Mathf.RoundToInt((float)playerOldGun.numberOfProjectiles / 9.0f);
 
-            dummySpreadGun.damage = playerOldGun.damage * 0.5f;
+            dummySpreadGun.damage = playerOldGun.damage * 0.65f;
+            dummySpreadGun.bulletDamageMultiplier = playerOldGun.bulletDamageMultiplier * 0.65f;
 
             dummySpreadGun.projectileSpeed = Mathf.Clamp(playerOldGun.projectileSpeed, 0.5f, 25.0f);
             dummySpreadGun.projectielSimulatonSpeed = Mathf.Clamp(playerOldGun.projectielSimulatonSpeed, 0.20f, 10.0f);
 
             dummySpreadGun.evenSpread = 0.0f;
             dummySpreadGun.spread = 1.0f;
-            dummySpreadGun.multiplySpread = 1.0f;
+            dummySpreadGun.multiplySpread = 1.5f;
+
+            // dummySpreadGun.dragMinSpeed = 0.05f;
+
+            List<ObjectsToSpawn> spawnList = playerOldGun.objectsToSpawn.ToList();
+            ObjectsToSpawn spawn = new ObjectsToSpawn();
+            spawn.AddToProjectile = bulletLifetimeFixer;
+            spawnList.Add(spawn);
+            dummySpreadGun.objectsToSpawn = spawnList.ToArray();
 
             Miscs.Log("ApplySpreadFlak() : replacing gun");
             Miscs.CopyGunStats(newSpreadGun, gun);
@@ -406,6 +427,11 @@ namespace GearUpCards.MonoBehaviours
 
             Miscs.Log("ApplySpreadFlak() : combine delegate");
             this.gun.ShootPojectileAction = (Action<GameObject>)Delegate.Combine(this.gun.ShootPojectileAction, this.shootAction);
+        }
+
+        public float GetFlakCurrentDamageMultiplier()
+        {
+            return (gun.damage / newSpreadGun.damage) * (gun.bulletDamageMultiplier / newSpreadGun.bulletDamageMultiplier);
         }
     }
 
@@ -609,6 +635,15 @@ namespace GearUpCards.MonoBehaviours
                 }
             }
 
+            dmgMul *= gunSpreadMono.GetFlakCurrentDamageMultiplier();
+
+            RemoveAfterSeconds removeMono = gameObject.GetComponentInChildren<RemoveAfterSeconds>();
+            if (removeMono != null)
+            {
+                delayTime = Mathf.Clamp(removeMono.seconds * 2.0f, 0.0f, defaultDelayTime);
+                removeMono.seconds *= 5.0f;
+            }
+
             // shrapnelDummyGun = gameObject.AddComponent<Gun>();
             // Miscs.CopyGunStats(shooterPlayer.gameObject.GetComponent<UniqueGunSpreadMono>().dummySpreadGun, shrapnelDummyGun);
 
@@ -678,24 +713,32 @@ namespace GearUpCards.MonoBehaviours
 
                 Traverse.Create(dummyGun).Field("forceShootDir").SetValue((Vector3) new Vector3(1.0f, 0.0f, 0.0f));
                 dummyGun.Attack(0.0f, true, useAmmo: false, damageM:  dmgMul);
+                Traverse.Create(dummyGun).Field("forceShootDir").SetValue((Vector3)new Vector3(-1.0f, 0.0f, 0.0f));
+                dummyGun.Attack(0.0f, true, useAmmo: false, damageM: dmgMul);
 
                 this.ExecuteAfterFrames(1, () =>
                 {
-                    Traverse.Create(dummyGun).Field("forceShootDir").SetValue((Vector3)new Vector3(-1.0f, 0.0f, 0.0f));
+                    Traverse.Create(dummyGun).Field("forceShootDir").SetValue((Vector3)new Vector3(0.5f, 0.866f, 0.0f));
+                    dummyGun.Attack(0.0f, true, useAmmo: false, damageM: dmgMul);
+                    Traverse.Create(dummyGun).Field("forceShootDir").SetValue((Vector3)new Vector3(-0.5f, -0.866f, 0.0f));
                     dummyGun.Attack(0.0f, true, useAmmo: false, damageM: dmgMul);
                 });
 
                 this.ExecuteAfterFrames(2, () =>
                 {
-                    Traverse.Create(dummyGun).Field("forceShootDir").SetValue((Vector3)new Vector3(0.0f, 1.0f, 0.0f));
+                    Traverse.Create(dummyGun).Field("forceShootDir").SetValue((Vector3)new Vector3(0.5f, -0.866f, 0.0f));
+                    dummyGun.Attack(0.0f, true, useAmmo: false, damageM: dmgMul);
+                    Traverse.Create(dummyGun).Field("forceShootDir").SetValue((Vector3)new Vector3(-0.5f, 0.866f, 0.0f));
                     dummyGun.Attack(0.0f, true, useAmmo: false, damageM: dmgMul);
                 });
 
-                this.ExecuteAfterFrames(3, () =>
-                {
-                    Traverse.Create(dummyGun).Field("forceShootDir").SetValue((Vector3)new Vector3(0.0f, -1.0f, 0.0f));
-                    dummyGun.Attack(0.0f, true, useAmmo: false, damageM: dmgMul);
-                });
+                // this.ExecuteAfterFrames(3, () =>
+                // {
+                //     Traverse.Create(dummyGun).Field("forceShootDir").SetValue((Vector3)new Vector3(1.0f, -1.0f, 0.0f));
+                //     dummyGun.Attack(0.0f, true, useAmmo: false, damageM: dmgMul);
+                //     Traverse.Create(dummyGun).Field("forceShootDir").SetValue((Vector3)new Vector3(-1.0f, 1.0f, 0.0f));
+                //     dummyGun.Attack(0.0f, true, useAmmo: false, damageM: dmgMul);
+                // });
 
                 // shooterPlayer.transform.position = playerPrevPos;
             }
@@ -775,6 +818,33 @@ namespace GearUpCards.MonoBehaviours
             maxVelocity = inMaxVelo;
             minSimSpeed = inMinSimSpeed;
             maxSimSpeed = inMaxSimSpeed;
+        }
+    }
+
+    class BulletLifetimeFix : MonoBehaviour
+    {
+        MoveTransform moveTransform;
+
+        public void Update()
+        {
+            moveTransform = GetComponentInParent<MoveTransform>();
+            if (moveTransform != null)
+            {
+                ProjectileHit projectileHit = gameObject.GetComponentInParent<ProjectileHit>();
+                Gun shooterGun = projectileHit.ownWeapon.GetComponent<Gun>();
+                
+                RemoveAfterSeconds removeMono = gameObject.GetComponentInParent<RemoveAfterSeconds>();
+                if (shooterGun.destroyBulletAfter > 0.0f)
+                {
+                    if (removeMono == null)
+                    {
+                        removeMono = gameObject.GetOrAddComponent<RemoveAfterSeconds>();
+                    }
+                    removeMono.seconds = shooterGun.destroyBulletAfter;
+                }
+
+                Destroy(this);
+            }
         }
     }
 

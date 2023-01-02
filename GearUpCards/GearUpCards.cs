@@ -19,6 +19,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 using GearUpCards.Utils;
+using UnboundLib.Extensions;
 
 namespace GearUpCards
 {
@@ -41,7 +42,7 @@ namespace GearUpCards
     {
         private const string ModId = "com.pudassassin.rounds.GearUpCards";
         private const string ModName = "GearUpCards";
-        public const string Version = "0.2.24"; //build #176 / Release 0-2-1
+        public const string Version = "0.2.33"; //build #187 / Release 0-3-0
 
         public const string ModInitials = "GearUP";
 
@@ -82,6 +83,7 @@ namespace GearUpCards
 
             // Orb Spells
             CustomCard.BuildCard<ObliterationOrbCard>();
+            CustomCard.BuildCard<RollingBulwarkOrbCard>();
 
             // Spell Casting-Assistance-Device series
             CustomCard.BuildCard<GlyphCADModuleCard>();
@@ -110,31 +112,21 @@ namespace GearUpCards
             GameModeManager.AddHook(GameModeHooks.HookPointStart, PointStart);
 
             // make cards mutually exclusive
-            this.ExecuteAfterFrames(5, () =>
+            this.ExecuteAfterFrames(10, () =>
             {
-                if (CardManager.cards.Values.Any(card => card.cardInfo.cardName == "Size Difference"))
+                if (GetCardInfo("Size Difference") != null)
                 {
-                    CardInfo otherCard = CardManager.cards.Values.First(card => card.cardInfo.cardName == "Size Difference").cardInfo;
-
-                    CustomCardCategories.instance.MakeCardsExclusive
-                    (
-                        otherCard,
-                        CardManager.cards.Values.First(card => card.cardInfo.cardName == "Size Normalizer").cardInfo
-                    );
+                    CardInfo otherCard = GetCardInfo("Size Difference");
+                    MakeExclusive("Size Difference", "Size Normalizer");
 
                     List<CardCategory> newList = otherCard.categories.ToList();
                     newList.Add(GearCategory.typeSizeMod);
                     otherCard.categories = newList.ToArray();
                 }
-                if (CardManager.cards.Values.Any(card => card.cardInfo.cardName == "Size Matters"))
+                if (GetCardInfo("Size Matters") != null)
                 {
-                    CardInfo otherCard = CardManager.cards.Values.First(card => card.cardInfo.cardName == "Size Matters").cardInfo;
-
-                    CustomCardCategories.instance.MakeCardsExclusive
-                    (
-                        otherCard,
-                        CardManager.cards.Values.First(card => card.cardInfo.cardName == "Size Normalizer").cardInfo
-                    );
+                    CardInfo otherCard = GetCardInfo("Size Matters");
+                    MakeExclusive("Size Matters", "Size Normalizer");
 
                     List<CardCategory> newList = otherCard.categories.ToList();
                     newList.Add(GearCategory.typeSizeMod);
@@ -142,29 +134,19 @@ namespace GearUpCards
                 }
 
                 // [Flak Cannon] Vs WWC
-                if (CardManager.cards.Values.Any(card => card.cardInfo.cardName == "Plasma Rifle"))
+                if (GetCardInfo("Plasma Rifle") != null)
                 {
-                    CardInfo otherCard = CardManager.cards.Values.First(card => card.cardInfo.cardName == "Plasma Rifle").cardInfo;
-
-                    CustomCardCategories.instance.MakeCardsExclusive
-                    (
-                        otherCard,
-                        CardManager.cards.Values.First(card => card.cardInfo.cardName == "Flak Cannon").cardInfo
-                    );
+                    CardInfo otherCard = GetCardInfo("Plasma Rifle");
+                    MakeExclusive("Plasma Rifle", "Flak Cannon");
 
                     List<CardCategory> newList = otherCard.categories.ToList();
                     newList.Add(GearCategory.typeGunMod);
                     otherCard.categories = newList.ToArray();
                 }
-                if (CardManager.cards.Values.Any(card => card.cardInfo.cardName == "Plasma Shotgun"))
+                if (GetCardInfo("Plasma Shotgun") != null)
                 {
-                    CardInfo otherCard = CardManager.cards.Values.First(card => card.cardInfo.cardName == "Plasma Shotgun").cardInfo;
-
-                    CustomCardCategories.instance.MakeCardsExclusive
-                    (
-                        otherCard,
-                        CardManager.cards.Values.First(card => card.cardInfo.cardName == "Flak Cannon").cardInfo
-                    );
+                    CardInfo otherCard = GetCardInfo("Plasma Shotgun");
+                    MakeExclusive("Plasma Shotgun", "Flak Cannon");
 
                     List<CardCategory> newList = otherCard.categories.ToList();
                     newList.Add(GearCategory.typeGunMod);
@@ -172,69 +154,20 @@ namespace GearUpCards
                 }
 
                 // [Flak Cannon] Vs PCE
-                if (CardManager.cards.Values.Any(card => card.cardInfo.cardName == "Fragmentation"))
-                {
-                    CardInfo otherCard = CardManager.cards.Values.First(card => card.cardInfo.cardName == "Fragmentation").cardInfo;
-
-                    CustomCardCategories.instance.MakeCardsExclusive
-                    (
-                        otherCard,
-                        CardManager.cards.Values.First(card => card.cardInfo.cardName == "Flak Cannon").cardInfo
-                    );
-                }
-                if (CardManager.cards.Values.Any(card => card.cardInfo.cardName == "Fireworks"))
-                {
-                    CardInfo otherCard = CardManager.cards.Values.First(card => card.cardInfo.cardName == "Fireworks").cardInfo;
-
-                    CustomCardCategories.instance.MakeCardsExclusive
-                    (
-                        otherCard,
-                        CardManager.cards.Values.First(card => card.cardInfo.cardName == "Flak Cannon").cardInfo
-                    );
-                }
+                MakeExclusive("Fragmentation", "Flak Cannon");
+                MakeExclusive("Fireworks", "Flak Cannon");
 
                 // [Flak Cannon] Vs BSC
-                if (CardManager.cards.Values.Any(card => card.cardInfo.cardName == "Rolling Thunder"))
-                {
-                    CardInfo otherCard = CardManager.cards.Values.First(card => card.cardInfo.cardName == "Rolling Thunder").cardInfo;
-
-                    CustomCardCategories.instance.MakeCardsExclusive
-                    (
-                        otherCard,
-                        CardManager.cards.Values.First(card => card.cardInfo.cardName == "Flak Cannon").cardInfo
-                    );
-                }
-                if (CardManager.cards.Values.Any(card => card.cardInfo.cardName == "Splitting Rounds"))
-                {
-                    CardInfo otherCard = CardManager.cards.Values.First(card => card.cardInfo.cardName == "Splitting Rounds").cardInfo;
-
-                    CustomCardCategories.instance.MakeCardsExclusive
-                    (
-                        otherCard,
-                        CardManager.cards.Values.First(card => card.cardInfo.cardName == "Flak Cannon").cardInfo
-                    );
-                }
+                MakeExclusive("Rolling Thunder", "Flak Cannon");
+                MakeExclusive("Splitting Rounds", "Flak Cannon");
 
                 // Vs CC's [Shock Blast]
-                if (CardManager.cards.Values.Any(card => card.cardInfo.cardName == "Shock Blast"))
+                if (GetCardInfo("Shock Blast"))
                 {
-                    CardInfo otherCard = CardManager.cards.Values.First(card => card.cardInfo.cardName == "Shock Blast").cardInfo;
-
-                    CustomCardCategories.instance.MakeCardsExclusive
-                    (
-                        otherCard,
-                        CardManager.cards.Values.First(card => card.cardInfo.cardName == "Flak Cannon").cardInfo
-                    );
-                    CustomCardCategories.instance.MakeCardsExclusive
-                    (
-                        otherCard,
-                        CardManager.cards.Values.First(card => card.cardInfo.cardName == "Arc of Bullets").cardInfo
-                    );
-                    CustomCardCategories.instance.MakeCardsExclusive
-                    (
-                        otherCard,
-                        CardManager.cards.Values.First(card => card.cardInfo.cardName == "Parallel Bullets").cardInfo
-                    );
+                    CardInfo otherCard = GetCardInfo("Shock Blast");
+                    MakeExclusive("Shock Blast", "Flak Cannon");
+                    MakeExclusive("Shock Blast", "Arc of Bullets");
+                    MakeExclusive("Shock Blast", "Parallel Bullets");
 
                     List<CardCategory> newList = otherCard.categories.ToList();
                     newList.Add(GearCategory.typeGunMod);
@@ -360,5 +293,11 @@ namespace GearUpCards
         // Assets loader
         public static readonly AssetBundle VFXBundle = Jotunn.Utils.AssetUtils.LoadAssetBundleFromResources("gearup_asset", typeof(GearUpCards).Assembly);
         public static readonly AssetBundle CardArtBundle = Jotunn.Utils.AssetUtils.LoadAssetBundleFromResources("gearup_cardarts", typeof(GearUpCards).Assembly);
+
+        // debug
+        // public static void GetPlayerBlacklistedCards(Player player)
+        // {
+        //     return player.data.Get
+        // }
     }
 }

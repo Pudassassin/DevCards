@@ -8,8 +8,8 @@
   <ItemGroup>
     <Compile Remove="Cards\ShardSlinger.cs" />
     <Compile Remove="Cards\Template.cs" />
-    <Compile Remove="MonoBehaviours\BulletModifiers\Class1.cs" />
     <Compile Remove="MonoBehaviours\CrystalShardModifier.cs" />
+    <Compile Remove="MonoBehaviours\PlayerEffects\CADModulesEffect.cs" />
     <Compile Remove="Patches\CardPickPatch.cs" />
     <Compile Remove="Utils\GunUtils.cs" />
   </ItemGroup>
@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="MonoBehaviours\BulletModifiers\Class1.cs" />
+    <None Include="MonoBehaviours\PlayerEffects\CADModulesEffect.cs" />
     <None Include="Patches\CardPickPatch.cs" />
     <None Include="Utils\GunUtils.cs" />
   </ItemGroup>

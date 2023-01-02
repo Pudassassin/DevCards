@@ -63,6 +63,7 @@ namespace GearUpCards.Extensions
         public int glyphPiercing;
 
         public int orbObliterationStack;
+        public int orbRollingBulwarkStack;
 
         public int magickFragmentStack;
 
@@ -97,6 +98,7 @@ namespace GearUpCards.Extensions
             glyphPiercing = 0;
 
             orbObliterationStack = 0;
+            orbRollingBulwarkStack = 0;
 
             // 1.0f being 100%/s!!
             hpPercentageRegen = 0.0f;
@@ -153,6 +155,7 @@ namespace GearUpCards.Extensions
             __instance.GetGearData().glyphPiercing = 0;
 
             __instance.GetGearData().orbObliterationStack = 0;
+            __instance.GetGearData().orbRollingBulwarkStack = 0;
 
             __instance.GetGearData().hpPercentageRegen = 0.0f;
 
