@@ -280,7 +280,8 @@ namespace GearUpCards.Utils
         {
             // GearUp spells
             "Anti-Bullet Magick",
-            "Orb-literation!"
+            "Orb-literation!",
+            "Rolling Borbwark"
         };
         public static List<string> cardListGlyph = new List<string>()
         {
@@ -318,6 +319,7 @@ namespace GearUpCards.Utils
             "GearUP@Magick Fragments",
             "GearUP@Shield Battery",
             "GearUP@Tactical Scanner",
+            "GearUP@Rolling Borbwark",
 
             // Willis' Cards Plus - Cards+
             "Cards+@Turtle",

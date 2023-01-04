@@ -19,7 +19,7 @@ namespace GearUpCards.MonoBehaviours
     internal class UniqueGunSpreadMono : MonoBehaviour
     {
         private const float procTime = 0.1f;
-        public static int flakProjectileAdd = 1;
+        public static int flakProjectileAdd = 2;
 
         internal Player player;
         internal Gun gun;
@@ -398,10 +398,10 @@ namespace GearUpCards.MonoBehaviours
 
             dummySpreadGun.attackID = player.playerID;
 
-            dummySpreadGun.bursts = Mathf.Clamp(Mathf.RoundToInt((float)playerOldGun.bursts / 4.0f), 1, playerOldGun.bursts);
+            dummySpreadGun.bursts = 0; // Mathf.Clamp(Mathf.RoundToInt((float)playerOldGun.bursts / 6.0f), 0, playerOldGun.bursts);
             dummySpreadGun.timeBetweenBullets = 0.15f;
 
-            dummySpreadGun.numberOfProjectiles = flakProjectileAdd + Mathf.RoundToInt((float)playerOldGun.numberOfProjectiles / 9.0f);
+            dummySpreadGun.numberOfProjectiles = flakProjectileAdd + Mathf.RoundToInt((float)playerOldGun.numberOfProjectiles / 7.0f);
 
             dummySpreadGun.damage = playerOldGun.damage * 0.65f;
             dummySpreadGun.bulletDamageMultiplier = playerOldGun.bulletDamageMultiplier * 0.65f;
@@ -420,6 +420,24 @@ namespace GearUpCards.MonoBehaviours
             spawn.AddToProjectile = bulletLifetimeFixer;
             spawnList.Add(spawn);
             dummySpreadGun.objectsToSpawn = spawnList.ToArray();
+
+            dummySpreadGun.ShootPojectileAction = (projectile) =>
+            {
+                try
+                {
+                    ChompyBulletModifier chompyMono = projectile.transform.root.GetComponentInChildren<ChompyBulletModifier>();
+                    if (chompyMono != null)
+                    {
+                        chompyMono.gameObject.AddComponent<ChompyBulletPetiteModifier>();
+                        Destroy(chompyMono);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    Miscs.LogError("[GearUp] FlakShrapnel shoot action failed!");
+                    Miscs.LogWarn(exception);
+                }
+            };
 
             Miscs.Log("ApplySpreadFlak() : replacing gun");
             Miscs.CopyGunStats(newSpreadGun, gun);
@@ -677,6 +695,8 @@ namespace GearUpCards.MonoBehaviours
 
         public override HasToReturn DoHitEffect(HitInfo hit)
         {
+            if (effectTriggered) return HasToReturn.canContinue;
+
             if (hit.transform != null)
             {
                 Miscs.Log("[GearUp] FlakShellModifier hit: " + hit.transform.gameObject.name);
@@ -766,7 +786,7 @@ namespace GearUpCards.MonoBehaviours
                 }
             });
 
-            
+            effectTriggered = true;
         }
     }
 

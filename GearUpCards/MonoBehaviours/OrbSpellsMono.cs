@@ -25,6 +25,7 @@ namespace GearUpCards.MonoBehaviours
         // public float _debugScale = 2.0f;
 
         private static GameObject spellVFXOrbLiterate = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_VortexLoop");
+        private static GameObject spellVFXRollingBuorbwark = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_EmpowerShot");
 
         private const string bulletGameObjectName = "Bullet_Base(Clone)";
 
@@ -48,11 +49,13 @@ namespace GearUpCards.MonoBehaviours
             //   gun stats handled by outside methods
             //   orb stats handled by modifier mono
 
-            GameObject bulletModifier;
+            // GameObject bulletModifier;
             GameObject orbDummyGunHolder;
             public OrbSpellType type;
             public Gun orbDummyGun;
             public int castPriority;
+
+            public Action<GameObject> castAction = (_) => { };
 
             private float cooldownStats;
             private float cooldownTimer;
@@ -64,6 +67,8 @@ namespace GearUpCards.MonoBehaviours
             // GameObject mainGunSpell;
             private int orbMaxCount;
             private int orbCount;
+
+            private float burstTimer = 0.0f;
 
             public void SetupDummyGun(Gun playerGun, Player player)
             {
@@ -318,23 +323,23 @@ namespace GearUpCards.MonoBehaviours
                     // fire method
                     orbDummyGun.Attack(0.0f, true, useAmmo: false);
 
-                    try
-                    {
-                        GameObject bulletFired = ((SpawnedAttack)orbDummyGun.GetFieldValue("spawnedAttack")).gameObject;
-                        bulletFired.name = "OrbSpell_Projectile";
-                    }
-                    catch (Exception exception)
-                    {
-                        Miscs.LogWarn("[GearUp] OrbSpellsMono:OrbSpellStats bullet renaming failed!");
-                        Miscs.LogWarn(exception);
-                    }
+                    // try
+                    // {
+                    //     GameObject bulletFired = ((SpawnedAttack)orbDummyGun.GetFieldValue("spawnedAttack")).gameObject;
+                    //     bulletFired.name = "OrbSpell_Projectile";
+                    // }
+                    // catch (Exception exception)
+                    // {
+                    //     Miscs.LogWarn("[GearUp] OrbSpellsMono:OrbSpellStats bullet renaming failed!");
+                    //     Miscs.LogWarn(exception);
+                    // }
 
                     // also check if manual cast is enable
                     if (!spellBursting && orbCount > 1) 
                     {
                         // fire, trigger burst
-
                         spellBursting = true;
+                        cooldownTimer = orbDummyGun.timeBetweenBullets;
                         orbCount--;
                     }
                     else if (spellBursting)
@@ -346,6 +351,10 @@ namespace GearUpCards.MonoBehaviours
                         {
                             spellBursting = false;
                             cooldownTimer = cooldownStats;
+                        }
+                        else
+                        {
+                            cooldownTimer = orbDummyGun.timeBetweenBullets;
                         }
 
                     }
@@ -630,7 +639,7 @@ namespace GearUpCards.MonoBehaviours
             glyphInfluence = stats.GetGearData().glyphInfluence;
             glyphPotency = stats.GetGearData().glyphPotency;
 
-            burstTimeStats = Mathf.Clamp(0.3f - (magickFragment * 0.05f), 0.1f, 1.0f);
+            // burstTimeStats = Mathf.Clamp(0.3f - (magickFragment * 0.05f), 0.1f, 1.0f);
 
             int checkIndex;
 
@@ -646,31 +655,62 @@ namespace GearUpCards.MonoBehaviours
                 float orbVelocity = 0.5f + (glyphDivination * 0.25f);
                 float orbSpeed = 1.0f + (glyphDivination * 0.1f);
 
-                // if in list: Update and enable
-                if (checkIndex >= 0)
+                // Action<GameObject> tempAction;
+
+                if (checkIndex >= 0 && checkIndex < orbSpells.Count)
                 {
+                    // if in list: Update and enable
                     orbSpells[checkIndex].UpdateOrbSpell(cooldown, orbCount);
                 }
-                // else: create and insert by priority
                 else
                 {
+                    // else: create and insert by priority
                     OrbSpellStats newOrbSpell = new OrbSpellStats(gun, player);
-                    GameObject orbModifier = new GameObject("OrbObliterationModifier", new Type[]
-                    {
-                        typeof(ObliterationModifier),
-                        typeof(BulletNoClipModifier)
-                    });
-                    orbModifier.GetComponent<BulletNoClipModifier>().SetPersistentOverride(true);
 
-                    checkIndex = InsertOrbSpell(newOrbSpell);
-
-                    ObjectsToSpawn[] objectsToSpawn = new ObjectsToSpawn[]
+                    newOrbSpell.castAction = (orbCast) =>
                     {
-                        new ObjectsToSpawn { AddToProjectile = orbModifier }
+                        try
+                        {
+                            orbCast.name = "OrbSpell_Obliteration";
+                            GameObject addToOrb = new GameObject("OrbSpell_ObliterationModifier");
+                            addToOrb.transform.parent = orbCast.transform;
+                            addToOrb.transform.localPosition = Vector3.zero;
+
+                            addToOrb.AddComponent<OrbObliterationModifier>();
+
+                            BulletNoClipModifier noClipper = addToOrb.AddComponent<BulletNoClipModifier>();
+                            noClipper.SetPersistentOverride(true);
+                        }
+                        catch (Exception exception)
+                        {
+                            Miscs.LogError("[GearUp] OrbSpell_Obliteration cast action failed!");
+                            Miscs.LogWarn(exception);
+                        }
                     };
 
-                    orbSpells[checkIndex].SetupOrbSpell(OrbSpellType.obliteration, objectsToSpawn, cooldown, orbCount, 10);
-                    orbSpells[checkIndex].orbDummyGun.name = "OrbSpell_Obliteration";
+                    Action<GameObject> tempAction = new Action<GameObject>(ShootActionAddVFX(spellVFXOrbLiterate));
+                    newOrbSpell.orbDummyGun.ShootPojectileAction = (Action<GameObject>)Delegate.Combine
+                    (
+                        newOrbSpell.castAction,
+                        tempAction
+                    );
+
+                    // GameObject orbModifier = new GameObject("OrbObliterationModifier", new Type[]
+                    // {
+                    //     typeof(OrbObliterationModifier)
+                    //     // typeof(BulletNoClipModifier)
+                    // });
+                    // // orbModifier.GetComponent<BulletNoClipModifier>().SetPersistentOverride(true);
+                    // 
+                    // ObjectsToSpawn[] objectsToSpawn = new ObjectsToSpawn[]
+                    // {
+                    //     new ObjectsToSpawn { AddToProjectile = orbModifier }
+                    // };
+
+                    newOrbSpell.SetupOrbSpell(OrbSpellType.obliteration, new ObjectsToSpawn[0], cooldown, orbCount, 10);
+                    newOrbSpell.orbDummyGun.name = "OrbSpellHolder_Obliteration";
+
+                    checkIndex = InsertOrbSpell(newOrbSpell);
                 }
 
                 orbSpells[checkIndex].orbDummyGun.projectileColor = new Color(0.4f, 0.0f, 0.4f, 1.0f);
@@ -680,12 +720,12 @@ namespace GearUpCards.MonoBehaviours
                 orbSpells[checkIndex].orbDummyGun.timeBetweenBullets = burstTime;
                 orbSpells[checkIndex].orbDummyGun.reflects = bounceCount;
 
-                Action<GameObject> actionVFX = new Action<GameObject>(ShootActionAddVFX(spellVFXOrbLiterate));
-                orbSpells[checkIndex].orbDummyGun.ShootPojectileAction = (Action<GameObject>)Delegate.Combine
-                    (
-                        orbSpells[checkIndex].orbDummyGun.ShootPojectileAction,
-                        actionVFX
-                    );
+                // Action<GameObject> tempAction = new Action<GameObject>(ShootActionAddVFX(spellVFXOrbLiterate));
+                // orbSpells[checkIndex].orbDummyGun.ShootPojectileAction = (Action<GameObject>)Delegate.Combine
+                // (
+                //     orbSpells[checkIndex].orbDummyGun.ShootPojectileAction,
+                //     tempAction
+                // );
 
                 Miscs.Log("[GearUp] OrbSpellsMono: Obliteration Updated!");
             }
@@ -694,7 +734,88 @@ namespace GearUpCards.MonoBehaviours
                 // check if in list
 
                 // if in list: Update to zero and disable
-                if (checkIndex >= 0)
+                if (checkIndex >= 0 && checkIndex < orbSpells.Count)
+                {
+                    orbSpells[checkIndex].UpdateOrbSpell(10.0f, 0);
+                }
+            }
+
+            // Orb Spell Rolling-Bulwark
+            checkIndex = QueryOrbSpell(OrbSpellType.rollingBulwark);
+            if (stats.GetGearData().orbRollingBulwarkStack > 0)
+            {
+                // stats calculation
+                float cooldown = Mathf.Clamp(6.0f - (magickFragment * 0.5f), 3.0f, 10.0f);
+                float burstTime = Mathf.Clamp(0.35f - (magickFragment * 0.05f), 0.1f, 0.5f);
+                int orbCount = 1 + Mathf.FloorToInt((stats.GetGearData().orbRollingBulwarkStack) / 2.0f);
+                int bounceCount = 2 + glyphGeometric;
+                float orbVelocity = 0.75f + (glyphDivination * 0.25f);
+                float orbSpeed = 1.0f + (glyphDivination * 0.1f);
+                // int empowerStack = 1 + Mathf.FloorToInt((1.1f + (float)glyphPotency) / 2.0f);
+
+                if (checkIndex >= 0 && checkIndex < orbSpells.Count)
+                {
+                    // if in list: Update and enable
+                    orbSpells[checkIndex].UpdateOrbSpell(cooldown, orbCount);
+                }
+                else
+                {
+                    // else: create and insert by priority
+                    OrbSpellStats newOrbSpell = new OrbSpellStats(gun, player);
+
+                    newOrbSpell.castAction = (orbCast) =>
+                    {
+                        try
+                        {
+                            orbCast.name = "OrbSpell_RollingBulwark";
+                            GameObject addToOrb = new GameObject("RollingBulwarkModifier");
+                            addToOrb.transform.parent = orbCast.transform;
+                            addToOrb.transform.localPosition = Vector3.zero;
+
+                            CustomEmpowerShotModifier customEmpower = addToOrb.AddComponent<CustomEmpowerShotModifier>();
+                            customEmpower.SetupEmpowerCharge(
+                                3 + glyphGeometric,
+                                stats.GetGearData().orbRollingBulwarkStack + Mathf.FloorToInt((1.1f + (float)glyphPotency) / 2.0f)
+                            );
+
+                            BulletNoClipModifier noClipper = addToOrb.AddComponent<BulletNoClipModifier>();
+                            noClipper.SetPersistentOverride(true);
+                        }
+                        catch (Exception exception)
+                        {
+                            Miscs.LogError("[GearUp] OrbSpell_RollingBulwark cast action failed!");
+                            Miscs.LogWarn(exception);
+                        }
+                    };
+
+                    Action<GameObject> tempAction2 = new Action<GameObject>(ShootActionAddVFX(spellVFXRollingBuorbwark));
+                    newOrbSpell.orbDummyGun.ShootPojectileAction = (Action<GameObject>)Delegate.Combine
+                    (
+                        newOrbSpell.castAction,
+                        tempAction2
+                    );
+
+                    newOrbSpell.SetupOrbSpell(OrbSpellType.rollingBulwark, new ObjectsToSpawn[0], cooldown, orbCount, 20);
+                    newOrbSpell.orbDummyGun.name = "OrbSpellHolder_RollingBulwark";
+
+                    checkIndex = InsertOrbSpell(newOrbSpell);
+                }
+
+                orbSpells[checkIndex].orbDummyGun.projectileColor = new Color(0.9f, 0.9f, 0.9f, 1.0f);
+                orbSpells[checkIndex].orbDummyGun.gravity = 0.0f;
+                orbSpells[checkIndex].orbDummyGun.projectileSpeed = orbVelocity;
+                orbSpells[checkIndex].orbDummyGun.projectielSimulatonSpeed = orbSpeed;
+                orbSpells[checkIndex].orbDummyGun.timeBetweenBullets = burstTime;
+                orbSpells[checkIndex].orbDummyGun.reflects = bounceCount;
+
+                Miscs.Log("[GearUp] OrbSpellsMono: Rolling-Bulwark Updated!");
+            }
+            else
+            {
+                // check if in list
+
+                // if in list: Update to zero and disable
+                if (checkIndex >= 0 && checkIndex < orbSpells.Count)
                 {
                     orbSpells[checkIndex].UpdateOrbSpell(10.0f, 0);
                 }

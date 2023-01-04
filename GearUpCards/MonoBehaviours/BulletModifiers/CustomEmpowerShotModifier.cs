@@ -10,6 +10,8 @@ namespace GearUpCards.MonoBehaviours
 {
     internal class CustomEmpowerShotModifier : RayHitEffect
     {
+        public static float procTickTime = 0.05f;
+
         private int empowerImpactCount = 1;
         private int empowerStackCount = 1;
         private float empowerBurstDelay = 0.1f;
@@ -17,6 +19,8 @@ namespace GearUpCards.MonoBehaviours
         private Vector2 lastImpactPos;
 
         internal bool effectEnable = false;
+        internal float procTimer = 0.0f;
+        internal Vector3 prevBulletPos = Vector3.zero;
 
         public void SetupEmpowerCharge(int impact, int stack, float burstDelay = 0.1f)
         {
@@ -39,14 +43,19 @@ namespace GearUpCards.MonoBehaviours
         {
             if (effectEnable)
             {
-
+                procTimer += TimeHandler.deltaTime;
+                if (procTimer >= procTickTime)
+                {
+                    prevBulletPos = transform.root.position;
+                    procTimer -= procTickTime;
+                }
             }
             else
             {
                 MoveTransform moveTransform = GetComponentInParent<MoveTransform>();
                 if (moveTransform != null)
                 {
-                    TempSetup();
+                    // TempSetup();
                     effectEnable = true;
                 }
             }
@@ -59,7 +68,11 @@ namespace GearUpCards.MonoBehaviours
                 return HasToReturn.canContinue;
             }
 
-            lastImpactPos = hit.point;
+            lastImpactPos = prevBulletPos;
+            if (lastImpactPos == Vector2.zero)
+            {
+                lastImpactPos = hit.point;
+            }
 
             for (int i = 0; i < empowerStackCount; i++)
             {
@@ -92,6 +105,51 @@ namespace GearUpCards.MonoBehaviours
 
             empowerImpactCount--;
             return HasToReturn.canContinue;
+        }
+    }
+
+    public class CustomEmpowerVFX : MonoBehaviour
+    {
+        private static GameObject empowerShotVFX = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_EmpowerShot");
+        public static float vfxScale = 0.25f;
+        public static float vfxScaleLog = 10.0f;
+
+        ProjectileHit projectileHit;
+        Player shooterPlayer;
+
+        private GameObject vfxObject;
+        private float bulletSize = 0.25f;
+        private float damage;
+
+        internal bool effectEnable = false;
+
+        public void Setup()
+        {
+            projectileHit = this.gameObject.GetComponentInParent<ProjectileHit>();
+            shooterPlayer = projectileHit.ownPlayer;
+
+            vfxObject = UnityEngine.Object.Instantiate(empowerShotVFX, transform.root);
+            vfxObject.transform.localEulerAngles = new Vector3(270.0f, 180.0f, 0.0f);
+            vfxObject.transform.localScale = Vector3.one * bulletSize;
+        }
+
+        public void Update()
+        {
+            if (effectEnable)
+            {
+                damage = projectileHit.dealDamageMultiplierr * projectileHit.damage;
+                bulletSize = Mathf.Max(Mathf.Log(damage, vfxScaleLog) * vfxScale, 0.5f);
+                vfxObject.transform.localScale = Vector3.one * bulletSize;
+            }
+            else
+            {
+                MoveTransform moveTransform = GetComponentInParent<MoveTransform>();
+                if (moveTransform != null)
+                {
+                    Setup();
+                    effectEnable = true;
+                }
+            }
         }
     }
 }

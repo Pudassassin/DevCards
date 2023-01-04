@@ -8,7 +8,7 @@ using GearUpCards.Extensions;
 
 namespace GearUpCards.MonoBehaviours
 {
-    public class ObliterationModifier : RayHitEffect
+    public class OrbObliterationModifier : RayHitEffect
     {
         private static GameObject VFXPrefab = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_OrbLiterationImpact");
 

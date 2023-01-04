@@ -28,25 +28,30 @@ namespace GearUpCards.Cards
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
+            block.cdAdd += 1.0f;
+
             ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Remove(GearCategory.tagSpellOnlyAugment);
 
             characterStats.GetGearData().orbRollingBulwarkStack += 1;
+            player.gameObject.GetOrAddComponent<OrbSpellsMono>();
+
+            CooldownUIMono cooldownUI = player.gameObject.GetOrAddComponent<CooldownUIMono>();
 
             // temp prototype
-            List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList<ObjectsToSpawn>();
-
-            GameObject gameObject = new GameObject("RollingBorbwarkModifier", new Type[]
-            {
-                typeof(BulletNoClipModifier),
-                typeof(CustomEmpowerShotModifier)
-            });
-
-            list.Add(new ObjectsToSpawn
-            {
-                AddToProjectile = gameObject
-            });
-
-            gun.objectsToSpawn = list.ToArray();
+            // List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList<ObjectsToSpawn>();
+            // 
+            // GameObject gameObject = new GameObject("RollingBorbwarkModifier", new Type[]
+            // {
+            //     typeof(BulletNoClipModifier),
+            //     typeof(CustomEmpowerShotModifier)
+            // });
+            // 
+            // list.Add(new ObjectsToSpawn
+            // {
+            //     AddToProjectile = gameObject
+            // });
+            // 
+            // gun.objectsToSpawn = list.ToArray();
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -58,7 +63,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "";
+            return "Blocking cast the ricocheting orb that trigger block abilities every bounce!";
         }
         protected override GameObject GetCardArt()
         {
@@ -75,24 +80,24 @@ namespace GearUpCards.Cards
                 // new CardInfoStat()
                 // {
                 //     positive = true,
-                //     stat = "Projectiles",
-                //     amount = "+4",
+                //     stat = "Max HP Culling",
+                //     amount = "10~15%",
                 //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 // },
-                // new CardInfoStat()
-                // {
-                //     positive = false,
-                //     stat = "Spread",
-                //     amount = "+60 deg",
-                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                // },
-                // new CardInfoStat()
-                // {
-                //     positive = false,
-                //     stat = "DMG",
-                //     amount = "-35%",
-                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                // }
+                new CardInfoStat()
+                {
+                    positive = false,
+                    stat = "Block CD",
+                    amount = "+1s",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                },
+                new CardInfoStat()
+                {
+                    positive = false,
+                    stat = "Spell CD",
+                    amount = "6s",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                }
             };
         }
         protected override CardThemeColor.CardThemeColorType GetTheme()

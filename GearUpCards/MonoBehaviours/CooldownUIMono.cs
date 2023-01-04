@@ -36,6 +36,9 @@ namespace GearUpCards.MonoBehaviours
         internal UnityEngine.UI.Text orbLitCDText = null;
         internal GameObject orbLitIcon = null;
 
+        internal UnityEngine.UI.Text rollBorbCDText = null;
+        internal GameObject rollBorbIcon = null;
+
         internal UnityEngine.UI.Text empowerShotText = null;
         internal GameObject empowerShotIcon = null;
 
@@ -51,14 +54,16 @@ namespace GearUpCards.MonoBehaviours
         internal OrbSpellsMono orbSpellsMono = null;
         internal float orbLiterationCooldown;
         public int orbLitIndex = -1;
+        internal float rollingBorbwarkCooldown;
+        public int rollingBorbwarkIndex = -1;
 
         // internal float tempCooldown;
         private bool wasDeactivated = false;
 
         /* DEBUG */
         // internal int proc_count = 0;
-        bool skipOrbs = false;
-        bool skipBattery = false;
+        // bool skipOrbs = false;
+        // bool skipBattery = false;
 
 
         public void Awake()
@@ -87,6 +92,9 @@ namespace GearUpCards.MonoBehaviours
 
             orbLitCDText = GameObject.Find($"{cooldownUI.name}/Canvas/OrbLiterate/Text").GetComponent<Text>();
             orbLitIcon = GameObject.Find($"{cooldownUI.name}/Canvas/OrbLiterate");
+
+            rollBorbCDText = GameObject.Find($"{cooldownUI.name}/Canvas/RollingBorbwark/Text").GetComponent<Text>();
+            rollBorbIcon = GameObject.Find($"{cooldownUI.name}/Canvas/RollingBorbwark");
 
             empowerShotText = GameObject.Find($"{cooldownUI.name}/Canvas/EmpowerShots/Text").GetComponent<Text>();
             empowerShotIcon = GameObject.Find($"{cooldownUI.name}/Canvas/EmpowerShots");
@@ -176,7 +184,33 @@ namespace GearUpCards.MonoBehaviours
                     orbLitIcon.SetActive(false);
                 }
 
-                
+                // (temp) RollingBorbwark Cooldown
+                if (orbSpellsMono != null)
+                {
+                    rollingBorbwarkIndex = orbSpellsMono.QueryOrbSpell(OrbSpellsMono.OrbSpellType.rollingBulwark);
+
+                    if (rollingBorbwarkIndex >= 0)
+                    {
+                        rollingBorbwarkCooldown = orbSpellsMono.GetOrbSpellCooldown(rollingBorbwarkIndex);
+                        if (rollingBorbwarkCooldown > 0.0f)
+                        {
+                            rollBorbIcon.SetActive(true);
+                            rollBorbCDText.text = FormatCooldown(rollingBorbwarkCooldown);
+                        }
+                        else
+                        {
+                            rollBorbIcon.SetActive(false);
+                        }
+                    }
+                    else
+                    {
+                        rollBorbIcon.SetActive(false);
+                    }
+                }
+                else
+                {
+                    rollBorbIcon.SetActive(false);
+                }
 
                 // if (!skipOrbs)
                 // {
@@ -266,7 +300,7 @@ namespace GearUpCards.MonoBehaviours
                 shieldBattery = null;
             }
 
-            if (stats.GetGearData().orbObliterationStack > 0)
+            if (stats.GetGearData().orbObliterationStack > 0 || stats.GetGearData().orbRollingBulwarkStack > 0)
             {
                 orbSpellsMono = player.gameObject.GetComponent<OrbSpellsMono>();
             }

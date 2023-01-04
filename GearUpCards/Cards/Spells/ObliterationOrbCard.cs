@@ -48,7 +48,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Blocking fires the orb that obliterates part of the map and reduce players' max HP.";
+            return "Blocking cast the orb that obliterates part of the map and reduce players' max HP.";
         }
         protected override GameObject GetCardArt()
         {
