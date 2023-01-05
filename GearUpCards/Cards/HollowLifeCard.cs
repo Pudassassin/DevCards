@@ -16,8 +16,6 @@ namespace GearUpCards.Cards
 {
     class HollowLifeCard : CustomCard
     {
-        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_HollowLife");
-
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
             
@@ -48,7 +46,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            return cardArt;
+            return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_HollowLife");
         }
         protected override CardInfo.Rarity GetRarity()
         {

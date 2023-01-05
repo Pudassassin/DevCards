@@ -17,8 +17,6 @@ namespace GearUpCards.Cards
 {
     class TacticalScannerCard : CustomCard
     {
-        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_TacticalScanner");
-
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
             
@@ -47,7 +45,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            return cardArt;
+            return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_TacticalScanner");
         }
         protected override CardInfo.Rarity GetRarity()
         {

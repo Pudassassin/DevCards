@@ -17,8 +17,6 @@ namespace GearUpCards.Cards
 {
     class ShieldBatteryCard : CustomCard
     {
-        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_ShieldBattery");
-
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
             gun.attackSpeed = 1 / 0.75f;
@@ -48,7 +46,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            return cardArt;
+            return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_ShieldBattery");
         }
         protected override CardInfo.Rarity GetRarity()
         {

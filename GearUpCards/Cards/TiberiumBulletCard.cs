@@ -14,8 +14,6 @@ namespace GearUpCards.Cards
 {
     class TiberiumBulletCard : CustomCard
     {
-        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_TiberiumBullets");
-
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
             // gun.attackSpeed = 1.0f / 0.85f;
@@ -67,7 +65,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            return cardArt;
+            return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_TiberiumBullets");
         }
         protected override CardInfo.Rarity GetRarity()
         {

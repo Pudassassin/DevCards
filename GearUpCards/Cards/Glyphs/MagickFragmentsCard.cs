@@ -17,8 +17,6 @@ namespace GearUpCards.Cards
 {
     class MagickFragmentsCard : CustomCard
     {
-        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_MagickFragment");
-
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
             
@@ -57,7 +55,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            return cardArt;
+            return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_MagickFragment");
         }
         protected override CardInfo.Rarity GetRarity()
         {

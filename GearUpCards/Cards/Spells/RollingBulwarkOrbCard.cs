@@ -17,8 +17,6 @@ namespace GearUpCards.Cards
 {
     class RollingBulwarkOrbCard : CustomCard
     {
-        internal static GameObject cardArt = null; // GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_ArcOfBullets");
-
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
             cardInfo.categories = new CardCategory[]
@@ -67,7 +65,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            return cardArt;
+            return null;
         }
         protected override CardInfo.Rarity GetRarity()
         {

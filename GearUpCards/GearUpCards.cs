@@ -42,7 +42,7 @@ namespace GearUpCards
     {
         private const string ModId = "com.pudassassin.rounds.GearUpCards";
         private const string ModName = "GearUpCards";
-        public const string Version = "0.2.37"; //build #193 / Release 0-2-1
+        public const string Version = "0.2.37.5"; //build #193u5 / Release 0-2-1
 
         public const string ModInitials = "GearUP";
 

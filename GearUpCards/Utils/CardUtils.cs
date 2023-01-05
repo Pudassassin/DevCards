@@ -363,18 +363,7 @@ namespace GearUpCards.Utils
                 tempCardInfo = GetCardInfo(tempCardName);
                 if (tempCardInfo == null) continue;
 
-                if (!raritySnapshot.ContainsKey(item))
-                {
-                    raritySnapshot.TryAdd
-                    (
-                        tempCardName,
-                        RarityUtils.GetCardRarityModifier(tempCardInfo)
-                    );
-                }
-                else
-                {
-                    raritySnapshot[tempCardName] = RarityUtils.GetCardRarityModifier(tempCardInfo);
-                }
+                raritySnapshot[tempCardName] = RarityUtils.GetCardRarityModifier(tempCardInfo);
             }
 
             // Miscs.Log("[GearUp] SaveGearUpCardRarity - Vanilla Blocks");
@@ -384,18 +373,7 @@ namespace GearUpCards.Utils
                 tempCardInfo = GetCardInfo(item);
                 if (tempCardInfo == null) continue;
 
-                if (!raritySnapshot.ContainsKey(item))
-                {
-                    raritySnapshot.TryAdd
-                    (
-                        item,
-                        RarityUtils.GetCardRarityModifier(tempCardInfo)
-                    );
-                }
-                else
-                {
-                    raritySnapshot[item] = RarityUtils.GetCardRarityModifier(tempCardInfo);
-                }
+                raritySnapshot[item] = RarityUtils.GetCardRarityModifier(tempCardInfo);
             }
 
             // Miscs.Log("[GearUp] SaveGearUpCardRarity - Modded Blocks");
@@ -405,18 +383,7 @@ namespace GearUpCards.Utils
                 tempCardInfo = GetCardInfo(item);
                 if (tempCardInfo == null) continue;
 
-                if (!raritySnapshot.ContainsKey(item))
-                {
-                    raritySnapshot.TryAdd
-                    (
-                        item,
-                        RarityUtils.GetCardRarityModifier(tempCardInfo)
-                    );
-                }
-                else
-                {
-                    raritySnapshot[item] = RarityUtils.GetCardRarityModifier(tempCardInfo);
-                }
+                raritySnapshot[item] = RarityUtils.GetCardRarityModifier(tempCardInfo);
             }
         }
 

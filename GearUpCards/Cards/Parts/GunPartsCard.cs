@@ -17,8 +17,6 @@ namespace GearUpCards.Cards
 {
     class GunPartsCard : CustomCard
     {
-        internal static GameObject cardArt = GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_GunParts");
-
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
             gun.attackSpeed = 1.0f / 1.20f;
@@ -43,7 +41,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            return cardArt;
+            return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_GunParts");
         }
         protected override CardInfo.Rarity GetRarity()
         {

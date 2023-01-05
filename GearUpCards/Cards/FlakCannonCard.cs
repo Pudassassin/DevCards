@@ -17,8 +17,6 @@ namespace GearUpCards.Cards
 {
     class FlakCannonCard : CustomCard
     {
-        internal static GameObject cardArt = null; // GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_ArcOfBullets");
-
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
             cardInfo.allowMultiple = false;
@@ -73,7 +71,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            return cardArt;
+            return null;
         }
         protected override CardInfo.Rarity GetRarity()
         {
