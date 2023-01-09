@@ -266,6 +266,7 @@ namespace GearUpCards.Utils
             "Influence Glyph",
             "Magick Fragments",
             "Potency Glyph",
+            "Time Glyph",
 
             // C&C cards
             "Tiberium Bullet",
@@ -281,16 +282,18 @@ namespace GearUpCards.Utils
             // GearUp spells
             "Anti-Bullet Magick",
             "Orb-literation!",
-            "Rolling Borbwark"
+            "Rolling Borbwark",
+            "Lifeforce Duorbity"
         };
         public static List<string> cardListGlyph = new List<string>()
         {
-            // glyphs
+            // GearUp glyphs
             "Divination Glyph",
             "Geometric Glyph",
             "Influence Glyph",
             "Magick Fragments",
-            "Potency Glyph"
+            "Potency Glyph",
+            "Time Glyph"
         };
 
         public static List<string> cardListVanillaBlocks = new List<string>()

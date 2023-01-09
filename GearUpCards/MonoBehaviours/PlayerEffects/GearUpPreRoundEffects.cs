@@ -37,6 +37,9 @@ namespace GearUpCards.MonoBehaviours
 
         private const float glyphPotencyDamage = 1.50f;
 
+        private const float glyphTimeGunDragMul = 0.80f;
+        private const float glyphTimeGunLifetimeMul = 1.35f;
+
         // internals
         private const float procTickTime = .10f;
 
@@ -64,6 +67,9 @@ namespace GearUpCards.MonoBehaviours
 
         public float prevBlockCdAdd = 0.0f;
         public float prevBlockCdMul = 1.0f;
+
+        public float prevGunDrag = 0.0f;
+        public float prevGunLifetime = 0.0f;
 
         // additional chatacter stats
         private float hpPercentageRegen = 0.0f;
@@ -133,6 +139,9 @@ namespace GearUpCards.MonoBehaviours
             prevGunNumProjectile = gun.numberOfProjectiles;
             prevGunBurstTime = gun.timeBetweenBullets;
             prevGunDamage = gun.damage;
+
+            prevGunDrag = gun.drag;
+            prevGunLifetime = gun.destroyBulletAfter;
         }
 
         private void RestorePlayerStats()
@@ -149,6 +158,9 @@ namespace GearUpCards.MonoBehaviours
             gun.numberOfProjectiles = prevGunNumProjectile;
             gun.timeBetweenBullets = prevGunBurstTime;
             gun.damage = prevGunDamage;
+
+            gun.drag = prevGunDrag;
+            gun.destroyBulletAfter = prevGunLifetime;
         }
 
         internal void ApplyGlyphCADModuleEffect()
@@ -158,6 +170,7 @@ namespace GearUpCards.MonoBehaviours
             // int glyphInfluence      = this.stats.GetGearData().glyphInfluence;
             int magickFragment = stats.GetGearData().magickFragmentStack;
             int glpyhPotency = stats.GetGearData().glyphPotency;
+            int glyphTime = stats.GetGearData().glyphTime;
 
             gun.projectileSpeed *= Mathf.Pow(glyphDivinationProjectileSpeed, glyphDivination);
             gun.projectielSimulatonSpeed *= Mathf.Pow(glyphDivinationProjectileSimSpeed, glyphDivination);
@@ -178,6 +191,18 @@ namespace GearUpCards.MonoBehaviours
             }
 
             gun.damage *= Mathf.Pow(glyphPotencyDamage, glpyhPotency);
+
+            for (int i = 0; i < glyphTime; i++)
+            {
+                if (gun.destroyBulletAfter > 0.0f)
+                {
+                    gun.destroyBulletAfter *= glyphTimeGunLifetimeMul;
+                }
+                if (gun.drag > 0.0f)
+                {
+                    gun.drag *= glyphTimeGunDragMul;
+                }
+            }
         }
 
         private void ApplyBulletsDotRar()

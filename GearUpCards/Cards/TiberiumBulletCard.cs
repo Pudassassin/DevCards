@@ -59,7 +59,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Bullet deal +100% DMG -HP over 4s, then persisting +5% DMG -HP/s until true death.";
+            return "Bullets continuously drain life from the victims they hit, with initial burst.";
             // return "Bullet deal +100% DMG as -HP over 4s, then +5% DMG -HP/s until the victim's true death";
             // return "Bullets cause target to lose\nHP over time until death!\n(Stackable Additively)";
         }
@@ -89,13 +89,13 @@ namespace GearUpCards.Cards
                 //     amount = "+5% dmg +0.35",
                 //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 // },
-                // new CardInfoStat()
-                // {
-                //     positive = true,
-                //     stat = "Loss/s / shot",
-                //     amount = "+0.05% HP",
-                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                // },
+                new CardInfoStat()
+                {
+                    positive = true,
+                    stat = "Life Drain",
+                    amount = "+5% dmg/s",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                },
                 new CardInfoStat()
                 {
                     positive = false,

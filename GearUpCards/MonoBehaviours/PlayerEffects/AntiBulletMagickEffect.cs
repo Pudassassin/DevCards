@@ -46,9 +46,10 @@ namespace GearUpCards.MonoBehaviours
         internal int magickFragment = 0;
         // AoE and range
         internal int glyphInfluence = 0;
-        // Time incleased 
+        // Force reload time increases
         internal int glyphPotency = 0;
-
+        // Zone duration
+        internal int glyphTime = 0;
 
         internal float spellCooldown = 12.0f;
         internal float spellRange = 10.0f;
@@ -275,17 +276,18 @@ namespace GearUpCards.MonoBehaviours
             magickFragment = this.stats.GetGearData().magickFragmentStack;
             glyphInfluence = this.stats.GetGearData().glyphInfluence;
             glyphPotency = this.stats.GetGearData().glyphPotency;
+            glyphTime = this.stats.GetGearData().glyphTime;
 
             spellCooldown = spellCooldownBase - (magickFragment * 1.5f);
-            spellCooldown = Mathf.Clamp(spellCooldown, 7.0f, 30.0f);
+            spellCooldown = Mathf.Clamp(spellCooldown, 6.0f, 30.0f);
 
             spellForceReloadSelfMultiplier = spellForceReloadSelfMultiplierBase - (magickFragment * 0.05f);
             spellForceReloadSelfMultiplier = Mathf.Clamp(spellForceReloadSelfMultiplier, 0.0f, 1.0f);
 
             spellRange = spellRangeBase + (1.0f * glyphInfluence);
 
-            spellForceReloadTimeAdd = spellForceReloadTimeAddBase + (0.5f * glyphPotency);
-            spellDuration = spellDurationBase + (0.25f * glyphPotency);
+            spellForceReloadTimeAdd = spellForceReloadTimeAddBase + (0.5f * glyphPotency) + (0.25f * glyphTime);
+            spellDuration = spellDurationBase + (0.25f * glyphPotency) + (0.5f * glyphTime);
         }
 
         internal void DeleteBullet()

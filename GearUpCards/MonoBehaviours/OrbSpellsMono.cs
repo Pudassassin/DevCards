@@ -17,11 +17,14 @@ using ModdingUtils.MonoBehaviours;
 
 using GearUpCards.Extensions;
 using GearUpCards.Utils;
+using UnboundLib.Utils;
 
 namespace GearUpCards.MonoBehaviours
 {
     public class OrbSpellsMono : MonoBehaviour
     {
+        private static string targetBounceCardName = "Target BOUNCE";
+        private static GameObject screenEdgePrefab = null;
         // public float _debugScale = 2.0f;
 
         private static GameObject spellVFXOrbLiterate = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_VortexLoop");
@@ -402,6 +405,8 @@ namespace GearUpCards.MonoBehaviours
         internal int glyphGeometric = 0;
         // Spell power
         internal int glyphPotency = 0;
+        // Spell duration
+        internal int glyphTime = 0;
         // Projectile piercing?
         // internal int glyphPiercing = 0;
 
@@ -432,6 +437,10 @@ namespace GearUpCards.MonoBehaviours
 
         public void Awake()
         {
+            CardInfo cardInfo = CardManager.cards.Values.First(card => card.cardInfo.cardName == targetBounceCardName).cardInfo;
+            Gun cardGun = cardInfo.gameObject.GetComponent<Gun>();
+            screenEdgePrefab = cardGun.objectsToSpawn[1].AddToProjectile;
+
             this.gun = this.gameObject.GetComponent<WeaponHandler>().gun;
             this.gunAmmo = this.gun.GetComponentInChildren<GunAmmo>();
             this.player = this.gameObject.GetComponent<Player>();
@@ -638,6 +647,7 @@ namespace GearUpCards.MonoBehaviours
             glyphGeometric = stats.GetGearData().glyphGeometric;
             glyphInfluence = stats.GetGearData().glyphInfluence;
             glyphPotency = stats.GetGearData().glyphPotency;
+            glyphTime = stats.GetGearData().glyphTime;
 
             // burstTimeStats = Mathf.Clamp(0.3f - (magickFragment * 0.05f), 0.1f, 1.0f);
 
@@ -695,19 +705,15 @@ namespace GearUpCards.MonoBehaviours
                         tempAction
                     );
 
-                    // GameObject orbModifier = new GameObject("OrbObliterationModifier", new Type[]
-                    // {
-                    //     typeof(OrbObliterationModifier)
-                    //     // typeof(BulletNoClipModifier)
-                    // });
-                    // // orbModifier.GetComponent<BulletNoClipModifier>().SetPersistentOverride(true);
-                    // 
-                    // ObjectsToSpawn[] objectsToSpawn = new ObjectsToSpawn[]
-                    // {
-                    //     new ObjectsToSpawn { AddToProjectile = orbModifier }
-                    // };
+                    ObjectsToSpawn[] spawnObjects = new ObjectsToSpawn[]
+                    {
+                        new ObjectsToSpawn
+                        {
+                            AddToProjectile = screenEdgePrefab
+                        }
+                    };
 
-                    newOrbSpell.SetupOrbSpell(OrbSpellType.obliteration, new ObjectsToSpawn[0], cooldown, orbCount, 10);
+                    newOrbSpell.SetupOrbSpell(OrbSpellType.obliteration, spawnObjects, cooldown, orbCount, 10);
                     newOrbSpell.orbDummyGun.name = "OrbSpellHolder_Obliteration";
 
                     checkIndex = InsertOrbSpell(newOrbSpell);
@@ -719,13 +725,6 @@ namespace GearUpCards.MonoBehaviours
                 orbSpells[checkIndex].orbDummyGun.projectielSimulatonSpeed = orbSpeed;
                 orbSpells[checkIndex].orbDummyGun.timeBetweenBullets = burstTime;
                 orbSpells[checkIndex].orbDummyGun.reflects = bounceCount;
-
-                // Action<GameObject> tempAction = new Action<GameObject>(ShootActionAddVFX(spellVFXOrbLiterate));
-                // orbSpells[checkIndex].orbDummyGun.ShootPojectileAction = (Action<GameObject>)Delegate.Combine
-                // (
-                //     orbSpells[checkIndex].orbDummyGun.ShootPojectileAction,
-                //     tempAction
-                // );
 
                 Miscs.Log("[GearUp] OrbSpellsMono: Obliteration Updated!");
             }
@@ -795,7 +794,15 @@ namespace GearUpCards.MonoBehaviours
                         tempAction2
                     );
 
-                    newOrbSpell.SetupOrbSpell(OrbSpellType.rollingBulwark, new ObjectsToSpawn[0], cooldown, orbCount, 20);
+                    ObjectsToSpawn[] spawnObjects = new ObjectsToSpawn[]
+                    {
+                        new ObjectsToSpawn
+                        {
+                            AddToProjectile = screenEdgePrefab
+                        }
+                    };
+
+                    newOrbSpell.SetupOrbSpell(OrbSpellType.rollingBulwark, spawnObjects, cooldown, orbCount, 20);
                     newOrbSpell.orbDummyGun.name = "OrbSpellHolder_RollingBulwark";
 
                     checkIndex = InsertOrbSpell(newOrbSpell);
@@ -809,6 +816,91 @@ namespace GearUpCards.MonoBehaviours
                 orbSpells[checkIndex].orbDummyGun.reflects = bounceCount;
 
                 Miscs.Log("[GearUp] OrbSpellsMono: Rolling-Bulwark Updated!");
+            }
+            else
+            {
+                // check if in list
+
+                // if in list: Update to zero and disable
+                if (checkIndex >= 0 && checkIndex < orbSpells.Count)
+                {
+                    orbSpells[checkIndex].UpdateOrbSpell(10.0f, 0);
+                }
+            }
+
+            // Orb Spell Lifeforce Duality
+            checkIndex = QueryOrbSpell(OrbSpellType.lifeforceDuality);
+            if (stats.GetGearData().orbLifeforceDuality > 0)
+            {
+                // stats calculation
+                float cooldown = Mathf.Clamp(8.0f - (magickFragment * 0.5f), 4.0f, 10.0f);
+                float burstTime = Mathf.Clamp(0.30f - (magickFragment * 0.05f), 0.1f, 0.5f);
+                int orbCount = stats.GetGearData().orbLifeforceDuality;
+                int bounceCount = 12 + (glyphGeometric * 3);
+                float orbVelocity = 0.60f + (glyphDivination * 0.10f);
+                float orbSpeed = 1.0f + (glyphDivination * 0.1f);
+
+                if (checkIndex >= 0 && checkIndex < orbSpells.Count)
+                {
+                    // if in list: Update and enable
+                    orbSpells[checkIndex].UpdateOrbSpell(cooldown, orbCount);
+                }
+                else
+                {
+                    // else: create and insert by priority
+                    OrbSpellStats newOrbSpell = new OrbSpellStats(gun, player);
+
+                    newOrbSpell.castAction = (orbCast) =>
+                    {
+                        try
+                        {
+                            orbCast.name = "OrbSpell_LifeforceDuality";
+                            GameObject addToOrb = new GameObject("LifeforceDualityModifier");
+                            addToOrb.transform.parent = orbCast.transform;
+                            addToOrb.transform.localPosition = Vector3.zero;
+
+                            addToOrb.AddComponent<OrbLifeforceDualityModifier>();
+
+                            BulletNoClipModifier noClipper = addToOrb.AddComponent<BulletNoClipModifier>();
+                            noClipper.SetPersistentOverride(true);
+                        }
+                        catch (Exception exception)
+                        {
+                            Miscs.LogError("[GearUp] OrbSpell_LifeforceDuality cast action failed!");
+                            Miscs.LogWarn(exception);
+                        }
+                    };
+
+                    newOrbSpell.orbDummyGun.ShootPojectileAction = newOrbSpell.castAction;
+                    // Action<GameObject> tempAction2 = new Action<GameObject>(ShootActionAddVFX(spellVFXRollingBuorbwark));
+                    // newOrbSpell.orbDummyGun.ShootPojectileAction = (Action<GameObject>)Delegate.Combine
+                    // (
+                    //     newOrbSpell.castAction,
+                    //     tempAction2
+                    // );
+
+                    ObjectsToSpawn[] spawnObjects = new ObjectsToSpawn[]
+                    {
+                        new ObjectsToSpawn
+                        {
+                            AddToProjectile = screenEdgePrefab
+                        }
+                    };
+
+                    newOrbSpell.SetupOrbSpell(OrbSpellType.lifeforceDuality, spawnObjects, cooldown, orbCount, 5);
+                    newOrbSpell.orbDummyGun.name = "OrbSpellHolder_LifeforceDuality";
+
+                    checkIndex = InsertOrbSpell(newOrbSpell);
+                }
+
+                orbSpells[checkIndex].orbDummyGun.projectileColor = new Color(0.9f, 0.9f, 0.9f, 1.0f);
+                orbSpells[checkIndex].orbDummyGun.gravity = 0.0f;
+                orbSpells[checkIndex].orbDummyGun.projectileSpeed = orbVelocity;
+                orbSpells[checkIndex].orbDummyGun.projectielSimulatonSpeed = orbSpeed;
+                orbSpells[checkIndex].orbDummyGun.timeBetweenBullets = burstTime;
+                orbSpells[checkIndex].orbDummyGun.reflects = bounceCount;
+
+                Miscs.Log("[GearUp] OrbSpellsMono: Lifeforce Duality Updated!");
             }
             else
             {
