@@ -9,6 +9,7 @@ using ModdingUtils.MonoBehaviours;
 using GearUpCards.Utils;
 using GearUpCards.Extensions;
 using UnityEngine.UI;
+using Photon.Pun;
 
 namespace GearUpCards.MonoBehaviours
 {
@@ -56,9 +57,9 @@ namespace GearUpCards.MonoBehaviours
             // moveTransform.velocity = moveTransform.velocity.normalized * 20.0f;
 
             // Orb Stats
-            healFlatRate        = 12.5f * (1 + casterStats.GetGearData().glyphPotency);
+            healFlatRate        = 20.0f * (1 + casterStats.GetGearData().glyphPotency);
             healPercentRate     = 0.01f + (0.005f * casterStats.GetGearData().glyphPotency);
-            drainFlatRate       = 25.0f * (1 + casterStats.GetGearData().glyphPotency);
+            drainFlatRate       = 40.0f * (1 + casterStats.GetGearData().glyphPotency);
             drainPercentRate    = 0.02f + (0.01f * casterStats.GetGearData().glyphPotency);
 
             orbLifeTime         = 7.5f + (1.5f * casterStats.GetGearData().glyphTime);
@@ -117,11 +118,11 @@ namespace GearUpCards.MonoBehaviours
 
                 if (orbAliveTime >= orbMaxDuration)
                 {
-                    Destroy(transform.root.gameObject);
+                    PhotonNetwork.Destroy(transform.root.gameObject);
                 }
                 else if (orbLifeTime < 0.0f)
                 {
-                    Destroy(transform.root.gameObject);
+                    PhotonNetwork.Destroy(transform.root.gameObject);
                 }
 
                 if (proxyPlayerCount <= 0)
@@ -198,7 +199,7 @@ namespace GearUpCards.MonoBehaviours
                             else
                             {
                                 // drain enemies' lives
-                                orbLifeTime += procTickTime;
+                                orbLifeTime += procTickTime * 0.5f;
                                 float drainAmount = (drainFlatRate + (item.data.maxHealth * drainPercentRate)) * procTickTime;
                                 item.data.health -= drainAmount * 0.5f;
                                 item.data.healthHandler.RPCA_SendTakeDamage(new Vector2(drainAmount * 0.5f, 0.0f), this.transform.position, playerID: casterPlayer.playerID);

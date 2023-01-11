@@ -40,7 +40,9 @@ namespace GearUpCards.Extensions
         {
             gunBulletsDotRar = 0,
 
-            cadModuleGlyph = 50
+            cadModuleGlyph = 50,
+
+            charmGuardian = 100
         }
     }
 
@@ -66,6 +68,7 @@ namespace GearUpCards.Extensions
         public int orbObliterationStack;
         public int orbRollingBulwarkStack;
         public int orbLifeforceDuality;
+        public int orbLifeforceBlast;
 
         public int magickFragmentStack;
 
@@ -103,6 +106,7 @@ namespace GearUpCards.Extensions
             orbObliterationStack = 0;
             orbRollingBulwarkStack = 0;
             orbLifeforceDuality = 0;
+            orbLifeforceBlast = 0;
 
             // 1.0f being 100%/s!!
             hpPercentageRegen = 0.0f;
@@ -162,6 +166,7 @@ namespace GearUpCards.Extensions
             __instance.GetGearData().orbObliterationStack = 0;
             __instance.GetGearData().orbRollingBulwarkStack = 0;
             __instance.GetGearData().orbLifeforceDuality = 0;
+            __instance.GetGearData().orbLifeforceBlast = 0;
 
             __instance.GetGearData().hpPercentageRegen = 0.0f;
 

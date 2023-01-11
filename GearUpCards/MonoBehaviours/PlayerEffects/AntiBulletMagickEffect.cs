@@ -304,7 +304,7 @@ namespace GearUpCards.MonoBehaviours
                 if (distance > spellRange)
                     continue;
 
-                Destroy(bullet);
+                PhotonNetwork.Destroy(bullet);
             }
         }
 

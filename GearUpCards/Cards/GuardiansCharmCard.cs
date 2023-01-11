@@ -15,22 +15,36 @@ using static GearUpCards.Utils.CardUtils;
 
 namespace GearUpCards.Cards
 {
-    class InfluenceGlyphCard : CustomCard
+    class GuardiansCharmCard : CustomCard
     {
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            // gun.attackSpeed = 1.0f / 0.85f;
-
-            cardInfo.categories = new CardCategory[]
-            {
-                GearCategory.tagSpellOnlyAugment
-            };
+            cardInfo.allowMultiple = false;
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            // explosive mono stuff
+            // black/whitelisting
+            // ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.typeUniqueGunSpread);
 
-            characterStats.GetGearData().glyphInfluence += 1;
+            if (block.cdMultiplier > 1.0f)
+            {
+                block.cdMultiplier -= 0.25f;
+            }
+            else
+            {
+                block.cdMultiplier *= 0.75f;
+            }
+
+            if (block.cdAdd > 1.0f)
+            {
+                block.cdAdd -= 0.25f;
+            }
+
+            gun.reloadTimeAdd += 1.0f;
+            gun.attackSpeed *= 1.0f / 0.75f;
+
+            // player.gameObject.GetOrAddComponent<GearUpPreRoundEffects>();
+            characterStats.GetGearData().addOnList.Add(GearUpConstants.AddOnType.charmGuardian);
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -38,51 +52,50 @@ namespace GearUpCards.Cards
         }
         protected override string GetTitle()
         {
-            return "Influence Glyph";
+            return "Guardians Charm";
         }
         protected override string GetDescription()
         {
-            // return "Improve your Spells' range and effect area. Your Bullets cause a small blast on impact.";
-            return "Improve your Spells' range and effect area.";
+            return "Passively boost your chance of drawing block-related cards.";
         }
         protected override GameObject GetCardArt()
         {
-            return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_GlyphInfluence");
+            return null;
         }
         protected override CardInfo.Rarity GetRarity()
         {
-            return CardInfo.Rarity.Common;
+            return CardInfo.Rarity.Uncommon;
         }
         protected override CardInfoStat[] GetStats()
         {
             return new CardInfoStat[]
             {
-                // new CardInfoStat()
-                // {
-                //     positive = true,
-                //     stat = "Blast DMG",
-                //     amount = "!WIP!",
-                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                // },
-                // new CardInfoStat()
-                // {
-                //     positive = false,
-                //     stat = "ATK SPD",
-                //     amount = "-15%",
-                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                // },
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "Spell Range/AoE",
-                    amount = "Larger",
+                    stat = "Block CD",
+                    amount = "-25% & -0.25s",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                },
+                new CardInfoStat()
+                {
+                    positive = false,
+                    stat = "Reload Time",
+                    amount = "+1s",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                },
+                new CardInfoStat()
+                {
+                    positive = false,
+                    stat = "ATK SPD",
+                    amount = "-25%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };
         }
         protected override CardThemeColor.CardThemeColorType GetTheme()
         {
-            return CardThemeColor.CardThemeColorType.MagicPink;
+            return CardThemeColor.CardThemeColorType.TechWhite;
         }
         public override string GetModName()
         {
@@ -90,7 +103,7 @@ namespace GearUpCards.Cards
         }
         public override void Callback()
         {
-            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Spell\nGlyph";
+            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Charm";
         }
     }
 }

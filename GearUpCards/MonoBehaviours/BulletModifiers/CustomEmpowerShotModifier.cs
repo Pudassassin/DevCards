@@ -5,12 +5,16 @@ using UnboundLib;
 
 using GearUpCards.Extensions;
 using GearUpCards.Utils;
+using Photon.Pun;
 
 namespace GearUpCards.MonoBehaviours
 {
     internal class CustomEmpowerShotModifier : RayHitEffect
     {
         public static float procTickTime = 0.05f;
+        public static string RPCKey = GearUpCards.ModId + ":CEmpowerImpactSync";
+
+        public PhotonView view;
 
         private int empowerImpactCount = 1;
         private int empowerStackCount = 1;
@@ -22,6 +26,12 @@ namespace GearUpCards.MonoBehaviours
         internal float procTimer = 0.0f;
         internal Vector3 prevBulletPos = Vector3.zero;
 
+        private void Awake()
+        {
+            this.view = GetComponentInParent<PhotonView>();
+            GetComponentInParent<ChildRPC>().childRPCsVector2.Add(RPCKey, SyncImpactPos);
+        }
+
         public void SetupEmpowerCharge(int impact, int stack, float burstDelay = 0.1f)
         {
             empowerImpactCount = impact;
@@ -29,15 +39,20 @@ namespace GearUpCards.MonoBehaviours
             empowerBurstDelay = burstDelay;
         }
 
-        public void TempSetup()
+        public void SyncImpactPos(Vector2 pos)
         {
-        // temp prototype
-            ProjectileHit projectileHit = this.gameObject.GetComponentInParent<ProjectileHit>();
-            Player shooterPlayer = projectileHit.ownPlayer;
-
-            empowerImpactCount = shooterPlayer.data.stats.GetGearData().orbRollingBulwarkStack * 3;
-            empowerStackCount = shooterPlayer.data.stats.GetGearData().orbRollingBulwarkStack;
+            prevBulletPos = pos;
         }
+
+        // public void TempSetup()
+        // {
+        // // temp prototype
+        //     ProjectileHit projectileHit = this.gameObject.GetComponentInParent<ProjectileHit>();
+        //     Player shooterPlayer = projectileHit.ownPlayer;
+        // 
+        //     empowerImpactCount = shooterPlayer.data.stats.GetGearData().orbRollingBulwarkStack * 3;
+        //     empowerStackCount = shooterPlayer.data.stats.GetGearData().orbRollingBulwarkStack;
+        // }
 
         public void Update()
         {
@@ -63,6 +78,11 @@ namespace GearUpCards.MonoBehaviours
 
         public override HasToReturn DoHitEffect(HitInfo hit)
         {
+            if (view != null && (view.IsMine))
+            {
+                GetComponentInParent<ChildRPC>().CallFunction(RPCKey, (Vector2)prevBulletPos);
+            }
+
             if (empowerImpactCount <= 0)
             {
                 return HasToReturn.canContinue;
@@ -105,6 +125,11 @@ namespace GearUpCards.MonoBehaviours
 
             empowerImpactCount--;
             return HasToReturn.canContinue;
+        }
+
+        private void OnDestroy()
+        {
+            GetComponentInParent<ChildRPC>()?.childRPCsVector2.Remove(RPCKey);
         }
     }
 

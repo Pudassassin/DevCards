@@ -30,6 +30,12 @@ namespace GearUpCards.Patches
                 healMuliplier *= hollowLifeEffect.GetHealMultiplier();
             }
 
+            LifeforceBlastStatus lifeforceBlastStatus = ___player.GetComponent<LifeforceBlastStatus>();
+            if (lifeforceBlastStatus != null)
+            {
+                healMuliplier *= lifeforceBlastStatus.GetHealMultiplier();
+            }
+
 
             healAmount *= healMuliplier;
         }

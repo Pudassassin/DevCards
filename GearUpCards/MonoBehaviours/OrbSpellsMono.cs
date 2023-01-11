@@ -687,6 +687,7 @@ namespace GearUpCards.MonoBehaviours
                             addToOrb.transform.localPosition = Vector3.zero;
 
                             addToOrb.AddComponent<OrbObliterationModifier>();
+                            addToOrb.AddComponent<SyncBulletPosition>();
 
                             BulletNoClipModifier noClipper = addToOrb.AddComponent<BulletNoClipModifier>();
                             noClipper.SetPersistentOverride(true);
@@ -770,6 +771,8 @@ namespace GearUpCards.MonoBehaviours
                             GameObject addToOrb = new GameObject("RollingBulwarkModifier");
                             addToOrb.transform.parent = orbCast.transform;
                             addToOrb.transform.localPosition = Vector3.zero;
+
+                            addToOrb.AddComponent<SyncBulletPosition>();
 
                             CustomEmpowerShotModifier customEmpower = addToOrb.AddComponent<CustomEmpowerShotModifier>();
                             customEmpower.SetupEmpowerCharge(
@@ -860,6 +863,7 @@ namespace GearUpCards.MonoBehaviours
                             addToOrb.transform.localPosition = Vector3.zero;
 
                             addToOrb.AddComponent<OrbLifeforceDualityModifier>();
+                            addToOrb.AddComponent<SyncBulletPosition>();
 
                             BulletNoClipModifier noClipper = addToOrb.AddComponent<BulletNoClipModifier>();
                             noClipper.SetPersistentOverride(true);
@@ -872,12 +876,6 @@ namespace GearUpCards.MonoBehaviours
                     };
 
                     newOrbSpell.orbDummyGun.ShootPojectileAction = newOrbSpell.castAction;
-                    // Action<GameObject> tempAction2 = new Action<GameObject>(ShootActionAddVFX(spellVFXRollingBuorbwark));
-                    // newOrbSpell.orbDummyGun.ShootPojectileAction = (Action<GameObject>)Delegate.Combine
-                    // (
-                    //     newOrbSpell.castAction,
-                    //     tempAction2
-                    // );
 
                     ObjectsToSpawn[] spawnObjects = new ObjectsToSpawn[]
                     {
@@ -913,6 +911,86 @@ namespace GearUpCards.MonoBehaviours
                 }
             }
 
+            // Orb Spell Lifeforce Blast
+            checkIndex = QueryOrbSpell(OrbSpellType.lifeforceBlast);
+            if (stats.GetGearData().orbLifeforceBlast > 0)
+            {
+                // stats calculation
+                float cooldown = Mathf.Clamp(8.0f - (magickFragment * 0.5f), 4.0f, 10.0f);
+                float burstTime = Mathf.Clamp(0.30f - (magickFragment * 0.05f), 0.1f, 0.5f);
+                int orbCount = Mathf.FloorToInt((2.1f + stats.GetGearData().orbLifeforceBlast) / 2.0f);
+                int bounceCount = glyphGeometric;
+                float orbVelocity = 0.75f + (glyphDivination * 0.15f);
+                float orbSpeed = 1.0f + (glyphDivination * 0.1f);
+
+                if (checkIndex >= 0 && checkIndex < orbSpells.Count)
+                {
+                    // if in list: Update and enable
+                    orbSpells[checkIndex].UpdateOrbSpell(cooldown, orbCount);
+                }
+                else
+                {
+                    // else: create and insert by priority
+                    OrbSpellStats newOrbSpell = new OrbSpellStats(gun, player);
+
+                    newOrbSpell.castAction = (orbCast) =>
+                    {
+                        try
+                        {
+                            orbCast.name = "OrbSpell_LifeforceBlast";
+                            GameObject addToOrb = new GameObject("LifeforceBlastModifier");
+                            addToOrb.transform.parent = orbCast.transform;
+                            addToOrb.transform.localPosition = Vector3.zero;
+
+                            addToOrb.AddComponent<OrbLifeforceBlastModifier>();
+                            addToOrb.AddComponent<SyncBulletPosition>();
+
+                            BulletNoClipModifier noClipper = addToOrb.AddComponent<BulletNoClipModifier>();
+                            noClipper.SetPersistentOverride(true);
+                        }
+                        catch (Exception exception)
+                        {
+                            Miscs.LogError("[GearUp] OrbSpell_LifeforceBlast cast action failed!");
+                            Miscs.LogWarn(exception);
+                        }
+                    };
+
+                    newOrbSpell.orbDummyGun.ShootPojectileAction = newOrbSpell.castAction;
+
+                    ObjectsToSpawn[] spawnObjects = new ObjectsToSpawn[]
+                    {
+                        new ObjectsToSpawn
+                        {
+                            AddToProjectile = screenEdgePrefab
+                        }
+                    };
+
+                    newOrbSpell.SetupOrbSpell(OrbSpellType.lifeforceBlast, spawnObjects, cooldown, orbCount, 5);
+                    newOrbSpell.orbDummyGun.name = "OrbSpellHolder_LifeforceBlast";
+
+                    checkIndex = InsertOrbSpell(newOrbSpell);
+                }
+
+                orbSpells[checkIndex].orbDummyGun.projectileColor = new Color(0.9f, 0.9f, 0.9f, 1.0f);
+                orbSpells[checkIndex].orbDummyGun.gravity = 0.0f;
+                orbSpells[checkIndex].orbDummyGun.projectileSpeed = orbVelocity;
+                orbSpells[checkIndex].orbDummyGun.projectielSimulatonSpeed = orbSpeed;
+                orbSpells[checkIndex].orbDummyGun.timeBetweenBullets = burstTime;
+                orbSpells[checkIndex].orbDummyGun.reflects = bounceCount;
+
+                Miscs.Log("[GearUp] OrbSpellsMono: Lifeforce Blast Updated!");
+            }
+            else
+            {
+                // check if in list
+
+                // if in list: Update to zero and disable
+                if (checkIndex >= 0 && checkIndex < orbSpells.Count)
+                {
+                    orbSpells[checkIndex].UpdateOrbSpell(10.0f, 0);
+                }
+            }
+
             // repeat for each spell manually
         }
 
@@ -925,15 +1003,6 @@ namespace GearUpCards.MonoBehaviours
 
                 if (conditionMet)
                 {
-                    // VFX part
-                    // GameObject VFX = Instantiate(spellVFXPrefab, this.player.transform.position + new Vector3(0.0f, 0.0f, 100.0f), Quaternion.identity);
-                    // VFX.transform.localScale = Vector3.one * spellRange;
-                    // VFX.name = "AntiBulletVFX_Copy";
-                    // VFX.GetComponent<Canvas>().sortingLayerName = "MostFront";
-                    // VFX.GetComponent<Canvas>().sortingOrder = 10000;
-                    // 
-                    // VFX.AddComponent<RemoveAfterSeconds>().seconds = 1.25f;
-
                     // If not Orb Sage > trigger Orb Spell burst-casting
                     if (!playerIsOrbSage)
                     {

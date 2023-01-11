@@ -611,6 +611,9 @@ namespace GearUpCards.MonoBehaviours
 
     class FlakShellModifier : RayHitEffect
     {
+        private static GameObject vfxFlakShell = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_Part_FlakShell");
+        private static Vector3 rotationDebug = new Vector3(270.0f, 90.0f, 0.0f);
+
         public static float defaultDelayTime = 0.75f;
         private float timer = 0.0f;
 
@@ -624,6 +627,7 @@ namespace GearUpCards.MonoBehaviours
         public bool effectTriggered = false;
         public bool checkFlakShell = false;
 
+        private GameObject partObj;
         private Vector3 playerPrevPos;
         private float delayTime = defaultDelayTime;
         private ProjectileHitEmpower empowerShotMono = null;
@@ -662,10 +666,10 @@ namespace GearUpCards.MonoBehaviours
                 removeMono.seconds *= 5.0f;
             }
 
-            // shrapnelDummyGun = gameObject.AddComponent<Gun>();
-            // Miscs.CopyGunStats(shooterPlayer.gameObject.GetComponent<UniqueGunSpreadMono>().dummySpreadGun, shrapnelDummyGun);
-
-            // effectEnable = true;
+            // visuals
+            partObj = Instantiate(vfxFlakShell, transform.root);
+            partObj.transform.localEulerAngles = rotationDebug;
+            partObj.transform.localPosition = Vector3.zero;
         }
 
         public void Update()
@@ -690,6 +694,13 @@ namespace GearUpCards.MonoBehaviours
                         effectEnable = true;
                     }
                 }
+            }
+
+            if (partObj != null)
+            {
+                float damage = projectileHit.dealDamageMultiplierr * projectileHit.damage;
+                float bulletSize = Mathf.Max(Mathf.Log(damage, 10.0f), 0.5f);
+                partObj.transform.localScale = Vector3.one * bulletSize;
             }
         }
 
@@ -778,10 +789,11 @@ namespace GearUpCards.MonoBehaviours
                 if (empowerShotMono == null)
                 {
                     // Miscs.Log("Boom!");
-                    Destroy(gameObject);
+                    PhotonNetwork.Destroy(transform.root.gameObject);
                 }
                 else
                 {
+                    Destroy(partObj);
                     Destroy(this);
                 }
             });

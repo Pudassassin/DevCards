@@ -458,6 +458,7 @@ namespace GearUpCards.Utils
             tempModifier += gearData.glyphInfluence * 1.00f;
             tempModifier += gearData.glyphPotency * 0.50f;
             tempModifier += gearData.magickFragmentStack * 0.50f;
+            tempModifier += gearData.glyphTime * 0.50f;
 
             // Miscs.Log(">.<");
             // Miscs.Log("> Glyph base modifier: " + tempModifier);
@@ -476,6 +477,16 @@ namespace GearUpCards.Utils
             }
             BatchAdjustCardRarity(cardListSpells, mul: tempModifier);
 
+            tempModifier = gearData.orbLifeforceDuality * 0.50f;
+            tempModifier += gearData.orbLifeforceBlast * 0.50f;
+            tempModifier += gearData.orbObliterationStack * 0.50f;
+            tempModifier += gearData.orbRollingBulwarkStack * 0.50f;
+            if (gearData.uniqueMagick != GearUpConstants.ModType.disabled && gearData.uniqueMagick != GearUpConstants.ModType.none)
+            {
+                tempModifier += 2.00f;
+            }
+            BatchAdjustCardRarity(cardListGlyph, mul: tempModifier);
+
             // [Empower] + [Shield Battery] boosting>> block abilities find chance
             tempModifier = (float)(gearData.shieldBatteryStack) * 0.25f;
             tempModifier += (float)(GetPlayerCardsWithName(targerPlayer, "Empower").Count) * 0.25f;
@@ -493,28 +504,18 @@ namespace GearUpCards.Utils
                 GetCardInfo("Empower", true),
                 mul: tempModifier * 2.0f
             );
-            BatchAdjustCardRarity(cardListVanillaBlocks, mul: tempModifier * 2.0f);
-            BatchAdjustCardRarity(cardListModdedBlocks, mul: tempModifier);
+
+            if (gearData.addOnList.Contains(GearUpConstants.AddOnType.charmGuardian))
+            {
+                BatchAdjustCardRarity(cardListVanillaBlocks, mul: tempModifier * 2.0f);
+                BatchAdjustCardRarity(cardListModdedBlocks, mul: tempModifier);
+            }
 
             // blocking ability boosting>> [Empower] + [Shield Battery] find chance
             List<PlayerCardData> tempList = GetPlayerCardsWithStringList(targerPlayer, cardListVanillaBlocks);
-
-            // Miscs.Log($"Player has vanilla blocks:");
-            // foreach (PlayerCardData item in tempList)
-            // {
-            //     Miscs.Log($"> {item.cardInfo.gameObject.name} @ {item.index}");
-            // }
-
-            tempModifier = (float)(tempList.Count) * 0.25f;
+            tempModifier = (float)(tempList.Count) * 0.20f;
 
             tempList = GetPlayerCardsWithStringList(targerPlayer, cardListModdedBlocks);
-
-            // Miscs.Log($"Player has modded blocks:");
-            // foreach (PlayerCardData item in tempList)
-            // {
-            //     Miscs.Log($"> {item.cardInfo.gameObject.name} @ {item.index}");
-            // }
-
             tempModifier += (float)(tempList.Count) * 0.10f;
 
             RarityUtils.AjustCardRarityModifier
@@ -527,6 +528,13 @@ namespace GearUpCards.Utils
                 GetCardInfo("Empower", true),
                 mul: tempModifier
             );
+
+            // blocking ability boosing>> more block cards
+            if (gearData.addOnList.Contains(GearUpConstants.AddOnType.charmGuardian))
+            {
+                BatchAdjustCardRarity(cardListVanillaBlocks, mul: tempModifier * 2.0f);
+                BatchAdjustCardRarity(cardListModdedBlocks, mul: tempModifier);
+            }
         }
 
         public static string CardNameSanitize(string name, bool removeWhitespaces = false)

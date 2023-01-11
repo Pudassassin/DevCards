@@ -40,9 +40,9 @@ namespace GearUpCards
 
     public class GearUpCards : BaseUnityPlugin
     {
-        private const string ModId = "com.pudassassin.rounds.GearUpCards";
-        private const string ModName = "GearUpCards";
-        public const string Version = "0.2.43"; //build #199 / Release 0-2-2
+        public const string ModId = "com.pudassassin.rounds.GearUpCards";
+        public const string ModName = "GearUpCards";
+        public const string Version = "0.2.47.2"; //build #203 / Release 0-2-2
 
         public const string ModInitials = "GearUP";
 
@@ -85,6 +85,10 @@ namespace GearUpCards
             CustomCard.BuildCard<ObliterationOrbCard>();
             CustomCard.BuildCard<RollingBulwarkOrbCard>();
             CustomCard.BuildCard<LifeforceDualityOrbCard>();
+            CustomCard.BuildCard<LifeforceBlastOrbCard>();
+
+            // Specializing Charms
+            CustomCard.BuildCard<GuardiansCharmCard>();
 
             // Spell Casting-Assistance-Device series
             CustomCard.BuildCard<GlyphCADModuleCard>();
