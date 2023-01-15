@@ -31,7 +31,7 @@ namespace GearUpCards.Cards
 
             block.cdAdd += 1.0f;
 
-            characterStats.GetGearData().orbLifeforceBlast += 1;
+            characterStats.GetGearData().orbLifeforceBlastStack += 1;
             player.gameObject.GetOrAddComponent<OrbSpellsMono>();
 
             CooldownUIMono cooldownUI = player.gameObject.GetOrAddComponent<CooldownUIMono>();
@@ -66,6 +66,7 @@ namespace GearUpCards.Cards
         protected override string GetDescription()
         {
             return "Blocking cast the orb that heals & boosts friends' heals, damages & hinders foes' heals on impact.";
+            // return "Blocking cast the orb that do burst Heal/DMG, then temporarly boost/hinder healing.";
         }
         protected override GameObject GetCardArt()
         {
@@ -79,13 +80,6 @@ namespace GearUpCards.Cards
         {
             return new CardInfoStat[]
             {
-                // new CardInfoStat()
-                // {
-                //     positive = true,
-                //     stat = "Max HP Culling",
-                //     amount = "10~15%",
-                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                // },
                 new CardInfoStat()
                 {
                     positive = false,

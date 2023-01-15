@@ -13,20 +13,21 @@ namespace GearUpCards.MonoBehaviours
 {
     public class BeamVFXMono : MonoBehaviour
     {
-        static float defaultBeamLength = 4.0f;
-        static string maskBoundName = "Mask_Bound";
-        static Vector3 referenceVector = new Vector3(1.0f, 0.0f, 0.0f);
+        protected static float defaultBeamLength = 4.0f;
+        protected static float defaultBeamWidth = 1.0f;
+        protected static string maskBoundName = "Mask_Bound";
+        protected static Vector3 referenceVector = new Vector3(1.0f, 0.0f, 0.0f);
 
         public Transform TLinkFrom, TLinkTo;
         public float unlinkedLifetime = 3.0f;
 
-        private Vector3 posLinkFrom, posLinkTo;
+        protected Vector3 posLinkFrom, posLinkTo;
 
-        private float distance, rotation;
-        private Vector3 direction, beamScale;
+        protected float distance, rotation, width;
+        protected Vector3 direction, beamScale, parentScale;
 
-        private GameObject beamMaskObject;
-        private RemoveAfterSeconds remover;
+        protected GameObject beamMaskObject;
+        protected RemoveAfterSeconds remover;
 
         SpriteMask[] spriteMasks;
         SpriteRenderer[] spriteRenderers;
@@ -37,6 +38,7 @@ namespace GearUpCards.MonoBehaviours
             posLinkFrom = Vector3.zero;
             posLinkTo = Vector3.zero;
             beamMaskObject = transform.Find(maskBoundName).gameObject;
+            width = defaultBeamWidth;
 
             spriteRenderers = transform.root.GetComponentsInChildren<SpriteRenderer>();
             foreach (SpriteRenderer item in spriteRenderers)
@@ -64,6 +66,9 @@ namespace GearUpCards.MonoBehaviours
 
         public void LateUpdate()
         {
+            transform.localScale = Vector3.one;
+            parentScale = transform.lossyScale;
+
             if (TLinkTo != null)
             {
                 posLinkTo = TLinkTo.position;
@@ -90,8 +95,13 @@ namespace GearUpCards.MonoBehaviours
             }
             else
             {
-                beamScale = beamMaskObject.transform.localScale;
-                beamScale.x = distance / defaultBeamLength;
+                beamScale = new Vector3
+                (
+                    (distance / defaultBeamLength) / parentScale.x,
+                    1.0f / parentScale.y,
+                    1.0f / parentScale.z
+                );
+                // beamScale.x = distance / defaultBeamLength;
                 beamMaskObject.transform.localScale = beamScale;
             }
 
@@ -99,14 +109,49 @@ namespace GearUpCards.MonoBehaviours
             distance = direction.magnitude;
             rotation = GetRotationFromVector(direction);
 
+            transform.localScale = new Vector3(1.0f, (width / defaultBeamWidth) / parentScale.y, 1.0f);
             transform.eulerAngles = new Vector3(0.0f, 0.0f, rotation);
             transform.position = Vector3.Lerp(posLinkFrom, posLinkTo, 0.5f);
 
         }
 
+        public void SetBeamWidth(float width)
+        {
+            this.width = width;
+        }
+
         public static float GetRotationFromVector(Vector3 vector)
         {
             return Mathf.Atan2(vector.y, vector.x) * Mathf.Rad2Deg;
+        }
+    }
+
+    public class RayVFXMono: BeamVFXMono
+    {
+        static string rayFocusName = "Beam_Focus";
+
+        protected GameObject rayFocusObject;
+        protected Vector3 rayScale;
+
+        public void Start()
+        {
+            base.Start();
+
+            rayFocusObject = transform.Find(rayFocusName).gameObject;
+        }
+
+        public void LateUpdate()
+        {
+            base.LateUpdate();
+
+            rayScale = new Vector3
+            (
+                (distance / defaultBeamLength) / parentScale.x,
+                1.0f / parentScale.y,
+                1.0f / parentScale.z
+            );
+            // rayScale.x = distance / defaultBeamLength;
+            rayFocusObject.transform.localScale = rayScale;
         }
     }
 }

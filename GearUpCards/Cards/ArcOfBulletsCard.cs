@@ -30,10 +30,11 @@ namespace GearUpCards.Cards
             // black/whitelisting
             ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.typeUniqueGunSpread);
 
-            gun.damage *= 0.65f;
+            // gun.damage *= 0.65f;
+            gun.bulletDamageMultiplier *= 0.75f;
 
             // about half of [Buckshot]'s spread but this is for mono's calculation
-            gun.spread += 60.0f / 360.0f;
+            gun.spread += 45.0f / 360.0f;
             gun.evenSpread += 1.0f;
             gun.numberOfProjectiles += 4;
 
@@ -89,14 +90,14 @@ namespace GearUpCards.Cards
                 {
                     positive = false,
                     stat = "Spread",
-                    amount = "+60 deg",
+                    amount = "+45 deg",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "DMG",
-                    amount = "-35%",
+                    amount = "-25%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };

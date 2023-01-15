@@ -5,6 +5,7 @@ using UnityEngine;
 using UnboundLib;
 
 using GearUpCards.MonoBehaviours;
+// using GearUpCards.Extensions;
 
 namespace GearUpCards.Patches
 {
@@ -46,6 +47,7 @@ namespace GearUpCards.Patches
         static void ApplyDamageMultiplier(HealthHandler __instance, ref Vector2 damage, Player ___player)
         {
             float damageMuliplier = 1.0f;
+            // CharacterStatModifiers stats = ___player.gameObject.GetComponent<CharacterStatModifiers>();
 
             TacticalScannerStatus scannerStatus = ___player.GetComponent<TacticalScannerStatus>();
             if (scannerStatus != null)
@@ -53,6 +55,17 @@ namespace GearUpCards.Patches
                 damageMuliplier *= scannerStatus.GetDamageMultiplier();
             }
 
+            ArcaneSunStatus arcaneSunStatus = ___player.GetComponent<ArcaneSunStatus>();
+            if (arcaneSunStatus != null)
+            {
+                damageMuliplier *= arcaneSunStatus.GetDamageMultiplier();
+            }
+
+            ArcaneSunEffect arcaneSunEffect = ___player.GetComponent<ArcaneSunEffect>();
+            if (arcaneSunEffect != null)
+            {
+                damageMuliplier *= Mathf.Pow(1.15f, arcaneSunEffect.stackCount);
+            }
 
             damage *= damageMuliplier;
         }

@@ -12,9 +12,9 @@ namespace GearUpCards.MonoBehaviours
     {
         private static GameObject VFXPrefab = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_OrbLiterationImpact");
 
-        private float healthCullAreaHit = 0.9f;
-        private float healthCullDirectHit = 0.85f;
-        private float obliterationRadius = 4.0f;
+        private float healthCullAreaHit = 0.80f;
+        private float healthCullDirectHit = 0.65f;
+        private float obliterationRadius = 5.0f;
 
         // private Gun shooterGun;
         // private Player shooterPlayer;
@@ -48,7 +48,7 @@ namespace GearUpCards.MonoBehaviours
             {
                 // direct hit victim take more MAX HP loss
                 GameObject victim = victimPlayer.gameObject;
-                float effectValue = healthCullDirectHit - (0.05f * glyphPotency);
+                float effectValue = healthCullDirectHit - (0.10f * glyphPotency);
 
                 status = victim.GetOrAddComponent<HollowLifeEffect>();
                 status.ApplyTempHealthCap(effectValue);
@@ -70,7 +70,7 @@ namespace GearUpCards.MonoBehaviours
                 playerDistance = (target.transform.position - gameObject.transform.position).magnitude;
                 if (playerDistance <= effectRadius)
                 {
-                    float effectValue = healthCullAreaHit - (0.025f * glyphPotency);
+                    float effectValue = healthCullAreaHit - (0.05f * glyphPotency);
 
                     status = target.gameObject.GetOrAddComponent<HollowLifeEffect>();
                     status.ApplyTempHealthCap(effectValue);

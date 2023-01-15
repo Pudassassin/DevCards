@@ -67,6 +67,11 @@ namespace GearUpCards.MonoBehaviours
                         {
                             player.data.health -= tickDamage;
                         }
+
+                        if (player.data.health < -1 * player.data.maxHealth)
+                        {
+                            player.data.health = -1 * player.data.maxHealth;
+                        }
                     }
 
                     timer -= tickInterval;

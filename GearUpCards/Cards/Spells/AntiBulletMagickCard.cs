@@ -44,6 +44,7 @@ namespace GearUpCards.Cards
 
             // black/whitelisting
             ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.typeUniqueMagick);
+            ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Remove(GearCategory.tagSpellOnlyAugment);
 
             // stats
             block.cdAdd += 1.5f;

@@ -58,6 +58,8 @@ namespace GearUpCards.Extensions
         public int chompyBulletStack;
         public int tiberiumBulletStack;
 
+        public int glyphMagickFragment;
+
         public int glyphDivination;
         public int glyphInfluence;
         public int glyphGeometric;
@@ -67,10 +69,10 @@ namespace GearUpCards.Extensions
 
         public int orbObliterationStack;
         public int orbRollingBulwarkStack;
-        public int orbLifeforceDuality;
-        public int orbLifeforceBlast;
+        public int orbLifeforceDualityStack;
+        public int orbLifeforceBlastStack;
 
-        public int magickFragmentStack;
+        public int arcaneSunStack;
 
         public float hpPercentageRegen;
 
@@ -94,8 +96,7 @@ namespace GearUpCards.Extensions
             chompyBulletStack = 0;
             tiberiumBulletStack = 0;
 
-            magickFragmentStack = 0;
-
+            glyphMagickFragment = 0;
             glyphDivination = 0;
             glyphInfluence = 0;
             glyphGeometric = 0;
@@ -105,8 +106,10 @@ namespace GearUpCards.Extensions
 
             orbObliterationStack = 0;
             orbRollingBulwarkStack = 0;
-            orbLifeforceDuality = 0;
-            orbLifeforceBlast = 0;
+            orbLifeforceDualityStack = 0;
+            orbLifeforceBlastStack = 0;
+
+            arcaneSunStack = 0;
 
             // 1.0f being 100%/s!!
             hpPercentageRegen = 0.0f;
@@ -154,7 +157,7 @@ namespace GearUpCards.Extensions
             __instance.GetGearData().chompyBulletStack = 0;
             __instance.GetGearData().tiberiumBulletStack = 0;
 
-            __instance.GetGearData().magickFragmentStack = 0;
+            __instance.GetGearData().glyphMagickFragment = 0;
 
             __instance.GetGearData().glyphDivination = 0;
             __instance.GetGearData().glyphInfluence = 0;
@@ -165,8 +168,10 @@ namespace GearUpCards.Extensions
 
             __instance.GetGearData().orbObliterationStack = 0;
             __instance.GetGearData().orbRollingBulwarkStack = 0;
-            __instance.GetGearData().orbLifeforceDuality = 0;
-            __instance.GetGearData().orbLifeforceBlast = 0;
+            __instance.GetGearData().orbLifeforceDualityStack = 0;
+            __instance.GetGearData().orbLifeforceBlastStack = 0;
+
+            __instance.GetGearData().arcaneSunStack = 0;
 
             __instance.GetGearData().hpPercentageRegen = 0.0f;
 

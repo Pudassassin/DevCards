@@ -28,11 +28,11 @@ namespace GearUpCards.Cards
 
             if (block.cdMultiplier > 1.0f)
             {
-                block.cdMultiplier -= 0.25f;
+                block.cdMultiplier -= 0.35f;
             }
             else
             {
-                block.cdMultiplier *= 0.75f;
+                block.cdMultiplier *= 0.65f;
             }
 
             if (block.cdAdd > 1.0f)
@@ -40,8 +40,8 @@ namespace GearUpCards.Cards
                 block.cdAdd -= 0.25f;
             }
 
-            gun.reloadTimeAdd += 1.0f;
-            gun.attackSpeed *= 1.0f / 0.75f;
+            gun.reloadTimeAdd += 1.25f;
+            // gun.attackSpeed *= 1.0f / 0.75f;
 
             // player.gameObject.GetOrAddComponent<GearUpPreRoundEffects>();
             characterStats.GetGearData().addOnList.Add(GearUpConstants.AddOnType.charmGuardian);
@@ -56,7 +56,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Passively boost your chance of drawing block-related cards.";
+            return "Boost your chance of drawing block-related cards.";
         }
         protected override GameObject GetCardArt()
         {
@@ -74,23 +74,23 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "Block CD",
-                    amount = "-25% & -0.25s",
+                    amount = "-35% & -0.25s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "Reload Time",
-                    amount = "+1s",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
-                new CardInfoStat()
-                {
-                    positive = false,
-                    stat = "ATK SPD",
-                    amount = "-25%",
+                    amount = "+1.25s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
+                // new CardInfoStat()
+                // {
+                //     positive = false,
+                //     stat = "ATK SPD",
+                //     amount = "-25%",
+                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                // }
             };
         }
         protected override CardThemeColor.CardThemeColorType GetTheme()

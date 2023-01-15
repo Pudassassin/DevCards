@@ -34,7 +34,7 @@ namespace GearUpCards.Cards
 
             block.cdAdd += 1.0f;
 
-            characterStats.GetGearData().orbLifeforceDuality += 1;
+            characterStats.GetGearData().orbLifeforceDualityStack += 1;
             player.gameObject.GetOrAddComponent<OrbSpellsMono>();
 
             CooldownUIMono cooldownUI = player.gameObject.GetOrAddComponent<CooldownUIMono>();

@@ -18,6 +18,8 @@ namespace GearUpCards.MonoBehaviours
         private float effectDuration = 4.0f;
         private bool isFriendly = false;
 
+        internal bool wasDisabled = false;
+
         internal float effectTimer = 0.0f;
         internal GameObject healBoostObj, healHinderObj;
         internal ParticleSystem healBoostPart, healHinderPart;
@@ -56,8 +58,19 @@ namespace GearUpCards.MonoBehaviours
             return healModifierFactor;
         }
 
+        public override void OnAwake()
+        {
+            GameModeManager.AddHook(GameModeHooks.HookPointEnd, OnPointEnd);
+            GameModeManager.AddHook(GameModeHooks.HookPointStart, OnPointEnd);
+        }
+
         public override void OnUpdate()
         {
+            if (wasDisabled)
+            {
+                PurgeStatus();
+            }
+
             effectTimer += TimeHandler.deltaTime;
 
             if (isFriendly)
@@ -118,12 +131,25 @@ namespace GearUpCards.MonoBehaviours
             {
                 Destroy(healHinderObj);
             }
+
+            GameModeManager.RemoveHook(GameModeHooks.HookPointEnd, OnPointEnd);
+            GameModeManager.RemoveHook(GameModeHooks.HookPointStart, OnPointEnd);
+
             Destroy(this);
+        }
+
+        private IEnumerator OnPointEnd(IGameModeHandler gm)
+        {
+            // This status effect should be cleared out at point end, if they survived
+            PurgeStatus();
+
+            yield break;
         }
 
         override public void OnOnDisable()
         {
             // This status effect should be cleared out when they are dead, reviving or not
+            wasDisabled = true;
             PurgeStatus();
         }
     }

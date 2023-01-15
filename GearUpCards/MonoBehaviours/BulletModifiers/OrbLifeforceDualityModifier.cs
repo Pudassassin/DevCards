@@ -10,6 +10,7 @@ using GearUpCards.Utils;
 using GearUpCards.Extensions;
 using UnityEngine.UI;
 using Photon.Pun;
+using System.Linq;
 
 namespace GearUpCards.MonoBehaviours
 {
@@ -57,14 +58,14 @@ namespace GearUpCards.MonoBehaviours
             // moveTransform.velocity = moveTransform.velocity.normalized * 20.0f;
 
             // Orb Stats
-            healFlatRate        = 20.0f * (1 + casterStats.GetGearData().glyphPotency);
+            healFlatRate        = 20.0f + (10.0f * casterStats.GetGearData().glyphPotency);
             healPercentRate     = 0.01f + (0.005f * casterStats.GetGearData().glyphPotency);
-            drainFlatRate       = 40.0f * (1 + casterStats.GetGearData().glyphPotency);
+            drainFlatRate       = 45.0f + (15.0f * casterStats.GetGearData().glyphPotency);
             drainPercentRate    = 0.02f + (0.01f * casterStats.GetGearData().glyphPotency);
 
             orbLifeTime         = 7.5f + (1.5f * casterStats.GetGearData().glyphTime);
             orbMaxDuration      = orbLifeTime * 2.0f;
-            proxyTimeLimit      = Mathf.Clamp(1.5f + (0.15f * (casterStats.GetGearData().glyphTime - casterStats.GetGearData().magickFragmentStack)),
+            proxyTimeLimit      = Mathf.Clamp(1.5f + (0.15f * (casterStats.GetGearData().glyphTime - casterStats.GetGearData().glyphMagickFragment)),
                                               0.3f,
                                               3.0f);
             effectRadius        = 8.0f + (0.5f * casterStats.GetGearData().glyphInfluence);
@@ -84,6 +85,23 @@ namespace GearUpCards.MonoBehaviours
             aoeObject.transform.localEulerAngles = new Vector3(270.0f, 180.0f, 0.0f);
             aoeObject.transform.localPosition = Vector3.zero;
             aoeObject.transform.localScale = Vector3.one * effectRadius;
+
+            try
+            {
+                int clientTeamID = PlayerManager.instance.players.First(player => player.data.view.IsMine).teamID;
+                if (projectileHit.ownPlayer.teamID == clientTeamID)
+                {
+                    aoeObject.transform.Find("Circle_Root/Circle_Thorns (1)").gameObject.SetActive(false);
+                }
+                else
+                {
+                    aoeObject.transform.Find("Circle_Root/Circle_Wrealth (1)").gameObject.SetActive(false);
+                }
+            }
+            catch (System.Exception exception)
+            {
+                Miscs.LogWarn(exception);
+            }
 
             GameObject tempGameObject;
             BeamVFXMono tempBeamMono;

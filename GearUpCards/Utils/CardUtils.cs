@@ -258,7 +258,13 @@ namespace GearUpCards.Utils
         {
             // spells
             "Anti-Bullet Magick",
+
             "Orb-literation!",
+            "Rolling Borbwark",
+            "Lifeforce Duorbity",
+            "Lifeforce Blast!",
+
+            "Arcane Sun",
 
             // glyphs
             "Divination Glyph",
@@ -281,9 +287,13 @@ namespace GearUpCards.Utils
         {
             // GearUp spells
             "Anti-Bullet Magick",
+
             "Orb-literation!",
             "Rolling Borbwark",
-            "Lifeforce Duorbity"
+            "Lifeforce Duorbity",
+            "Lifeforce Blast!",
+
+            "Arcane Sun"
         };
         public static List<string> cardListGlyph = new List<string>()
         {
@@ -457,7 +467,7 @@ namespace GearUpCards.Utils
             tempModifier += gearData.glyphGeometric * 0.50f;
             tempModifier += gearData.glyphInfluence * 1.00f;
             tempModifier += gearData.glyphPotency * 0.50f;
-            tempModifier += gearData.magickFragmentStack * 0.50f;
+            tempModifier += gearData.glyphMagickFragment * 0.50f;
             tempModifier += gearData.glyphTime * 0.50f;
 
             // Miscs.Log(">.<");
@@ -477,8 +487,8 @@ namespace GearUpCards.Utils
             }
             BatchAdjustCardRarity(cardListSpells, mul: tempModifier);
 
-            tempModifier = gearData.orbLifeforceDuality * 0.50f;
-            tempModifier += gearData.orbLifeforceBlast * 0.50f;
+            tempModifier = gearData.orbLifeforceDualityStack * 0.50f;
+            tempModifier += gearData.orbLifeforceBlastStack * 0.50f;
             tempModifier += gearData.orbObliterationStack * 0.50f;
             tempModifier += gearData.orbRollingBulwarkStack * 0.50f;
             if (gearData.uniqueMagick != GearUpConstants.ModType.disabled && gearData.uniqueMagick != GearUpConstants.ModType.none)
@@ -490,7 +500,7 @@ namespace GearUpCards.Utils
             // [Empower] + [Shield Battery] boosting>> block abilities find chance
             tempModifier = (float)(gearData.shieldBatteryStack) * 0.25f;
             tempModifier += (float)(GetPlayerCardsWithName(targerPlayer, "Empower").Count) * 0.25f;
-            tempModifier += gearData.magickFragmentStack * 0.50f;
+            tempModifier += gearData.glyphMagickFragment * 0.50f;
 
             // Miscs.Log(">.<");
             // Miscs.Log("> Block base modifier: " + tempModifier);
@@ -532,8 +542,8 @@ namespace GearUpCards.Utils
             // blocking ability boosing>> more block cards
             if (gearData.addOnList.Contains(GearUpConstants.AddOnType.charmGuardian))
             {
-                BatchAdjustCardRarity(cardListVanillaBlocks, mul: tempModifier * 2.0f);
-                BatchAdjustCardRarity(cardListModdedBlocks, mul: tempModifier);
+                BatchAdjustCardRarity(cardListVanillaBlocks, mul: (tempModifier * 2.0f) + 3.0f);
+                BatchAdjustCardRarity(cardListModdedBlocks, mul: tempModifier + 1.5f);
             }
         }
 

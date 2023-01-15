@@ -168,7 +168,7 @@ namespace GearUpCards.MonoBehaviours
             int glyphDivination = stats.GetGearData().glyphDivination;
             int glyphGeometric = stats.GetGearData().glyphGeometric;
             // int glyphInfluence      = this.stats.GetGearData().glyphInfluence;
-            int magickFragment = stats.GetGearData().magickFragmentStack;
+            int magickFragment = stats.GetGearData().glyphMagickFragment;
             int glpyhPotency = stats.GetGearData().glyphPotency;
             int glyphTime = stats.GetGearData().glyphTime;
 

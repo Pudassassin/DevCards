@@ -61,13 +61,17 @@ namespace GearUpCards.MonoBehaviours
         internal bool empowerCharged = false;
 
         internal Vector3 prevPosition;
+
         internal Vector3 castPosition;
+        internal Vector3 castPosEmpower;
 
         // internal float timeLastBlocked = 0.0f;
         // internal float timeLastActivated = 0.0f;
 
         public float CooldownTimer = 0.0f;
+
         public float DurationTimer = 0.0f;
+        public float DurationTimerE = 0.0f;
 
         internal float timer = 0.0f;
         internal bool effectWarmUp = false;
@@ -108,6 +112,10 @@ namespace GearUpCards.MonoBehaviours
             {
                 DurationTimer -= TimeHandler.deltaTime;
             }
+            if (DurationTimerE > 0.0f)
+            {
+                DurationTimerE -= TimeHandler.deltaTime;
+            }
 
             if (spellIsCast)
             {
@@ -142,6 +150,10 @@ namespace GearUpCards.MonoBehaviours
                 if (DurationTimer > 0.0f)
                 {
                     DeleteBullet();
+                }
+                if (DurationTimerE > 0.0f)
+                {
+                    DeleteBulletE();
                 }
 
                 timer -= procTime;
@@ -184,17 +196,22 @@ namespace GearUpCards.MonoBehaviours
                 if (conditionMet)
                 {
                     // empower do cheeky teleport, I can just grab player.transform.position
-                    castPosition = this.player.transform.position;
-
 
                     if (trigger == BlockTrigger.BlockTriggerType.Empower)
                     {
-                        CastSpell(castPosition, trigger);
+                        castPosEmpower = this.player.transform.position;
+                        DurationTimerE = spellDuration;
+
                         empowerCharged = false;
+
+                        CastSpell(castPosEmpower, trigger);
                         // timeLastActivated = Time.time;
                     }
                     else
                     {
+                        castPosition = this.player.transform.position;
+                        DurationTimer = spellDuration;
+
                         switch (trigger)
                         {
                             case BlockTrigger.BlockTriggerType.Default:
@@ -240,11 +257,12 @@ namespace GearUpCards.MonoBehaviours
             {
                 if (target.playerID == this.player.playerID && trigger == BlockTrigger.BlockTriggerType.Empower)
                 {
-                    distance = (this.prevPosition - castPosition).magnitude;
+                    // resolve empower position reversing its trickery
+                    distance = (this.prevPosition - position).magnitude;
                 }
                 else
                 {
-                    distance = (target.transform.position - castPosition).magnitude;
+                    distance = (target.transform.position - position).magnitude;
                 }
 
                 if (distance > spellRange)
@@ -268,12 +286,11 @@ namespace GearUpCards.MonoBehaviours
                 // UnityEngine.Debug.Log($"[AntiBullet] Forced-Reload player[{target.playerID}]");
 
             }
-            DurationTimer = spellDuration;
         }
 
         internal void RecalculateEffectStats()
         {
-            magickFragment = this.stats.GetGearData().magickFragmentStack;
+            magickFragment = this.stats.GetGearData().glyphMagickFragment;
             glyphInfluence = this.stats.GetGearData().glyphInfluence;
             glyphPotency = this.stats.GetGearData().glyphPotency;
             glyphTime = this.stats.GetGearData().glyphTime;
@@ -300,6 +317,23 @@ namespace GearUpCards.MonoBehaviours
                     continue;
 
                 distance = (bullet.transform.position - castPosition).magnitude;
+
+                if (distance > spellRange)
+                    continue;
+
+                PhotonNetwork.Destroy(bullet);
+            }
+        }
+        internal void DeleteBulletE()
+        {
+            float distance;
+            List<GameObject> bulletToDelete = GameObject.FindGameObjectsWithTag("Bullet").ToList();
+            foreach (GameObject bullet in bulletToDelete)
+            {
+                if (!bullet.name.Equals(bulletGameObjectName))
+                    continue;
+
+                distance = (bullet.transform.position - castPosEmpower).magnitude;
 
                 if (distance > spellRange)
                     continue;

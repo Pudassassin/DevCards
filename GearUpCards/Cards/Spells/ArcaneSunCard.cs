@@ -2,64 +2,54 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using GearUpCards.MonoBehaviours;
 using UnboundLib;
 using UnboundLib.Cards;
-using CardChoiceSpawnUniqueCardPatch.CustomCategories;
-
 using UnityEngine;
 
-using GearUpCards.MonoBehaviours;
-using GearUpCards.Utils;
 using GearUpCards.Extensions;
 using static GearUpCards.Utils.CardUtils;
+using UnboundLib.Utils;
 
 namespace GearUpCards.Cards
 {
-    class MagickFragmentsCard : CustomCard
+    class ArcaneSunCard : CustomCard
     {
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
-            
+            cardInfo.categories = new CardCategory[]
+            {
+                GearCategory.tagSpell
+            };
         }
+
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            if (block.cdMultiplier > 1.0f)
-            {
-                block.cdMultiplier -= 0.25f;
-            }
-            else
-            {
-                block.cdMultiplier *= 0.75f;
-            }
+            ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Remove(GearCategory.tagSpellOnlyAugment);
 
-            if (block.cdAdd > 1.0f)
-            {
-                block.cdAdd -= 0.1f;
-            }
-
-            player.data.maxHealth *= 0.75f;
-
-            characterStats.GetGearData().glyphMagickFragment += 1;
+            characterStats.GetGearData().arcaneSunStack += 1;
+            player.gameObject.GetOrAddComponent<ArcaneSunEffect>();
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-
+            // bullet modifier pool auto-reset on card removal, simply let it do its jobs
+            // UnityEngine.Debug.Log($"[{GearUpCards.ModInitials}][Card] {GetTitle()} has been removed to player {player.playerID}.");
         }
         protected override string GetTitle()
         {
-            return "Magick Fragments";
+            return "Arcane Sun";
         }
         protected override string GetDescription()
         {
-            return "This mysterious glyph hasten your spellcasting, but at what cost?";
+            return "Summon a mini sun that deals increasing damage to nearby enemy you can see. Also cause them to take more damage from other sources.";
         }
         protected override GameObject GetCardArt()
         {
-            return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_MagickFragment");
+            return null; // GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_OrbLiteration");
         }
         protected override CardInfo.Rarity GetRarity()
         {
-            return CardInfo.Rarity.Common;
+            return CardInfo.Rarity.Uncommon;
         }
         protected override CardInfoStat[] GetStats()
         {
@@ -68,22 +58,15 @@ namespace GearUpCards.Cards
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "Block CD",
-                    amount = "-25% & -0.1s",
+                    stat = "Sun Target",
+                    amount = "+1",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
-                    stat = "Health",
-                    amount = "-25%",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
-                new CardInfoStat()
-                {
-                    positive = true,
-                    stat = "Spell CD",
-                    amount = "Faster",
+                    stat = "DMG Taken",
+                    amount = "+15%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };
@@ -98,7 +81,7 @@ namespace GearUpCards.Cards
         }
         public override void Callback()
         {
-            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Spell\nGlyph";
+            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Passive\nSpell";
         }
     }
 }

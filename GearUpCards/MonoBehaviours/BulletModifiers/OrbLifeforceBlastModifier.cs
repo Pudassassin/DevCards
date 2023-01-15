@@ -10,6 +10,7 @@ using GearUpCards.Utils;
 using GearUpCards.Extensions;
 using UnityEngine.UI;
 using Photon.Pun;
+using System.Linq;
 
 namespace GearUpCards.MonoBehaviours
 {
@@ -128,6 +129,23 @@ namespace GearUpCards.MonoBehaviours
             aoeObject.transform.localScale = Vector3.one * effectRadius;
             RemoveAfterSeconds remover = aoeObject.AddComponent<RemoveAfterSeconds>();
             remover.seconds = 2.5f;
+
+            try
+            {
+                int clientTeamID = PlayerManager.instance.players.First(player => player.data.view.IsMine).teamID;
+                if (projectileHit.ownPlayer.teamID == clientTeamID)
+                {
+                    aoeObject.transform.Find("Circle_Root/Circle_Thorns (1)").gameObject.SetActive(false);
+                }
+                else
+                {
+                    aoeObject.transform.Find("Circle_Root/Circle_Wrealth (1)").gameObject.SetActive(false);
+                }
+            }
+            catch (System.Exception exception)
+            {
+                Miscs.LogWarn(exception);
+            }
 
             return HasToReturn.canContinue;
         }

@@ -48,6 +48,9 @@ namespace GearUpCards.MonoBehaviours
         internal GearUpConstants.ModType lastGunSpreadMod = GearUpConstants.ModType.none;
         internal GameObject bulletLifetimeFixer;
 
+        internal int bulletFiredIndex = 0;
+        internal float parallelWidth = 0.0f;
+
         public void Awake()
         {
             this.player = this.gameObject.GetComponent<Player>();
@@ -182,7 +185,14 @@ namespace GearUpCards.MonoBehaviours
             {
                 try
                 {
-
+                    switch (stats.GetGearData().gunSpreadMod)
+                    {
+                        case GearUpConstants.ModType.gunSpreadParallel:
+                            bulletFiredIndex = 0;
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 catch (Exception exception)
                 {
@@ -197,25 +207,35 @@ namespace GearUpCards.MonoBehaviours
             // triggers on firing EACH bullet
             return delegate (GameObject bulletFired)
             {
-                this.ExecuteAfterFrames(1, () =>
+                try
                 {
-                    try
+                    switch (stats.GetGearData().gunSpreadMod)
                     {
-                        switch (stats.GetGearData().gunSpreadMod)
-                        {
-                            case GearUpConstants.ModType.gunSpreadFlak:
-                                bulletFired.GetOrAddComponent<FlakShellModifier>();
-                                break;
-                            default:
-                                break;
-                        }
+                        case GearUpConstants.ModType.gunSpreadParallel:
+                            ParallelBulletModifier parallel = bulletFired.GetOrAddComponent<ParallelBulletModifier>();
+                            // Miscs.Log(parallel);
+
+                            parallel.bulletIndex = bulletFiredIndex;
+                            parallel.bulletsInVolley = gun.numberOfProjectiles;
+                            parallel.parallelWidth = parallelWidth;
+                            bulletFiredIndex++;
+
+                            // Miscs.Log(bulletFiredIndex);
+                            break;
+
+                        case GearUpConstants.ModType.gunSpreadFlak:
+                            bulletFired.GetOrAddComponent<FlakShellModifier>();
+                            break;
+
+                        default:
+                            break;
                     }
-                    catch (Exception exception)
-                    {
-                        UnityEngine.Debug.LogError($"[UniqueGunSpreadMono] ShootAction failed! [{player.playerID}]");
-                        UnityEngine.Debug.LogWarning(exception);
-                    }
-                });
+                }
+                catch (Exception exception)
+                {
+                    UnityEngine.Debug.LogError($"[UniqueGunSpreadMono] ShootAction failed! [{player.playerID}]");
+                    UnityEngine.Debug.LogWarning(exception);
+                }
             };
         }
 
@@ -243,6 +263,10 @@ namespace GearUpCards.MonoBehaviours
                 isGunReplaced = false;
             }
 
+            Action action = Traverse.Create(gun).Field("attackAction").GetValue<Action>();
+            action = (Action)Delegate.RemoveAll(action, attackAction);
+            Traverse.Create(gun).Field("attackAction").SetValue((Action)action);
+
             gun.ShootPojectileAction = (Action<GameObject>)Delegate.RemoveAll(gun.ShootPojectileAction, shootAction);
         }
 
@@ -262,6 +286,10 @@ namespace GearUpCards.MonoBehaviours
                 gun.evenSpread = prevEvenSpread;
                 gun.multiplySpread = prevSpreadMul;
                 gun.gravity = prevGravity;
+
+                Action action = Traverse.Create(gun).Field("attackAction").GetValue<Action>();
+                action = (Action)Delegate.RemoveAll(action, attackAction);
+                Traverse.Create(gun).Field("attackAction").SetValue((Action)action);
 
                 gun.ShootPojectileAction = (Action<GameObject>)Delegate.RemoveAll(gun.ShootPojectileAction, shootAction);
 
@@ -329,28 +357,40 @@ namespace GearUpCards.MonoBehaviours
 
         private void ApplySpreadParallel()
         {
-            if (prevSpread <= 0.0f)
-            {
-                gun.spread = 0.0f;
-                gun.evenSpread = prevSpread;
-                gun.multiplySpread = prevSpreadMul;
-            }
-            else
-            {
-                gun.spread = 0.01f;
+            // if (prevSpread <= 0.0f)
+            // {
+            //     gun.spread = 0.0f;
+            //     gun.evenSpread = prevSpread;
+            //     gun.multiplySpread = prevSpreadMul;
+            // }
+            // else
+            // {
+            //     gun.spread = 0.01f;
+            // 
+            //     if (prevEvenSpread < 1.0f)
+            //     {
+            //         gun.evenSpread = 1.0f;
+            //     }
+            //     else
+            //     {
+            //         gun.evenSpread = prevEvenSpread;
+            //     }
+            // 
+            //     // gun.multiplySpread = prevSpreadMul * prevSpread * (50 + gun.numberOfProjectiles * 5);
+            //     gun.multiplySpread = prevSpreadMul * prevSpread * (50 + gun.numberOfProjectiles * 3);
+            // }
 
-                if (prevEvenSpread < 1.0f)
-                {
-                    gun.evenSpread = 1.0f;
-                }
-                else
-                {
-                    gun.evenSpread = prevEvenSpread;
-                }
+            // Width is the distance of outermost bullets
+            parallelWidth = gun.spread * (2.0f + (0.20f * gun.numberOfProjectiles));
+            parallelWidth *= gun.multiplySpread;
+            parallelWidth = Mathf.Max(parallelWidth, 1.0f);
 
-                // gun.multiplySpread = prevSpreadMul * prevSpread * (50 + gun.numberOfProjectiles * 5);
-                gun.multiplySpread = prevSpreadMul * prevSpread * (50 + gun.numberOfProjectiles * 3);
-            }
+            gun.spread = 0.0f;
+            gun.evenSpread = 0.0f;
+            gun.multiplySpread = 1.0f;
+
+            gun.AddAttackAction(this.attackAction);
+            gun.ShootPojectileAction = (Action<GameObject>)Delegate.Combine(gun.ShootPojectileAction, this.shootAction);
         }
 
         private void ApplySpreadFlak()
@@ -523,8 +563,15 @@ namespace GearUpCards.MonoBehaviours
 
     class ParallelBulletModifier : RayHitEffect
     {
+        private static float parallelWidthScale = 20.0f;
+
+        public int bulletIndex = 0;
+        public int bulletsInVolley = 0;
+        public float parallelWidth = 0.0f;
+        private Vector3 sidewayVelocity = Vector3.zero;
+
         private float delayTime = 0.1f;
-        private float initSpeed = 55.0f;
+        private float initSpeed = 50.0f;
 
         internal float timer = 0.0f;
 
@@ -535,48 +582,51 @@ namespace GearUpCards.MonoBehaviours
         private ProjectileHit bulletHit;
         private Gun shooterGun;
 
-        private bool effectEnabled = false;
+        private bool effectEnable = false;
 
-
-        public void Start()
+        public void Setup()
         {
-            if (transform.parent != null)
+            try
             {
-                try
-                {
-                    // Miscs.Log("[GearUp] ParallelBulletModifier: Update 0");
-                    bulletMove = gameObject.GetComponentInParent<MoveTransform>();
+                // Miscs.Log("[GearUp] ParallelBulletModifier: Update 0");
+                bulletMove = gameObject.GetComponentInParent<MoveTransform>();
 
-                    // Miscs.Log("[GearUp] ParallelBulletModifier: Update 1");
-                    bulletHit = gameObject.GetComponentInParent<ProjectileHit>();
+                // Miscs.Log("[GearUp] ParallelBulletModifier: Update 1");
+                bulletHit = gameObject.GetComponentInParent<ProjectileHit>();
 
-                    // Miscs.Log("[GearUp] ParallelBulletModifier: Update 2");
-                    shooterGun = bulletHit.ownWeapon.GetComponent<Gun>();
+                // Miscs.Log("[GearUp] ParallelBulletModifier: Update 2");
+                shooterGun = bulletHit.ownWeapon.GetComponent<Gun>();
 
-                    prevGravity = bulletMove.gravity;
-                    bulletMove.gravity = 0.0f;
+                prevGravity = bulletMove.gravity;
+                bulletMove.gravity = 0.0f;
 
-                    prevSpeed = bulletMove.velocity.magnitude;
-                    bulletMove.velocity = bulletMove.velocity.normalized * initSpeed;
+                prevSpeed = bulletMove.velocity.magnitude;
+                bulletMove.velocity = bulletMove.velocity.normalized * initSpeed;
 
-                    prevDrag = bulletMove.drag;
-                    bulletMove.drag = 0.0f;
+                sidewayVelocity = Miscs.RotateVector(bulletMove.velocity.normalized, 90.0f);
+                float sidewaySign = (bulletIndex % 2 == 0) ? -1.0f : 1.0f;
+                float sidewayScale = (Mathf.Floor((bulletIndex + (bulletsInVolley % 2)) / 2) + (0.5f * ((bulletsInVolley + 1) % 2))) / (float)(bulletsInVolley - 1);
+                sidewayVelocity = sidewayVelocity * sidewaySign * sidewayScale * parallelWidth * parallelWidthScale;
 
-                    prevSimSpeed = Traverse.Create(bulletMove).Field("simulationSpeed").GetValue<float>();
-                    Traverse.Create(bulletMove).Field("simulationSpeed").SetValue((float)1.0f);
+                // Miscs.Log($"[{bulletIndex}/{bulletsInVolley}] ({parallelWidth}): {sidewaySign} | {sidewayScale} | {sidewayVelocity}");
 
-                    targetDirection = shooterGun.shootPosition.forward;
+                bulletMove.velocity += sidewayVelocity;
 
-                    // Miscs.Log("[GearUp] ParallelBulletModifier: Start");
-                }
-                catch (Exception exception)
-                {
-                    Miscs.LogWarn("[GearUP] ParallelBulletModifier: caught an exception (I swear this only happen once when it is first added to gun.objectToSpawn)");
-                    Miscs.LogWarn(exception);
-                    effectEnabled = false;
-                }
+                prevDrag = bulletMove.drag;
+                bulletMove.drag = 0.0f;
 
-                effectEnabled = true;
+                prevSimSpeed = Traverse.Create(bulletMove).Field("simulationSpeed").GetValue<float>();
+                Traverse.Create(bulletMove).Field("simulationSpeed").SetValue((float)1.0f);
+
+                targetDirection = shooterGun.shootPosition.forward;
+
+                // Miscs.Log("[GearUp] ParallelBulletModifier: Start");
+            }
+            catch (Exception exception)
+            {
+                Miscs.LogWarn("[GearUP] ParallelBulletModifier: caught an exception");
+                Miscs.LogWarn(exception);
+                effectEnable = false;
             }
         }
 
@@ -590,7 +640,7 @@ namespace GearUpCards.MonoBehaviours
 
         public void Update()
         {
-            if (effectEnabled)
+            if (effectEnable)
             {
                 timer += TimeHandler.deltaTime;
 
@@ -606,13 +656,22 @@ namespace GearUpCards.MonoBehaviours
                     Destroy(this);
                 }
             }
+            else
+            {
+                MoveTransform moveTransform = GetComponentInParent<MoveTransform>();
+                if (moveTransform != null)
+                {
+                    Setup();
+                    effectEnable = true;
+                }
+            }
         }
     }
 
     class FlakShellModifier : RayHitEffect
     {
         private static GameObject vfxFlakShell = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_Part_FlakShell");
-        private static Vector3 rotationDebug = new Vector3(270.0f, 90.0f, 0.0f);
+        private static Vector3 rotationDebug = new Vector3(270.0f, 270.0f, 0.0f);
 
         public static float defaultDelayTime = 0.75f;
         private float timer = 0.0f;
@@ -699,7 +758,7 @@ namespace GearUpCards.MonoBehaviours
             if (partObj != null)
             {
                 float damage = projectileHit.dealDamageMultiplierr * projectileHit.damage;
-                float bulletSize = Mathf.Max(Mathf.Log(damage, 10.0f), 0.5f);
+                float bulletSize = Mathf.Max(Mathf.Log(damage, 10.0f) * 0.5f, 0.5f);
                 partObj.transform.localScale = Vector3.one * bulletSize;
             }
         }
@@ -708,15 +767,15 @@ namespace GearUpCards.MonoBehaviours
         {
             if (effectTriggered) return HasToReturn.canContinue;
 
-            if (hit.transform != null)
-            {
-                Miscs.Log("[GearUp] FlakShellModifier hit: " + hit.transform.gameObject.name);
-            }
+            // if (hit.transform != null)
+            // {
+            //     Miscs.Log("[GearUp] FlakShellModifier hit: " + hit.transform.gameObject.name);
+            // }
 
             if (hit.transform.GetComponent<Player>())
             {
                 // explode immediately
-                Miscs.Log("> Direct Hit!");
+                // Miscs.Log("> Direct Hit!");
                 FlakExplode();
             }
             if (hit.transform == null)

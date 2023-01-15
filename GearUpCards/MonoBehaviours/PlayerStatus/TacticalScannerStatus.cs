@@ -37,6 +37,7 @@ namespace GearUpCards.MonoBehaviours
 
         private const float procTickTime = .10f;
 
+        private bool wasDisabled = false;
         internal float procTimer = 0.0f;
         internal float effectTimer = 0.0f;
         internal bool statusEnable = false;
@@ -85,7 +86,8 @@ namespace GearUpCards.MonoBehaviours
             previousHealth = this.player.data.health;
             previousMaxHealth = this.player.data.maxHealth;
 
-            // GameModeManager.AddHook(GameModeHooks.HookPointEnd, OnPointEnd);
+            GameModeManager.AddHook(GameModeHooks.HookPointEnd, OnPointEnd);
+            GameModeManager.AddHook(GameModeHooks.HookPointStart, OnPointEnd);
 
             Camera gameCamera = GameObject.Find("SpotlightCam").GetComponent<Camera>();
             if (gameCamera != null)
@@ -105,6 +107,11 @@ namespace GearUpCards.MonoBehaviours
 
         override public void OnUpdate()
         {
+            if (wasDisabled)
+            {
+                PurgeStatus();
+            }
+
             procTimer += TimeHandler.deltaTime;
             effectTimer += TimeHandler.deltaTime;
 
@@ -271,8 +278,11 @@ namespace GearUpCards.MonoBehaviours
         {
             // UnityEngine.Debug.Log($"Purging 'Scanned' [{this.player.playerID}]");
 
-            Destroy(this);
+            GameModeManager.RemoveHook(GameModeHooks.HookPointEnd, OnPointEnd);
+            GameModeManager.RemoveHook(GameModeHooks.HookPointStart, OnPointEnd);
+            Destroy(scanDataUI);
 
+            Destroy(this);
             // UnityEngine.Debug.Log($"Purged 'Scanned' [{this.player.playerID}]");
         }
 
@@ -287,13 +297,13 @@ namespace GearUpCards.MonoBehaviours
         override public void OnOnDisable()
         {
             // This status effect should be cleared out when they are dead, reviving or not
+            wasDisabled = true;
             PurgeStatus();
         }
 
         override public void OnOnDestroy()
         {
             // GameModeManager.RemoveHook(GameModeHooks.HookPointEnd, OnPointEnd);
-            Destroy(scanDataUI);
         }
     }
 }

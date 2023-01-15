@@ -642,7 +642,7 @@ namespace GearUpCards.MonoBehaviours
         private void UpdateOrbSpellStats()
         {
             // General Stats
-            magickFragment = stats.GetGearData().magickFragmentStack;
+            magickFragment = stats.GetGearData().glyphMagickFragment;
             glyphDivination = stats.GetGearData().glyphDivination;
             glyphGeometric = stats.GetGearData().glyphGeometric;
             glyphInfluence = stats.GetGearData().glyphInfluence;
@@ -833,13 +833,13 @@ namespace GearUpCards.MonoBehaviours
 
             // Orb Spell Lifeforce Duality
             checkIndex = QueryOrbSpell(OrbSpellType.lifeforceDuality);
-            if (stats.GetGearData().orbLifeforceDuality > 0)
+            if (stats.GetGearData().orbLifeforceDualityStack > 0)
             {
                 // stats calculation
                 float cooldown = Mathf.Clamp(8.0f - (magickFragment * 0.5f), 4.0f, 10.0f);
                 float burstTime = Mathf.Clamp(0.30f - (magickFragment * 0.05f), 0.1f, 0.5f);
-                int orbCount = stats.GetGearData().orbLifeforceDuality;
-                int bounceCount = 12 + (glyphGeometric * 3);
+                int orbCount = stats.GetGearData().orbLifeforceDualityStack;
+                int bounceCount = 500 + (glyphGeometric * 100);
                 float orbVelocity = 0.60f + (glyphDivination * 0.10f);
                 float orbSpeed = 1.0f + (glyphDivination * 0.1f);
 
@@ -913,12 +913,12 @@ namespace GearUpCards.MonoBehaviours
 
             // Orb Spell Lifeforce Blast
             checkIndex = QueryOrbSpell(OrbSpellType.lifeforceBlast);
-            if (stats.GetGearData().orbLifeforceBlast > 0)
+            if (stats.GetGearData().orbLifeforceBlastStack > 0)
             {
                 // stats calculation
                 float cooldown = Mathf.Clamp(8.0f - (magickFragment * 0.5f), 4.0f, 10.0f);
                 float burstTime = Mathf.Clamp(0.30f - (magickFragment * 0.05f), 0.1f, 0.5f);
-                int orbCount = Mathf.FloorToInt((2.1f + stats.GetGearData().orbLifeforceBlast) / 2.0f);
+                int orbCount = Mathf.FloorToInt((2.1f + stats.GetGearData().orbLifeforceBlastStack) / 2.0f);
                 int bounceCount = glyphGeometric;
                 float orbVelocity = 0.75f + (glyphDivination * 0.15f);
                 float orbSpeed = 1.0f + (glyphDivination * 0.1f);

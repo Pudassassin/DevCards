@@ -30,10 +30,11 @@ namespace GearUpCards.Cards
             // black/whitelisting
             ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.typeUniqueGunSpread);
 
-            gun.damage *= 0.35f;
+            // gun.damage *= 0.35f;
+            gun.bulletDamageMultiplier *= 0.35f;
 
-            gun.spread += 0.375f;
-            gun.evenSpread += 1.0f;
+            gun.spread += 0.50f;
+            // gun.evenSpread += 1.0f;
             gun.numberOfProjectiles += 4;
 
             player.gameObject.GetOrAddComponent<UniqueGunSpreadMono>();
@@ -44,8 +45,7 @@ namespace GearUpCards.Cards
 
             GameObject gameObject = new GameObject("ParallelBulletsModifier", new Type[]
             {
-                typeof(BulletNoClipModifier),
-                typeof(ParallelBulletModifier)
+                typeof(BulletNoClipModifier)
             });
             list.Add(new ObjectsToSpawn
             {

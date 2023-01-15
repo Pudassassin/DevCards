@@ -42,7 +42,7 @@ namespace GearUpCards
     {
         public const string ModId = "com.pudassassin.rounds.GearUpCards";
         public const string ModName = "GearUpCards";
-        public const string Version = "0.2.47.2"; //build #203 / Release 0-2-2
+        public const string Version = "0.2.53"; //build #208 / Release 0-3-0
 
         public const string ModInitials = "GearUP";
 
@@ -86,6 +86,9 @@ namespace GearUpCards
             CustomCard.BuildCard<RollingBulwarkOrbCard>();
             CustomCard.BuildCard<LifeforceDualityOrbCard>();
             CustomCard.BuildCard<LifeforceBlastOrbCard>();
+
+            // Other Spells
+            CustomCard.BuildCard<ArcaneSunCard>();
 
             // Specializing Charms
             CustomCard.BuildCard<GuardiansCharmCard>();

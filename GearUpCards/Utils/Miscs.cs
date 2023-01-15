@@ -40,6 +40,21 @@ namespace GearUpCards.Utils
             }
         }
 
+		// Vector Utils
+		public static Vector3 RotateVector(Vector3 vector, float degree)
+        {
+			float sin = Mathf.Sin(degree * Mathf.Deg2Rad);
+			float cos = Mathf.Cos(degree * Mathf.Deg2Rad);
+
+			float prevX = vector.x;
+			float prevY = vector.y;
+
+			vector.x = (cos * prevX) - (sin * prevY);
+			vector.y = (sin * prevX) + (cos * prevY);
+
+			return vector;
+        }
+
 		// String Utils
 		public static List<string> StringSplit(string input, char splitAt)
 		{
@@ -195,7 +210,7 @@ namespace GearUpCards.Utils
 			copyToGun.player = copyFromGun.player;
 			copyToGun.projectielSimulatonSpeed = copyFromGun.projectielSimulatonSpeed;
 			copyToGun.projectileColor = copyFromGun.projectileColor;
-			copyToGun.projectiles = copyFromGun.projectiles;
+			// copyToGun.projectiles = copyFromGun.projectiles;
 			copyToGun.projectileSize = copyFromGun.projectileSize;
 			copyToGun.projectileSpeed = copyFromGun.projectileSpeed;
 			copyToGun.randomBounces = copyFromGun.randomBounces;
@@ -228,6 +243,7 @@ namespace GearUpCards.Utils
 
 			// duping objectsToSpawn
 			copyToGun.objectsToSpawn = copyFromGun.objectsToSpawn;
+			copyToGun.projectiles = copyFromGun.projectiles.ToList().ToArray();
 
 			// List<ObjectsToSpawn> listObjects = new List<ObjectsToSpawn>();
 			// ObjectsToSpawn objectsToSpawn;
