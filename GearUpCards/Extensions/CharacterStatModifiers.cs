@@ -28,6 +28,7 @@ namespace GearUpCards.Extensions
             sizeShrinker,
 
             magickAntiBullet = 30,
+            magickPortal,
             magickTimeDilution,
 
             gunSpreadArc = 40,

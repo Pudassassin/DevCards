@@ -35,7 +35,7 @@ namespace GearUpCards.MonoBehaviours
         private const float scannerStackCooldown = -0.5f;
 
         private const float procTime = .10f;
-        private const float warmupTime = 2.0f;
+        private const float warmupTime = 0.5f;
 
         internal Action<BlockTrigger.BlockTriggerType> scannerAction;
 

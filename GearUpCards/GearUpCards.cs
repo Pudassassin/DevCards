@@ -42,7 +42,7 @@ namespace GearUpCards
     {
         public const string ModId = "com.pudassassin.rounds.GearUpCards";
         public const string ModName = "GearUpCards";
-        public const string Version = "0.2.53"; //build #208 / Release 0-3-0
+        public const string Version = "0.2.56.8"; //build #211 / Release 0-3-0
 
         public const string ModInitials = "GearUP";
 
@@ -80,6 +80,7 @@ namespace GearUpCards
 
             // Unique Magick series (powerful on-block "spell" abilities)
             CustomCard.BuildCard<AntiBulletMagickCard>();
+            CustomCard.BuildCard<PortalMagickCard>();
 
             // Orb Spells
             CustomCard.BuildCard<ObliterationOrbCard>();

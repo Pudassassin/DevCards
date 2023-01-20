@@ -12,6 +12,8 @@ namespace GearUpCards.MonoBehaviours
         public float lastSent;
         public PhotonView view;
 
+        public bool enableIntervalSync = true;
+
         private void Awake()
         {
             this.interval = defaultSyncInterval;
@@ -20,6 +22,19 @@ namespace GearUpCards.MonoBehaviours
         }
 
         private void Update()
+        {
+            if (enableIntervalSync)
+            {
+                CallSyncPosition();
+                // if (view != null && (view.IsMine) && Time.time > (this.lastSent + this.interval))
+                // {
+                //     GetComponentInParent<ChildRPC>().CallFunction(RPCKey, (Vector2)this.transform.root.position);
+                //     this.lastSent = Time.time;
+                // }
+            }
+        }
+
+        public void CallSyncPosition()
         {
             if (view != null && (view.IsMine) && Time.time > (this.lastSent + this.interval))
             {

@@ -21,9 +21,12 @@ namespace GearUpCards.Utils
                 invalid = -1,
 
                 generic = 0,
+                background,
 
                 buzzSaw,
-                boxDestructible
+                boxDestructible,
+
+                mapExtendedWWMOZones
             }
 
             public GameObject gameObject;
@@ -66,12 +69,26 @@ namespace GearUpCards.Utils
                     return MapObjectType.boxDestructible;
                 }
 
-                // general solid, traversible box/rect and circle/ellipse
+                // Custom Map: WWMO zones
+                if (gameObject.GetComponent<SpriteRenderer>() &&
+                    gameObject.name.Contains("WWMO.MapObjects") &&
+                    gameObject.GetComponent<BoxCollider2D>()
+                    )
+                {
+                    return MapObjectType.mapExtendedWWMOZones;
+                }
+
+                // general solid or BG, traversible box/rect and circle/ellipse
                 // Vanilla Map > Boxes
                 if (gameObject.GetComponent<SpriteRenderer>() &&
                     gameObject.GetComponent<BoxCollider2D>()
                     )
                 {
+                    SFPolygon sfPolygon = gameObject.GetComponent<SFPolygon>();
+                    if (!sfPolygon.isActiveAndEnabled)
+                    {
+                        return MapObjectType.background;
+                    }
                     return MapObjectType.generic;
                 }
 
@@ -80,6 +97,11 @@ namespace GearUpCards.Utils
                     gameObject.GetComponent<CircleCollider2D>()
                     )
                 {
+                    SFPolygon sfPolygon = gameObject.GetComponent<SFPolygon>();
+                    if (!sfPolygon.isActiveAndEnabled)
+                    {
+                        return MapObjectType.background;
+                    }
                     return MapObjectType.generic;
                 }
 
@@ -88,6 +110,11 @@ namespace GearUpCards.Utils
                     gameObject.GetComponent<PolygonCollider2D>()
                     )
                 {
+                    SFPolygon sfPolygon = gameObject.GetComponent<SFPolygon>();
+                    if (!sfPolygon.isActiveAndEnabled)
+                    {
+                        return MapObjectType.background;
+                    }
                     return MapObjectType.generic;
                 }
 
@@ -98,14 +125,14 @@ namespace GearUpCards.Utils
         public static List<MapObject> mapObjects = null;
         public static Scene mapScene;
 
-        public List<MapObject> GetMapObjectsList()
-        {
-            if (mapObjects == null)
-            {
-                RPCA_UpdateMapObjectsList();
-            }
-            return mapObjects;
-        }
+        // public List<MapObject> GetMapObjectsList()
+        // {
+        //     if (mapObjects == null)
+        //     {
+        //         RPCA_UpdateMapObjectsList();
+        //     }
+        //     return mapObjects;
+        // }
 
         // enlist all valid map objects
         [PunRPC]
@@ -122,7 +149,7 @@ namespace GearUpCards.Utils
                 if (!mapScene.IsValid()) return false;
 
                 GameObject mapRootGM = mapScene.GetRootGameObjects()[0];
-                if (!mapScene.IsValid()) return false;
+                if (!mapRootGM) return false;
 
                 Transform[] mapGMTransforms = mapRootGM.GetComponentsInChildren<Transform>();
                 MapObject.MapObjectType type;
@@ -245,5 +272,43 @@ namespace GearUpCards.Utils
             mapObjects = null;
         }
 
+        // check if position point in colliders
+        public static bool CheckPointInMapObject(Vector3 position, List<MapObject.MapObjectType> ignoreList)
+        {
+            // Miscs.Log("CheckPointInMapObject()");
+            Vector2 checkPos = new Vector2(position.x, position.y);
+            Collider2D collider;
+            bool result = false;
+
+            if (ignoreList == null)
+            {
+                ignoreList = new List<MapObject.MapObjectType>();
+            }
+
+            foreach (MapObject item in mapObjects)
+            {
+                //Miscs.Log("Check Ignore List");
+                if (ignoreList.Contains(item.type))
+                {
+                    continue;
+                }
+
+                //Miscs.Log("Get Collider2D");
+                collider = item.gameObject.GetComponent<Collider2D>();
+                if (collider != null)
+                {
+                    //Miscs.Log("Check in Bounds");
+                    // position.z = collider.bounds.center.z;
+
+                    if (collider.OverlapPoint(checkPos))
+                    {
+                        result = true;
+                        break;
+                    }
+                }
+            }
+
+            return result;
+        }
     }
 }

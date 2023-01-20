@@ -83,7 +83,14 @@ namespace GearUpCards.Cards
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "Spell Trajectory",
+                    stat = "Orb Trajectory",
+                    amount = "Improved",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                },
+                new CardInfoStat()
+                {
+                    positive = true,
+                    stat = "Spell Range",
                     amount = "Improved",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }

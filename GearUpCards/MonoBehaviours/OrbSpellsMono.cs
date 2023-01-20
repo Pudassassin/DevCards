@@ -33,7 +33,7 @@ namespace GearUpCards.MonoBehaviours
         private const string bulletGameObjectName = "Bullet_Base(Clone)";
 
         private const float procTime = .05f;
-        private const float warmupTime = 2.0f;
+        private const float warmupTime = 0.5f;
 
         public enum OrbSpellType
         {
