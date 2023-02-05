@@ -14,6 +14,8 @@ namespace GearUpCards.Cards
 {
     class ChompyBulletCard : CustomCard
     {
+        public static GameObject objectToSpawn = null;
+
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
             // gun.attackSpeed = 1.0f / 0.85f;
@@ -31,15 +33,19 @@ namespace GearUpCards.Cards
             // add ONLY one stack of ChompyBulletEffect to the bullet modifier pool
             if (characterStats.GetGearData().chompyBulletStack == 0)
             {
-                List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList<ObjectsToSpawn>();
-
-                GameObject gameObject = new GameObject("ChompyBulletModifier", new Type[]
+                if (objectToSpawn == null)
                 {
-                    typeof(ChompyBulletModifier)
-                });
+                    objectToSpawn = new GameObject("ChompyBulletModifier", new Type[]
+                    {
+                        typeof(ChompyBulletModifier)
+                    });
+                    DontDestroyOnLoad(objectToSpawn);
+                }
+
+                List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList<ObjectsToSpawn>();
                 list.Add(new ObjectsToSpawn
                 {
-                    AddToProjectile = gameObject
+                    AddToProjectile = objectToSpawn
                 });
 
                 gun.objectsToSpawn = list.ToArray();

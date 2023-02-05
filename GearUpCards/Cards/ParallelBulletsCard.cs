@@ -17,6 +17,8 @@ namespace GearUpCards.Cards
 {
     class ParallelBulletsCard : CustomCard
     {
+        public static GameObject objectToSpawn = null;
+
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
             cardInfo.allowMultiple = false;
@@ -41,15 +43,19 @@ namespace GearUpCards.Cards
             characterStats.GetGearData().gunSpreadMod = GearUpConstants.ModType.gunSpreadParallel;
 
             // add modifier to bullet
-            List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList<ObjectsToSpawn>();
-
-            GameObject gameObject = new GameObject("ParallelBulletsModifier", new Type[]
+            if (objectToSpawn == null)
             {
-                typeof(BulletNoClipModifier)
-            });
+                objectToSpawn = new GameObject("ParallelBulletsModifier", new Type[]
+                {
+                    typeof(BulletNoClipModifier)
+                });
+                DontDestroyOnLoad(objectToSpawn);
+            }
+
+            List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList<ObjectsToSpawn>();
             list.Add(new ObjectsToSpawn
             {
-                AddToProjectile = gameObject
+                AddToProjectile = objectToSpawn
             });
 
             gun.objectsToSpawn = list.ToArray();

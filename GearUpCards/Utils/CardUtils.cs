@@ -254,6 +254,90 @@ namespace GearUpCards.Utils
         }
 
         // adjusting per-player card rarity modifiers
+        public class RarityDelta
+        {
+            static List<RarityDelta> rarityDeltas
+            {
+                get
+                {
+                    if (rarityDeltas == null)
+                    {
+                        rarityDeltas = new List<RarityDelta>();
+                    }
+                    return rarityDeltas;
+                }
+                set
+                {
+                    rarityDeltas = value;
+                }
+            }
+            CardInfo cardInfo;
+            float addDelta = 0.0f;
+            float mulDelta = 0.0f;
+
+            RarityDelta(CardInfo cardInfo, float add = 0.0f, float mul = 0.0f)
+            {
+                this.cardInfo = cardInfo;
+                this.addDelta = add;
+                this.mulDelta = mul;
+            }
+
+            void Undo()
+            {
+                if (cardInfo != null)
+                {
+                    RarityUtils.AjustCardRarityModifier(cardInfo, -1.0f * addDelta, -1.0f * mulDelta);
+                    addDelta = 0.0f;
+                    mulDelta = 0.0f;
+                }
+            }
+
+            public static void AdjustRarityModifier(CardInfo cardInfo, float add = 0.0f, float mul = 0.0f)
+            {
+                Miscs.Log("[GearUp] AdjustRarityModifier()");
+                if (cardInfo == null) return;
+
+                Miscs.Log("[GearUp] AdjustRarityModifier(): A");
+                RarityUtils.AjustCardRarityModifier(cardInfo, add, mul);
+
+                Miscs.Log("[GearUp] AdjustRarityModifier(): B");
+                RarityDelta targetCard = null;
+                foreach (RarityDelta item in rarityDeltas)
+                {
+                    if (item.cardInfo == cardInfo)
+                    {
+                        targetCard = item;
+                        break;
+                    }
+                }
+
+                Miscs.Log("[GearUp] AdjustRarityModifier(): C");
+                if (targetCard == null)
+                {
+                    rarityDeltas.Add(new RarityDelta(cardInfo, add, mul));
+                }
+                else
+                {
+                    targetCard.addDelta += add;
+                    targetCard.mulDelta += mul;
+                }
+            }
+
+            public static void UndoAll()
+            {
+                Miscs.Log("[GearUp] UndoAll()");
+                if (rarityDeltas == null) return;
+
+                foreach (RarityDelta item in rarityDeltas)
+                {
+                    item.Undo();
+                }
+
+                Miscs.Log("[GearUp] UndoAll(): A");
+                rarityDeltas.Clear();
+            }
+        }
+
         public static List<string> gearUpRarityChecklist = new List<string>()
         {
             // spells
@@ -436,7 +520,8 @@ namespace GearUpCards.Utils
                 tempCardInfo = GetCardInfo(item);
                 if (tempCardInfo == null) continue;
 
-                RarityUtils.AjustCardRarityModifier(tempCardInfo, add, mul);
+                RarityDelta.AdjustRarityModifier(tempCardInfo, add, mul);
+                // RarityUtils.AjustCardRarityModifier(tempCardInfo, add, mul);
                 // Miscs.Log("Got it");
             }
         }
@@ -479,7 +564,8 @@ namespace GearUpCards.Utils
             }
             else
             {
-                RarityUtils.AjustCardRarityModifier
+                //RarityUtils.AjustCardRarityModifier
+                RarityDelta.AdjustRarityModifier
                 (
                     GetCardInfo(GearUpCards.ModInitials, "Glyph CAD Module"),
                     mul: tempModifier * 1.50f - 0.75f
@@ -504,12 +590,15 @@ namespace GearUpCards.Utils
 
             // Miscs.Log(">.<");
             // Miscs.Log("> Block base modifier: " + tempModifier);
-            RarityUtils.AjustCardRarityModifier
+
+            //RarityUtils.AjustCardRarityModifier
+            RarityDelta.AdjustRarityModifier
             (
                 GetCardInfo(GearUpCards.ModInitials, "Shield Battery"),
                 mul: tempModifier * 2.0f
             );
-            RarityUtils.AjustCardRarityModifier
+            //RarityUtils.AjustCardRarityModifier
+            RarityDelta.AdjustRarityModifier
             (
                 GetCardInfo("Empower", true),
                 mul: tempModifier * 2.0f
@@ -528,12 +617,14 @@ namespace GearUpCards.Utils
             tempList = GetPlayerCardsWithStringList(targerPlayer, cardListModdedBlocks);
             tempModifier += (float)(tempList.Count) * 0.10f;
 
-            RarityUtils.AjustCardRarityModifier
+            //RarityUtils.AjustCardRarityModifier
+            RarityDelta.AdjustRarityModifier
             (
                 GetCardInfo(GearUpCards.ModInitials, "Shield Battery"),
                 mul: tempModifier
             );
-            RarityUtils.AjustCardRarityModifier
+            //RarityUtils.AjustCardRarityModifier
+            RarityDelta.AdjustRarityModifier
             (
                 GetCardInfo("Empower", true),
                 mul: tempModifier

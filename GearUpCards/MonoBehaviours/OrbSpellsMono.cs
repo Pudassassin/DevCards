@@ -23,6 +23,11 @@ namespace GearUpCards.MonoBehaviours
 {
     public class OrbSpellsMono : MonoBehaviour
     {
+        public static GameObject objectSpawn_obliteration = null;
+        public static GameObject objectSpawn_rollingbulwark = null;
+        public static GameObject objectSpawn_LFBlast = null;
+        public static GameObject objectSpawn_LFDuality = null;
+
         private static string targetBounceCardName = "Target BOUNCE";
         private static GameObject screenEdgePrefab = null;
         // public float _debugScale = 2.0f;

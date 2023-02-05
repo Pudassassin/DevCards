@@ -21,6 +21,9 @@ namespace GearUpCards.MonoBehaviours
         private const float procTime = 0.1f;
         public static int flakProjectileAdd = 2;
 
+        public static GameObject objectToSpawnParallel = null;
+        public static GameObject objectToSpawnFlak = null;
+
         internal Player player;
         internal Gun gun;
         internal CharacterStatModifiers stats;
@@ -381,7 +384,7 @@ namespace GearUpCards.MonoBehaviours
             // }
 
             // Width is the distance of outermost bullets
-            parallelWidth = gun.spread * (2.0f + (0.20f * gun.numberOfProjectiles));
+            parallelWidth = gun.spread * (2.5f + (0.10f * gun.numberOfProjectiles));
             parallelWidth *= gun.multiplySpread;
             parallelWidth = Mathf.Max(parallelWidth, 1.0f);
 
@@ -396,7 +399,7 @@ namespace GearUpCards.MonoBehaviours
         private void ApplySpreadFlak()
         {
             // flak cannon stats
-            Miscs.Log("ApplySpreadFlak()");
+            //Miscs.Log("ApplySpreadFlak()");
             Miscs.CopyGunStats(playerOldGun, newSpreadGun);
 
             newSpreadGun.attackID = player.playerID;
@@ -433,7 +436,7 @@ namespace GearUpCards.MonoBehaviours
             // newSpreadGun.destroyBulletAfter = 0.0f;
 
             // fragmentation stats (to be fired 8! times)
-            Miscs.Log("ApplySpreadFlak() : dummySpreadGun");
+            //Miscs.Log("ApplySpreadFlak() : dummySpreadGun");
             Miscs.CopyGunStatsNoActions(playerOldGun, dummySpreadGun);
 
             dummySpreadGun.attackID = player.playerID;
@@ -479,11 +482,11 @@ namespace GearUpCards.MonoBehaviours
                 }
             };
 
-            Miscs.Log("ApplySpreadFlak() : replacing gun");
+            //Miscs.Log("ApplySpreadFlak() : replacing gun");
             Miscs.CopyGunStats(newSpreadGun, gun);
             isGunReplaced = true;
 
-            Miscs.Log("ApplySpreadFlak() : combine delegate");
+            //Miscs.Log("ApplySpreadFlak() : combine delegate");
             this.gun.ShootPojectileAction = (Action<GameObject>)Delegate.Combine(this.gun.ShootPojectileAction, this.shootAction);
         }
 
@@ -837,7 +840,7 @@ namespace GearUpCards.MonoBehaviours
                 Miscs.LogWarn("[GearUp] FlakShellModifier: Dummy Gun is NULL!");
             }
 
-            this.ExecuteAfterFrames(5, () =>
+            this.ExecuteAfterFrames(3, () =>
             {
                 RayHitReflect rayHitReflect = GetComponentInChildren<RayHitReflect>();
                 if (rayHitReflect != null)

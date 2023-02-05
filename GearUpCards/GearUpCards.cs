@@ -42,7 +42,7 @@ namespace GearUpCards
     {
         public const string ModId = "com.pudassassin.rounds.GearUpCards";
         public const string ModName = "GearUpCards";
-        public const string Version = "0.2.56.8"; //build #211 / Release 0-3-0
+        public const string Version = "0.2.57.1"; //build #212 / Release 0-3-0
 
         public const string ModInitials = "GearUP";
 
@@ -254,7 +254,7 @@ namespace GearUpCards
         IEnumerator OnPickStart(IGameModeHandler gm)
         {
             Miscs.Log("[GearUpCard] OnPickStart()");
-            CardUtils.SaveCardRarity();
+            // CardUtils.SaveCardRarity();
             isCardPickingPhase = true;
 
             yield break;
@@ -263,7 +263,8 @@ namespace GearUpCards
         IEnumerator OnPickEnd(IGameModeHandler gm)
         {
             Miscs.Log("[GearUpCard] OnPickEnd()");
-            CardUtils.RestoreGearUpCardRarity();
+            // CardUtils.RestoreGearUpCardRarity();
+            CardUtils.RarityDelta.UndoAll();
             // isCardPickingPhase = false;
 
             yield break;

@@ -51,7 +51,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            return null; // GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_GlyphDivination");
+            return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_GlyphTime");
         }
         protected override CardInfo.Rarity GetRarity()
         {

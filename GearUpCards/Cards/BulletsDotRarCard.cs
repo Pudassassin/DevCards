@@ -36,11 +36,11 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Compress number of projectiles down 1/3, each dealing <i>up to 5x DMG!</i> **\n*scales to compression delta";
+            return "Compress no. of projectiles down 1/3, each dealing <i>up to 5x DMG!</i> **\n*scales to compression delta";
         }
         protected override GameObject GetCardArt()
         {
-            return null;
+            return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_BulletsDotRar");
         }
         protected override CardInfo.Rarity GetRarity()
         {

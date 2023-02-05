@@ -56,7 +56,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            return null; // GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_AntiBulletMagick");
+            return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_PortalMagick");
         }
         protected override CardInfo.Rarity GetRarity()
         {

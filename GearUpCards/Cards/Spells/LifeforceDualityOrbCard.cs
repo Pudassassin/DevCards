@@ -83,7 +83,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            return null; // GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_OrbLiteration");
+            return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_LifeforceDuorbity");
         }
         protected override CardInfo.Rarity GetRarity()
         {

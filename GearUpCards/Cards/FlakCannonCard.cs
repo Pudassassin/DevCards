@@ -17,6 +17,8 @@ namespace GearUpCards.Cards
 {
     class FlakCannonCard : CustomCard
     {
+        public static GameObject objectToSpawn = null;
+
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
             cardInfo.allowMultiple = false;
@@ -42,17 +44,21 @@ namespace GearUpCards.Cards
             characterStats.GetGearData().gunSpreadMod = GearUpConstants.ModType.gunSpreadFlak;
 
             // add modifier to bullet
-            List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList<ObjectsToSpawn>();
-
-            GameObject gameObject = new GameObject("FlakCannonModifier", new Type[]
+            if (objectToSpawn == null)
             {
-                // typeof(FlakShellModifier),
-                typeof(BulletSpeedLimiter),
-                typeof(BulletNoClipModifier)
-            });
+                objectToSpawn = new GameObject("FlakCannonModifier", new Type[]
+                {
+                    // typeof(FlakShellModifier),
+                    typeof(BulletSpeedLimiter),
+                    typeof(BulletNoClipModifier)
+                });
+                DontDestroyOnLoad(objectToSpawn);
+            }
+
+            List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList<ObjectsToSpawn>();
             list.Add(new ObjectsToSpawn
             {
-                AddToProjectile = gameObject
+                AddToProjectile = objectToSpawn
             });
 
             gun.objectsToSpawn = list.ToArray();
@@ -71,7 +77,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            return null;
+            return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_FlakCannon");
         }
         protected override CardInfo.Rarity GetRarity()
         {

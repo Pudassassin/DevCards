@@ -65,7 +65,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            return null;
+            return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_RollingBuorbwark");
         }
         protected override CardInfo.Rarity GetRarity()
         {
