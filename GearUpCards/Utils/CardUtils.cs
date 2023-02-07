@@ -256,21 +256,7 @@ namespace GearUpCards.Utils
         // adjusting per-player card rarity modifiers
         public class RarityDelta
         {
-            static List<RarityDelta> rarityDeltas
-            {
-                get
-                {
-                    if (rarityDeltas == null)
-                    {
-                        rarityDeltas = new List<RarityDelta>();
-                    }
-                    return rarityDeltas;
-                }
-                set
-                {
-                    rarityDeltas = value;
-                }
-            }
+            static List<RarityDelta> rarityDeltas = new List<RarityDelta>();
             CardInfo cardInfo;
             float addDelta = 0.0f;
             float mulDelta = 0.0f;
@@ -294,13 +280,13 @@ namespace GearUpCards.Utils
 
             public static void AdjustRarityModifier(CardInfo cardInfo, float add = 0.0f, float mul = 0.0f)
             {
-                Miscs.Log("[GearUp] AdjustRarityModifier()");
+                // Miscs.Log("[GearUp] AdjustRarityModifier()");
                 if (cardInfo == null) return;
 
-                Miscs.Log("[GearUp] AdjustRarityModifier(): A");
+                // Miscs.Log("[GearUp] AdjustRarityModifier(): A");
                 RarityUtils.AjustCardRarityModifier(cardInfo, add, mul);
 
-                Miscs.Log("[GearUp] AdjustRarityModifier(): B");
+                // Miscs.Log("[GearUp] AdjustRarityModifier(): B");
                 RarityDelta targetCard = null;
                 foreach (RarityDelta item in rarityDeltas)
                 {
@@ -311,7 +297,7 @@ namespace GearUpCards.Utils
                     }
                 }
 
-                Miscs.Log("[GearUp] AdjustRarityModifier(): C");
+                // Miscs.Log("[GearUp] AdjustRarityModifier(): C");
                 if (targetCard == null)
                 {
                     rarityDeltas.Add(new RarityDelta(cardInfo, add, mul));
@@ -325,7 +311,7 @@ namespace GearUpCards.Utils
 
             public static void UndoAll()
             {
-                Miscs.Log("[GearUp] UndoAll()");
+                // Miscs.Log("[GearUp] UndoAll()");
                 if (rarityDeltas == null) return;
 
                 foreach (RarityDelta item in rarityDeltas)
@@ -333,7 +319,7 @@ namespace GearUpCards.Utils
                     item.Undo();
                 }
 
-                Miscs.Log("[GearUp] UndoAll(): A");
+                // Miscs.Log("[GearUp] UndoAll(): A");
                 rarityDeltas.Clear();
             }
         }
@@ -577,6 +563,7 @@ namespace GearUpCards.Utils
             tempModifier += gearData.orbLifeforceBlastStack * 0.50f;
             tempModifier += gearData.orbObliterationStack * 0.50f;
             tempModifier += gearData.orbRollingBulwarkStack * 0.50f;
+            tempModifier += gearData.arcaneSunStack * 0.50f;
             if (gearData.uniqueMagick != GearUpConstants.ModType.disabled && gearData.uniqueMagick != GearUpConstants.ModType.none)
             {
                 tempModifier += 2.00f;

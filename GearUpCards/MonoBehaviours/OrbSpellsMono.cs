@@ -394,6 +394,7 @@ namespace GearUpCards.MonoBehaviours
         internal Action<BlockTrigger.BlockTriggerType> spellAction;
 
         internal Player player;
+        internal GeneralInput generalInput;
         internal Gun gun;
         internal GunAmmo gunAmmo;
         internal Block block;
@@ -449,6 +450,7 @@ namespace GearUpCards.MonoBehaviours
             this.gun = this.gameObject.GetComponent<WeaponHandler>().gun;
             this.gunAmmo = this.gun.GetComponentInChildren<GunAmmo>();
             this.player = this.gameObject.GetComponent<Player>();
+            this.generalInput = this.gameObject.GetComponent<GeneralInput>();
             this.block = this.gameObject.GetComponent<Block>();
             this.stats = this.gameObject.GetComponent<CharacterStatModifiers>();
 
@@ -632,8 +634,19 @@ namespace GearUpCards.MonoBehaviours
 
         private void SetGunForceDir(Gun gun)
         {
-            Vector3 shootDir = MainCam.instance.cam.ScreenToWorldPoint(Input.mousePosition) - base.transform.position;
-            shootDir.z = 0f;
+            Vector3 shootDir;
+
+            // determine direction and portal pos
+            if (generalInput.inputType == GeneralInput.InputType.Controller)
+            {
+                shootDir = generalInput.lastAimDirection;
+            }
+            else
+            {
+                shootDir = MainCam.instance.cam.ScreenToWorldPoint(Input.mousePosition) - player.transform.position;
+            }
+
+            shootDir.z = 0.0f;
             shootDir = shootDir.normalized;
 
             gun.SetFieldValue("forceShootDir", (Vector3)shootDir);
