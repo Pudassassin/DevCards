@@ -42,9 +42,9 @@ namespace GearUpCards.MonoBehaviours
         private static float damageAmpScaling = 0.015f;
 
         private static float rampUpRateBase = 1.0f;
-        private static float rampUpRateScaling = 0.1f;
+        private static float rampUpRateScaling = 0.2f;
 
-        private static float preChargeBase = 5.0f;
+        private static float preChargeBase = 6.0f;
         private static float preChargeScaling = 1.0f;
 
         private static float debuffRetainTimeBase = 1.0f;
@@ -53,7 +53,7 @@ namespace GearUpCards.MonoBehaviours
         private static float debuffDecayRateBase = 1.0f;
         private static float debuffDecayRateScaling = -0.1f;
 
-        private static float effectRadiusBase = 12.0f;
+        private static float effectRadiusBase = 15.0f;
         private static float effectRadiusScaling = 1.5f;
 
         internal int stackCount = 0;

@@ -60,7 +60,7 @@ namespace GearUpCards.MonoBehaviours
             // Orb Stats
             healFlatRate        = 20.0f + (10.0f * casterStats.GetGearData().glyphPotency);
             healPercentRate     = 0.01f + (0.005f * casterStats.GetGearData().glyphPotency);
-            drainFlatRate       = 45.0f + (15.0f * casterStats.GetGearData().glyphPotency);
+            drainFlatRate       = 25.0f + (12.5f * casterStats.GetGearData().glyphPotency);
             drainPercentRate    = 0.02f + (0.01f * casterStats.GetGearData().glyphPotency);
 
             orbLifeTime         = 7.5f + (1.5f * casterStats.GetGearData().glyphTime);
@@ -217,7 +217,7 @@ namespace GearUpCards.MonoBehaviours
                             else
                             {
                                 // drain enemies' lives
-                                orbLifeTime += procTickTime * 0.5f;
+                                orbLifeTime += procTickTime * 0.25f;
                                 float drainAmount = (drainFlatRate + (item.data.maxHealth * drainPercentRate)) * procTickTime;
                                 item.data.health -= drainAmount * 0.5f;
                                 item.data.healthHandler.RPCA_SendTakeDamage(new Vector2(drainAmount * 0.5f, 0.0f), this.transform.position, playerID: casterPlayer.playerID);

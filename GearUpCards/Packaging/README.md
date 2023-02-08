@@ -1,5 +1,5 @@
-# GearUP Cards [0.2.0] 
-Public Release 0-2-0, build #141
+# GearUP Cards [v0.3.1] 
+Public Release 0-3-0, build #214 (Unity-packed)
 
 Adding in game-changing mechanics into the modded ROUNDS fray! Bought to you by Pudassassin
 
@@ -14,6 +14,14 @@ Adding in game-changing mechanics into the modded ROUNDS fray! Bought to you by 
 - All players affected suffer **additional 3.5s reload time** on top of their own guns' reload time.
 
 - Caster suffer less penalty from above.
+
+#### \[Portal Magick]
+- **Unique Magick** - *Spell caster*
+
+- *Blocking Create a pair of portals that teleport players **AND** projectiles from one to another with slight re-entry delays. Gun-fired bullets gains bonus damage and bounces going thru them!*
+
+- NOW you are thinking with Portals! (TM)
+
 #### \[Hollow Life]
 Health Passive
 
@@ -25,6 +33,12 @@ Health Passive
 **Tip: Look for the cards that benefit from having larger Max HP pool, or having you to stay low on health, but definitely not \[Pristine Perserverance]!*
 
 ### **Uncommon Cards**
+#### \[Shield Battery]
+**Passive Block Modifier**
+- *\[Empower] now have "+1 Empower Shot" but no longer give bullet boosts.*
+
+- Allowing you to fire multiple shots of \[Empower] after each block, increases by this card and \[Empower] card
+
 #### \[Chompy Bullet]
 **Passive Bullet Modifier**
 
@@ -57,6 +71,15 @@ Health Passive
 
 - also provides +4 projectiles, +60 degree spread and -35% damage penalty
 
+#### \[Flak Cannon]
+**Unique Gun Spread Modification**
+
+- *Your gun fire bundled shells that split into shrapnels after 1s that also have bullet effects!*
+
+- Flak 'Shells' has 99 bounces, increased DMG and adjusted bullet speed but only stay for 1s before splitting
+
+- Greatly reduce total # of projectile you fired and halves the total burst counts
+
 #### \[Parallel Bullets]
 **Unique Gun Spread Modification**
 
@@ -80,7 +103,64 @@ Health Passive
 
 - *Blocking fires the orb that obliterates part of the map and reduce players' max HP.*
 
-- ALL PLAYERS in the impact area suffer -10% max HP (-15% on direct hit), **last until respawn**
+- Culls the MAX HP of ALL PLAYERS in the impact area, **last until respawn**
+
+#### \[Rolling Buorbwark]
+**Active Orb Spell** - *Orb sage*
+
+- *Blocking cast the ricocheting orb that trigger block abilities every bounce!*
+
+- Works similarly to how the vanilla \[Empower\] would but fired on block and bouncy!
+
+#### \[Lifeforce Blast!]
+**Active Orb Spell** - *Orb sage*
+
+- *Blocking cast the orb that heals & boosts friends' healings, damages & hinders foes' healings on impact.*
+
+- Inspired by and works similarly to Overwatch Ana's Biotic Grenade
+
+#### \[Lifeforce Duorbity]
+**Active Orb Spell** - *Orb sage*
+
+- *Blocking cast the bouncing orb that heals friends and drains foes' lives close to it.*
+
+- Orb only affect target(s) in its line-of-sight and in range, in which case it slows down until no one's nearby
+
+- Orb lasts longer when it drains enemies' Health, or shorter when it heals multiple allies.
+
+- Inspired by and works similarly to Overwatch Moira's Biotic Orb(s)
+
+#### \[Arcane Sun]
+**Passive Spell**
+
+- *Summon a mini sun that deals increasing damage to nearby enemy you can see. Also cause them to take more damage from other sources.*
+
+- Only fire toward target(s) in your line-of-sight and in range
+
+- Enemy burnt also suffer "Damage Amp" debuff that cause them to temporarly take more damage; the longer they burns continuously the stronger the debuff becomes
+
+#### \[Guardians Charm]
+**Passive Charm**
+
+- *Boost your chance of drawing block-related cards.*
+
+- Make you more likely to draw block-based ability cards and other block passives-- and the more you take them, the more they show up!
+
+- By itself, greatly improve your block cooldown.
+
+#### \[Glyph CAD Module]
+**Passive CAD Module**
+
+- *Your Gun and Block benefit **TWICE** the bonus from Glyphs and boost the chance of finding Spell and more Glyphs*
+
+- it is rarer to show up by its own early on, only show up more often when you take more and more Glyphs cards
+
+#### \[Bullets.rar]
+**Passive Gun modifier**
+
+- *Compress no. of projectiles down 1/3, each dealing up to 5x DMG!*
+
+- the ratio is actually based on the # of projectile before and after 'compression'; card will not work if your gun's projectile count is **one**
 
 ### **Common Cards**
 #### \[Medical Parts]
@@ -113,7 +193,7 @@ Health Passive
 
 - on its own, it gives +25% Bullet (velocity) Speed and +15% Projectile (simulation) Speed.
 
-#### \[Geometry Glyph]
+#### \[Geometric Glyph]
 **Spell Passive** - *Glyph*
 
 - *"Simple Geometry!"*
@@ -127,69 +207,24 @@ Health Passive
 
 - only available when you pick at least 1 'Spell' card-- it does nothing without one!
 
+#### \[Potency Glyph]
+**Spell Passive** - *Glyph*
+
+- *Your Bullets hurts more and your Spells become more powerful!*
+
+- on its own, it gives +65% Bullet Damage at the cost of -15% Health.
+
+#### \[Time Glyph]
+**Spell Passive** - *Glyph*
+
+- *Extend bullets' lifetime and slightly delay the damage you taken.*
+
+- You take delayed damage, +0.5 seconds longer
+
+- if there's bullet drag, it is decreased by 25%
+
+- if the bullet's lifetime is cut short, it is extended by 50%
+
+
 ## Note from the modder
 There will be more cards planned to expand in each category, here the second beta release give more contents and introducing 'Orb Spell', as well as bug fixes, rebalancing the first beta cards and framework updates
-
-More details can be found over the GitHub
-
-## Patch Notes
-#### Public Beta 2-0 \[v0.2.0]
-- added [Orb-Literation] and dependencies: map destruction, Max HP culls on impact
-- added [Tiberium Bullet] and dependencies: caustic HP removal bullet modifier
-- added [Arc of Bullets]: evenly spread bullets in arc
-- added [Parallel Bullets]: neatly arranged and focused bullets
-
-- added [Divination Glyph]: velocity/trajectory. speed to both Spell and Bullets
-- added [Influence Glyph]: spell range/AoE upgrade
-- added [Geometric Glyph]: bounces to both Spell and Bullets
-- added [Potency Glyph]: spell power, add raw damage to Bullets
-
-- reworked [Size Normalizer] to utilze patch instead of MonoBehavior; works instantly and reliably
-
-- rebalanced all of the initial release cards
-
-- rebalanced [Tactical Scanner]
-  - AoE radius: 12 (+1.5 per stack)
-  - Damage/Heal Amp: 50% per stack
-  - Duration: 6 seconds (+1 per stack)
-  - Cooldown: 9 seconds (-0.5 per stack)
-
-- rebalanced [Chompy Bullet]
-  - ~15% > ~20% HP Culling; per bullet-- at default gun firerate
-  - -25% > -15% DMG, ATKSPD and Reload SPD
-  - Stackable with diminishing return
-
-- completed [Shield Battery]
-  - 2 Empowered shot capacity
-  - no longer give an extra block
-  - +0.5s block cooldown
-  - -25% attack speed
-
-- all block ability cooldowns start at 2.0s at battle starts
-
-Under the hood:
-- Implemented HollowLifeEffect mono to handle temp HP caps incurred by [Orb-Literation] and possibly future cards
-
-- Chompy Bullet now only add one instance of the effect to each bullet, they will calculate the effect on the fly
-
-- Disabled redundancy system that iterate and resolve unique and/or mutually exclusive cards (it will be other mods'
-  faults that breach allowMultiple/black/whitelisting system)
-
-#### Public Beta 1-2 \[v0.1.13]
-- Under the hood reworks of healing and damage multipliers.
-
-- **\[Tactical Scanner]** now properly modify **healings** and **damages** taken and ignore all **direct health changes**.
-
-- **\[Hollow Life]** changes:
-  - rarity changed to **Rare**
-  - Max HP gains changed from **x2.5** to **3x**
-  - now giving **-15% healing effects**; reducing healing and regeneration
-
-- Reduced the delay caused by card conflict resolver at the start of each round.
-
-#### Public Beta 1-1 \[v0.1.9]
-- Patched the logic behind the monobehavior that manages and prevents card conflicts, to execute from the main mod class instead of from each players!
-- **\[Shield Battery]** sneak peak
-
-#### Public Beta 1-0 \[v0.1.0]
-- It all begins. Starting out with 5 wacky cards and 3 minor all-around passive cards

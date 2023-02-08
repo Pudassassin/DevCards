@@ -29,6 +29,11 @@ namespace GearUpCards.MonoBehaviours
         private static int portalCheckSubDiv = 12;
         private static float portalCheckTolerance = 0.333f;
 
+        // RPC syncs
+        public static string RPCKey1 = GearUpCards.ModId + ":PortalSync1";
+        public static string RPCKey2 = GearUpCards.ModId + ":PortalSync2";
+        public PhotonView view;
+
         // private static GameObject portalCrosshair  = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_PortalMagick_Orange");
 
         private static string portalMagickRuneCircleHier = "Circle_Root/Circle_Rune";
@@ -94,13 +99,16 @@ namespace GearUpCards.MonoBehaviours
         internal Block block;
         internal CharacterStatModifiers stats;
 
-
         public void Awake()
         {
             this.player = this.gameObject.GetComponent<Player>();
             this.generalInput = this.gameObject.GetComponent<GeneralInput>();
             this.block = this.gameObject.GetComponent<Block>();
             this.stats = this.gameObject.GetComponent<CharacterStatModifiers>();
+
+            this.view = GetComponentInParent<PhotonView>();
+            GetComponentInParent<ChildRPC>().childRPCsVector2.Add(RPCKey1, SyncPortalBlue);
+            GetComponentInParent<ChildRPC>().childRPCsVector2.Add(RPCKey2, SyncPortalOrange);
 
             int clientPlayerID = PlayerManager.instance.players.First(player => player.data.view.IsMine).playerID;
             if (player.playerID == clientPlayerID)
@@ -121,6 +129,19 @@ namespace GearUpCards.MonoBehaviours
             GameModeManager.AddHook(GameModeHooks.HookBattleStart, OnBattleStart);
             GameModeManager.AddHook(GameModeHooks.HookPointEnd, OnPointEnd);
         }
+        public void CallSyncPosition()
+        {
+            GetComponentInParent<ChildRPC>().CallFunction(RPCKey1, (Vector2)this.portalBluePos);
+            GetComponentInParent<ChildRPC>().CallFunction(RPCKey2, (Vector2)this.portalOrangePos);
+        }
+        public void SyncPortalBlue(Vector2 pos)
+        {
+            this.portalBluePos = pos;
+        }
+        public void SyncPortalOrange(Vector2 pos)
+        {
+            this.portalOrangePos = pos;
+        }
 
         public void Start()
         {
@@ -140,25 +161,31 @@ namespace GearUpCards.MonoBehaviours
             if (spellReady && !spellWarmUp)
             {
                 // determine direction and portal pos
-                if (generalInput.inputType == GeneralInput.InputType.Controller)
+                if (player.data.view.IsMine)
                 {
-                    aimDirection = generalInput.lastAimDirection;
-                    aimDirection.z = 0.0f;
-                    aimDirection = aimDirection.normalized;
-                    distanceEnd = spellRange;
-                }
-                else
-                {
-                    aimDirection = MainCam.instance.cam.ScreenToWorldPoint(Input.mousePosition) - player.transform.position;
-                    aimDirection.z = 0.0f;
-                    distanceEnd = aimDirection.magnitude;
-                    aimDirection = aimDirection.normalized;
-                    distanceEnd = Mathf.Clamp(distanceEnd, distanceStart + portalSize * 2.0f, spellRange);
-                }
-                distanceStart = (player.transform.localScale.x + portalSize + 1.0f);
+                    if (generalInput.inputType == GeneralInput.InputType.Controller)
+                    {
+                        aimDirection = generalInput.lastAimDirection;
+                        aimDirection.z = 0.0f;
+                        aimDirection = aimDirection.normalized;
+                        distanceEnd = spellRange;
+                    }
+                    else
+                    {
+                        aimDirection = MainCam.instance.cam.ScreenToWorldPoint(Input.mousePosition) - player.transform.position;
+                        aimDirection.z = 0.0f;
+                        distanceEnd = aimDirection.magnitude;
+                        aimDirection = aimDirection.normalized;
+                        distanceEnd = Mathf.Clamp(distanceEnd, distanceStart + portalSize * 2.0f, spellRange);
+                    }
+                    distanceStart = (player.transform.localScale.x + portalSize + 1.0f);
 
-                portalBluePos = player.transform.position + (aimDirection * distanceStart);
-                portalOrangePos = player.transform.position + (aimDirection * distanceEnd);
+                    portalBluePos = player.transform.position + (aimDirection * distanceStart);
+                    portalOrangePos = player.transform.position + (aimDirection * distanceEnd);
+
+                    // Send RPC
+                    CallSyncPosition();
+                }
 
                 // aim visuals
                 if (portalCrosshairs != null)
@@ -234,6 +261,12 @@ namespace GearUpCards.MonoBehaviours
 
                 if (conditionMet && areaCleared)
                 {
+                    // Send RPC
+                    if (player.data.view.IsMine)
+                    {
+                        CallSyncPosition();
+                    }
+
                     // setup portal controller + pair
                     GameObject portalControlObj = new GameObject($"PortalController ({idCounter})");
                     portalControlObj.transform.position = Vector3.zero;
