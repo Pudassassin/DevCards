@@ -20,6 +20,10 @@ namespace GearUpCards.Cards
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
             gun.attackSpeed = 1 / 0.75f;
+            cardInfo.categories = new CardCategory[]
+            {
+                GearCategory.noType
+            };
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {

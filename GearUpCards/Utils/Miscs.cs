@@ -149,11 +149,13 @@ namespace GearUpCards.Utils
 			CopyGunStatsBase(copyFromGun, copyToGun);
 
 			copyToGun.holdable = null;
-			copyToGun.ShootPojectileAction = null;
+			// copyToGun.ShootPojectileAction = null;
+			copyToGun.ShootPojectileAction = (GameObject _) => { };
 
 			// dealing with private fields
 			// Traverse.Create(copyToGun).Field("attackAction").SetValue((Action)Traverse.Create(copyFromGun).Field("attackAction").GetValue());
-			Traverse.Create(copyToGun).Field("attackAction").SetValue(null);
+			Action noAction = () => { };
+			Traverse.Create(copyToGun).Field("attackAction").SetValue(noAction);
 
 			// Traverse.Create(copyToGun).Field("gunAmmo").SetValue(null);
 			// Traverse.Create(copyToGun).Field("gunID").SetValue((int)Traverse.Create(copyFromGun).Field("gunID").GetValue());
@@ -242,7 +244,7 @@ namespace GearUpCards.Utils
 			copyToGun.waveMovement = copyFromGun.waveMovement;
 
 			// duping objectsToSpawn
-			copyToGun.objectsToSpawn = copyFromGun.objectsToSpawn;
+			copyToGun.objectsToSpawn = copyFromGun.objectsToSpawn.ToList().ToArray();
 			copyToGun.projectiles = copyFromGun.projectiles.ToList().ToArray();
 
 			// List<ObjectsToSpawn> listObjects = new List<ObjectsToSpawn>();

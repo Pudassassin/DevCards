@@ -19,7 +19,7 @@ namespace GearUpCards.Cards
         {
             cardInfo.categories = new CardCategory[]
             {
-                GearCategory.tagSpell
+                GearCategory.typeSpell
             };
         }
 
@@ -65,8 +65,8 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Blocking cast the orb that heals & boosts friends' heals, damages & hinders foes' heals on impact.";
-            // return "Blocking cast the orb that do burst Heal/DMG, then temporarly boost/hinder healing.";
+            // return "Blocking cast the orb that heals & boosts friends' heals, damages & hinders foes' heals on impact.";
+            return "Blocking cast the orb that deal burst Heal/DMG, then temporary boost/hinder healing of the affected.";
         }
         protected override GameObject GetCardArt()
         {

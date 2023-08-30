@@ -19,7 +19,7 @@ namespace GearUpCards.Cards
         {
             cardInfo.categories = new CardCategory[]
             {
-                GearCategory.tagSpell
+                GearCategory.typeSpell
             };
         }
 

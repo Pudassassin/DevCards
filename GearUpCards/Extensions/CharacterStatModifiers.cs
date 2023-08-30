@@ -52,6 +52,7 @@ namespace GearUpCards.Extensions
 
     public class CharacterStatModifiersGearData
     {
+        // card stacks
         public int hollowLifeStack;
         public int tacticalScannerStack;
         public int shieldBatteryStack;
@@ -59,6 +60,7 @@ namespace GearUpCards.Extensions
         public int chompyBulletStack;
         public int tiberiumBulletStack;
 
+        // glyphs stacks
         public int glyphMagickFragment;
 
         public int glyphDivination;
@@ -68,6 +70,7 @@ namespace GearUpCards.Extensions
         public int glyphPiercing;
         public int glyphTime;
 
+        // spell stacks
         public int orbObliterationStack;
         public int orbRollingBulwarkStack;
         public int orbLifeforceDualityStack;
@@ -75,6 +78,7 @@ namespace GearUpCards.Extensions
 
         public int arcaneSunStack;
 
+        //
         public float hpPercentageRegen;
 
         public GearUpConstants.ModType gunMod;
@@ -87,6 +91,8 @@ namespace GearUpCards.Extensions
         public List<GearUpConstants.AddOnType> addOnList;
 
         public float t_uniqueMagickCooldown;
+
+        //
 
         public CharacterStatModifiersGearData()
         {

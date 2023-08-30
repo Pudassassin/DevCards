@@ -37,7 +37,7 @@ namespace GearUpCards.Cards
 
             // about half of [Buckshot]'s spread but this is for mono's calculation
             gun.spread += 45.0f / 360.0f;
-            gun.evenSpread += 1.0f;
+            // gun.evenSpread += 1.0f;
             gun.numberOfProjectiles += 4;
 
             player.gameObject.GetOrAddComponent<UniqueGunSpreadMono>();

@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System.Linq;
+using System.Collections.Generic;
 
 using BepInEx;
 using UnboundLib;
@@ -14,12 +16,13 @@ using Jotunn;
 
 using GearUpCards.Cards;
 using static GearUpCards.Utils.CardUtils;
-using UnboundLib.Utils;
-using System.Linq;
-using System.Collections.Generic;
-
 using GearUpCards.Utils;
+using GearUpCards.MonoBehaviours;
+
+using UnboundLib.Utils;
+
 using UnboundLib.Extensions;
+using RarityLib.Utils;
 
 namespace GearUpCards
 {
@@ -31,6 +34,7 @@ namespace GearUpCards
     [BepInDependency("com.willuwontu.rounds.evenspreadpatch", BepInDependency.DependencyFlags.HardDependency)]
 
     [BepInDependency("root.rarity.lib", BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency("root.category.util", BepInDependency.DependencyFlags.HardDependency)]
 
     // Declares our mod to Bepin
     [BepInPlugin(ModId, ModName, Version)]
@@ -42,12 +46,18 @@ namespace GearUpCards
     {
         public const string ModId = "com.pudassassin.rounds.GearUpCards";
         public const string ModName = "GearUpCards";
-        public const string Version = "0.3.1.2"; //build #214 / Release 0-3-0
+        public const string Version = "0.3.2.1"; //build #219 / Release 0-4-0
 
         public const string ModInitials = "GearUP";
 
+        // // card category dicts >>> CardUtils.cs
+        // public bool cardCategoryHasRarity = false;
+        // public Dictionary<Rarity, CardCategory> rarityCategories = new Dictionary<Rarity, CardCategory>();
+        // public Dictionary<string, CardCategory> packCategories = new Dictionary<string, CardCategory>();
+
         // public static GearUpCards Instance { get; private set; }
         public static bool isCardPickingPhase = false;
+        public static bool isCardExtraDrawPhase = false;
         static int lastPickerID = -1;
 
         void Awake()
@@ -111,6 +121,10 @@ namespace GearUpCards
             CustomCard.BuildCard<PotencyGlyphCard>();
             CustomCard.BuildCard<TimeGlyphCard>();
 
+            // Booster Packs
+            CustomCard.BuildCard<VeteransFriendCard>();
+            CustomCard.BuildCard<VintageGearsCard>();
+
             // Adding hooks
             GameModeManager.AddHook(GameModeHooks.HookGameStart, GameStart);
             GameModeManager.AddHook(GameModeHooks.HookPointEnd, PointEnd);
@@ -118,7 +132,7 @@ namespace GearUpCards
             // GameModeManager.AddHook(GameModeHooks.HookPointEnd, OnPickStart);
             // GameModeManager.AddHook(GameModeHooks.HookGameStart, OnPickStart);
             GameModeManager.AddHook(GameModeHooks.HookPickStart, OnPickStart);
-            GameModeManager.AddHook(GameModeHooks.HookPlayerPickEnd, OnPickEnd);
+            GameModeManager.AddHook(GameModeHooks.HookPlayerPickEnd, OnPlayerPickEnd);
             GameModeManager.AddHook(GameModeHooks.HookPointStart, PointStart);
 
             // make cards mutually exclusive
@@ -185,6 +199,19 @@ namespace GearUpCards
                     otherCard.categories = newList.ToArray();
                 }
             });
+
+            // initialize card categories
+            this.ExecuteAfterFrames(65, () =>
+            {
+                foreach (var item in RarityUtils.Rarities.Values)
+                {
+                    rarityCategories.Add(item, CustomCardCategories.instance.CardCategory("__Rarity-" + item.name));
+                }
+                foreach (var item in CardManager.categories)
+                {
+                    packCategories.Add(item, CustomCardCategories.instance.CardCategory("__Pack-" + item));
+                }
+            });
         }
 
         void Update()
@@ -207,7 +234,6 @@ namespace GearUpCards
         }
 
         // initial card blacklist/whitelist at game start
-
         IEnumerator GameStart(IGameModeHandler gm)
         {
             foreach (var player in PlayerManager.instance.players)
@@ -248,6 +274,37 @@ namespace GearUpCards
             }
             CardUtils.raritySnapshot = new Dictionary<string, float>();
 
+            // adding/clearing rarity in card category
+            if (cardCategoryHasRarity)
+            {
+                // purge old rarity categories
+                CardManager.cards.Values.ToList<Card>().ForEach(delegate (Card card)
+                {
+                    foreach (var item in rarityCategories.Values)
+                    {
+                        List<CardCategory> categoryList = new List<CardCategory>(card.cardInfo.categories);
+                        if (categoryList.Contains(item))
+                        {
+                            categoryList.Remove(item);
+                            CardCategory[] categories = categoryList.ToArray();
+                            card.cardInfo.categories = categories;
+                            break;
+                        }
+                    }
+                });
+
+                cardCategoryHasRarity = false;
+            }
+
+            CardManager.cards.Values.ToList<Card>().ForEach(delegate (Card card)
+            {
+                Rarity rarity = RarityUtils.GetRarityData(card.cardInfo.rarity);
+                CardCategory rarityCat = rarityCategories[rarity];
+                CardCategory[] cardCategories = card.cardInfo.categories.AddToArray(rarityCat);
+                card.cardInfo.categories = cardCategories;
+            });
+            cardCategoryHasRarity = true;
+
             yield break;
         }
 
@@ -260,12 +317,29 @@ namespace GearUpCards
             yield break;
         }
 
-        IEnumerator OnPickEnd(IGameModeHandler gm)
+        IEnumerator OnPlayerPickEnd(IGameModeHandler gm)
         {
             Miscs.Log("[GearUpCard] OnPickEnd()");
             // CardUtils.RestoreGearUpCardRarity();
             CardUtils.RarityDelta.UndoAll();
             // isCardPickingPhase = false;
+
+            if (!isCardExtraDrawPhase)
+            {
+                isCardExtraDrawPhase = true;
+
+                foreach (Player player in PlayerManager.instance.players.ToArray())
+                {
+                    CardDrawTracker cardDrawTracker = player.gameObject.GetComponent<CardDrawTracker>();
+                    if (cardDrawTracker != null)
+                    {
+                        yield return cardDrawTracker.ResolveExtraDraws();
+                        yield return new WaitForSecondsRealtime(0.1f);
+                    }
+                }
+
+                isCardExtraDrawPhase = false;
+            }
 
             yield break;
         }

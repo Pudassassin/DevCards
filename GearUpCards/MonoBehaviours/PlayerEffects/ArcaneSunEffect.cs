@@ -8,6 +8,7 @@ using UnityEngine;
 using UnboundLib;
 using UnboundLib.GameModes;
 using Photon.Pun;
+using ModdingUtils;
 using ModdingUtils.MonoBehaviours;
 
 using GearUpCards.Extensions;
@@ -38,13 +39,13 @@ namespace GearUpCards.MonoBehaviours
         private static float damagePercentBase = 0.005f;
         private static float damagePercentScaling = 0.0025f;
 
-        private static float damageAmpBase = 1.075f;
-        private static float damageAmpScaling = 0.015f;
+        private static float damageAmpBase = 1.10f;
+        private static float damageAmpScaling = 0.05f;
 
         private static float rampUpRateBase = 1.0f;
         private static float rampUpRateScaling = 0.2f;
 
-        private static float preChargeBase = 6.0f;
+        private static float preChargeBase = 7.0f;
         private static float preChargeScaling = 1.0f;
 
         private static float debuffRetainTimeBase = 1.0f;
@@ -121,6 +122,11 @@ namespace GearUpCards.MonoBehaviours
 
         public void Update()
         {
+            if (ModdingUtils.Utils.PlayerStatus.PlayerAliveAndSimulated(player))
+            {
+                effectEnabled = true;
+            }
+
             if (wasDeactivated && !effectWarmup)
             {
                 OnRespawn();
@@ -144,11 +150,17 @@ namespace GearUpCards.MonoBehaviours
                     {
                         linkFlag = true;
 
-                        if (!item.gameObject.activeInHierarchy || item.data.healthHandler.isRespawning)
+                        if (!ModdingUtils.Utils.PlayerStatus.PlayerAliveAndSimulated(item))
                         {
                             // either dead or reviving, unlink it
                             linkFlag = false;
                         }
+
+                        // if (!item.gameObject.activeInHierarchy || item.data.healthHandler.isRespawning)
+                        // {
+                        //     // either dead or reviving, unlink it
+                        //     linkFlag = false;
+                        // }
 
                         distance = (item.gameObject.transform.position - transform.root.position).magnitude;
                         if (distance > effectRadius)
@@ -215,7 +227,7 @@ namespace GearUpCards.MonoBehaviours
                         item.data.healthHandler.RPCA_SendTakeDamage(new Vector2(damage * damageFactor, 0.0f), item.transform.position, playerID: player.playerID);
 
                         // beam visual
-                        float rayWidth = Mathf.Clamp(0.5f + (arcaneSunStatus.GetEffectCharge() / 10.0f), 0.5f, 4.0f);
+                        float rayWidth = Mathf.Clamp(1.0f + (arcaneSunStatus.GetEffectCharge() / 5.0f), 1.0f, 4.0f);
 
                         rayPlayerPairs[item].SetActive(true);
                         rayPlayerPairs[item].GetComponent<RayVFXMono>().SetBeamWidth(rayWidth);

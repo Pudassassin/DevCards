@@ -20,22 +20,69 @@ namespace GearUpCards.Utils
     {
         public static class GearCategory
         {
-            public static CardCategory typeGunMod = CustomCardCategories.instance.CardCategory("GearUp_GunMod");
-            public static CardCategory typeBlockMod = CustomCardCategories.instance.CardCategory("GearUp_BlockMod");
+            public static CardCategory noType = CustomCardCategories.instance.CardCategory("GearUp_Unspecified");
 
-            public static CardCategory typeCrystal = CustomCardCategories.instance.CardCategory("GearUp_Crystal");
-            public static CardCategory typeCrystalGear = CustomCardCategories.instance.CardCategory("GearUp_CrystalUser");
-            public static CardCategory typeCrystalMod = CustomCardCategories.instance.CardCategory("GearUp_CrystalMod");
+            public static CardCategory typeGunMod = CustomCardCategories.instance.CardCategory("GearUp_Gun-Mod");
+            public static CardCategory typeBlockMod = CustomCardCategories.instance.CardCategory("GearUp_Block-Mod");
+            public static CardCategory typeSizeMod = CustomCardCategories.instance.CardCategory("GearUp_Size-Mod");
 
-            public static CardCategory typeSizeMod = CustomCardCategories.instance.CardCategory("GearUp_SizeMod");
+            // public static CardCategory typeCrystal = CustomCardCategories.instance.CardCategory("GearUp_Crystal");
+            // public static CardCategory typeCrystalGear = CustomCardCategories.instance.CardCategory("GearUp_Crystal-User");
+            // public static CardCategory typeCrystalMod = CustomCardCategories.instance.CardCategory("GearUp_Crystal-Mod");
 
-            public static CardCategory typeUniqueMagick = CustomCardCategories.instance.CardCategory("GearUp_UniqueMagick");
+            public static CardCategory typeUniqueMagick = CustomCardCategories.instance.CardCategory("GearUp_Unique-Magick");
+            public static CardCategory typeUniqueGunSpread = CustomCardCategories.instance.CardCategory("GearUp_Unique-Gun-Spread");
+            public static CardCategory typeUniqueCAD = CustomCardCategories.instance.CardCategory("GearUp_Unique-CAD");
 
-            public static CardCategory typeUniqueGunSpread = CustomCardCategories.instance.CardCategory("GearUp_UniqueGunSpread");
+            public static CardCategory typeParts = CustomCardCategories.instance.CardCategory("GearUp_Parts");
+            public static CardCategory typeCharm = CustomCardCategories.instance.CardCategory("GearUp_Charm");
+            public static CardCategory typeGear = CustomCardCategories.instance.CardCategory("GearUp_Gear");
 
+            public static CardCategory typeGlyph = CustomCardCategories.instance.CardCategory("GearUp_Glyph");
+            public static CardCategory typeSpell = CustomCardCategories.instance.CardCategory("GearUp_Spell");
+            public static CardCategory typeCadModule = CustomCardCategories.instance.CardCategory("GearUp_CAD-Module");
+
+            public static CardCategory typeBoosterPack = CustomCardCategories.instance.CardCategory("GearUp_Booster-Pack");
+
+            public static CardCategory tagCardManipulation = CustomCardCategories.instance.CardCategory("CardManipulation");
+            public static CardCategory tagNoGlitch = CustomCardCategories.instance.CardCategory("NoRandom");
             public static CardCategory tagNoRemove = CustomCardCategories.instance.CardCategory("NoRemove");
-            public static CardCategory tagSpell = CustomCardCategories.instance.CardCategory("GearUp_Spell");
-            public static CardCategory tagSpellOnlyAugment = CustomCardCategories.instance.CardCategory("GearUp_SpellOnlyAugment");
+            public static CardCategory tagNoTableFlip = CustomCardCategories.instance.CardCategory("NoFlip");
+
+
+            public static CardCategory tagSpellOnlyAugment = CustomCardCategories.instance.CardCategory("GearUp_Spell-Only-Augment");
+
+            internal static List<CardCategory> __gearCategories = null;
+            public static List<CardCategory> GearCategories
+            {
+                get
+                {
+                    if (__gearCategories == null)
+                    {
+                        __gearCategories = new List<CardCategory>();
+                        __gearCategories.Add(noType);
+                        __gearCategories.Add(typeBoosterPack);
+
+                        __gearCategories.Add(typeGunMod);
+                        __gearCategories.Add(typeBlockMod);
+                        __gearCategories.Add(typeSizeMod);
+
+                        __gearCategories.Add(typeUniqueMagick);
+                        __gearCategories.Add(typeUniqueGunSpread);
+                        __gearCategories.Add(typeUniqueCAD);
+
+                        __gearCategories.Add(typeParts);
+                        __gearCategories.Add(typeCharm);
+                        __gearCategories.Add(typeGear);
+
+                        __gearCategories.Add(typeGlyph);
+                        __gearCategories.Add(typeSpell);
+                        __gearCategories.Add(typeCadModule);
+                    }
+
+                    return __gearCategories;
+                }
+            }
         }
 
         public class PlayerCardData
@@ -50,6 +97,33 @@ namespace GearUpCards.Utils
                 this.owner = owner;
                 this.index = index;
             }
+        }
+
+        // card category dicts
+        public static bool cardCategoryHasRarity = false;
+        public static Dictionary<Rarity, CardCategory> rarityCategories = new Dictionary<Rarity, CardCategory>();
+        public static Dictionary<string, CardCategory> packCategories = new Dictionary<string, CardCategory>();
+
+        public static Rarity TryQueryRarity(string query, string failSafe)
+        {
+            List<Rarity> rarityList = new List<Rarity>(rarityCategories.Keys);
+            foreach (var item in rarityList)
+            {
+                if (item.name == query)
+                {
+                    return item;
+                }
+            }
+
+            foreach (var item in rarityList)
+            {
+                if (item.name == failSafe)
+                {
+                    return item;
+                }
+            }
+
+            return RarityUtils.GetRarityData(CardInfo.Rarity.Common);
         }
 
         public static bool PlayerHasCard(Player player, string cardName)

@@ -23,7 +23,8 @@ namespace GearUpCards.Cards
 
             cardInfo.categories = new CardCategory[]
             {
-                GearCategory.tagSpellOnlyAugment
+                GearCategory.tagSpellOnlyAugment,
+                GearCategory.typeGlyph
             };
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
