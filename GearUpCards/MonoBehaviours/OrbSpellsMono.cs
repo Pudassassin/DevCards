@@ -413,6 +413,8 @@ namespace GearUpCards.MonoBehaviours
         internal int glyphPotency = 0;
         // Spell duration
         internal int glyphTime = 0;
+        // Spell projectiles
+        internal int glyphReplication = 0;
         // Projectile piercing?
         // internal int glyphPiercing = 0;
 
@@ -666,6 +668,7 @@ namespace GearUpCards.MonoBehaviours
             glyphInfluence = stats.GetGearData().glyphInfluence;
             glyphPotency = stats.GetGearData().glyphPotency;
             glyphTime = stats.GetGearData().glyphTime;
+            glyphReplication = stats.GetGearData().glyphReplication;
 
             // burstTimeStats = Mathf.Clamp(0.3f - (magickFragment * 0.05f), 0.1f, 1.0f);
 
@@ -744,6 +747,29 @@ namespace GearUpCards.MonoBehaviours
                 orbSpells[checkIndex].orbDummyGun.projectielSimulatonSpeed = orbSpeed;
                 orbSpells[checkIndex].orbDummyGun.timeBetweenBullets = burstTime;
                 orbSpells[checkIndex].orbDummyGun.reflects = bounceCount;
+
+                //replcation!
+                if (glyphReplication > 0)
+                {
+                    orbSpells[checkIndex].orbDummyGun.evenSpread = 1.0f;
+                    orbSpells[checkIndex].orbDummyGun.spread = 0.01f;
+
+                    int projectiles = 1 + glyphReplication;
+                    orbSpells[checkIndex].orbDummyGun.numberOfProjectiles = projectiles;
+
+                    if (projectiles <= 4)
+                    {
+                        orbSpells[checkIndex].orbDummyGun.multiplySpread = projectiles * 5.0f;
+                    }
+                    else if (projectiles <= 10)
+                    {
+                        orbSpells[checkIndex].orbDummyGun.multiplySpread = projectiles * 6.0f;
+                    }
+                    else
+                    {
+                        orbSpells[checkIndex].orbDummyGun.multiplySpread = projectiles * 7.0f;
+                    }
+                }
 
                 Miscs.Log("[GearUp] OrbSpellsMono: Obliteration Updated!");
             }
@@ -836,6 +862,29 @@ namespace GearUpCards.MonoBehaviours
                 orbSpells[checkIndex].orbDummyGun.timeBetweenBullets = burstTime;
                 orbSpells[checkIndex].orbDummyGun.reflects = bounceCount;
 
+                //replcation!
+                if (glyphReplication > 0)
+                {
+                    orbSpells[checkIndex].orbDummyGun.evenSpread = 1.0f;
+                    orbSpells[checkIndex].orbDummyGun.spread = 0.01f;
+
+                    int projectiles = 1 + glyphReplication;
+                    orbSpells[checkIndex].orbDummyGun.numberOfProjectiles = projectiles;
+
+                    if (projectiles <= 4)
+                    {
+                        orbSpells[checkIndex].orbDummyGun.multiplySpread = projectiles * 5.0f;
+                    }
+                    else if (projectiles <= 10)
+                    {
+                        orbSpells[checkIndex].orbDummyGun.multiplySpread = projectiles * 6.0f;
+                    }
+                    else
+                    {
+                        orbSpells[checkIndex].orbDummyGun.multiplySpread = projectiles * 7.0f;
+                    }
+                }
+
                 Miscs.Log("[GearUp] OrbSpellsMono: Rolling-Bulwark Updated!");
             }
             else
@@ -916,6 +965,29 @@ namespace GearUpCards.MonoBehaviours
                 orbSpells[checkIndex].orbDummyGun.timeBetweenBullets = burstTime;
                 orbSpells[checkIndex].orbDummyGun.reflects = bounceCount;
 
+                //replcation!
+                if (glyphReplication > 0)
+                {
+                    orbSpells[checkIndex].orbDummyGun.evenSpread = 1.0f;
+                    orbSpells[checkIndex].orbDummyGun.spread = 0.01f;
+
+                    int projectiles = 1 + glyphReplication;
+                    orbSpells[checkIndex].orbDummyGun.numberOfProjectiles = projectiles;
+
+                    if (projectiles <= 4)
+                    {
+                        orbSpells[checkIndex].orbDummyGun.multiplySpread = projectiles * 5.0f;
+                    }
+                    else if (projectiles <= 10)
+                    {
+                        orbSpells[checkIndex].orbDummyGun.multiplySpread = projectiles * 6.0f;
+                    }
+                    else
+                    {
+                        orbSpells[checkIndex].orbDummyGun.multiplySpread = projectiles * 7.0f;
+                    }
+                }
+
                 Miscs.Log("[GearUp] OrbSpellsMono: Lifeforce Duality Updated!");
             }
             else
@@ -995,6 +1067,29 @@ namespace GearUpCards.MonoBehaviours
                 orbSpells[checkIndex].orbDummyGun.projectielSimulatonSpeed = orbSpeed;
                 orbSpells[checkIndex].orbDummyGun.timeBetweenBullets = burstTime;
                 orbSpells[checkIndex].orbDummyGun.reflects = bounceCount;
+
+                //replcation!
+                if (glyphReplication > 0)
+                {
+                    orbSpells[checkIndex].orbDummyGun.evenSpread = 1.0f;
+                    orbSpells[checkIndex].orbDummyGun.spread = 0.01f;
+
+                    int projectiles = 1 + glyphReplication;
+                    orbSpells[checkIndex].orbDummyGun.numberOfProjectiles = projectiles;
+
+                    if (projectiles <= 4)
+                    {
+                        orbSpells[checkIndex].orbDummyGun.multiplySpread = projectiles * 5.0f;
+                    }
+                    else if (projectiles <= 10)
+                    {
+                        orbSpells[checkIndex].orbDummyGun.multiplySpread = projectiles * 6.0f;
+                    }
+                    else
+                    {
+                        orbSpells[checkIndex].orbDummyGun.multiplySpread = projectiles * 7.0f;
+                    }
+                }
 
                 Miscs.Log("[GearUp] OrbSpellsMono: Lifeforce Blast Updated!");
             }

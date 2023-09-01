@@ -11,7 +11,9 @@ namespace GearUpCards.Utils
         {
             if (gun == null) return 0.0f;
 
-            float attackTime = gun.attackSpeed * gun.attackSpeedMultiplier;
+            // float attackTime = gun.attackSpeed * gun.attackSpeedMultiplier;
+            float attackTime = gun.attackSpeed;
+
             int projectileCount = gun.numberOfProjectiles;
 
             float burstTime = gun.timeBetweenBullets;
@@ -35,7 +37,8 @@ namespace GearUpCards.Utils
         {
             if (gun == null) return 0.0f;
 
-            float attackTime = gun.attackSpeed * gun.attackSpeedMultiplier;
+            // float attackTime = gun.attackSpeed * gun.attackSpeedMultiplier;
+            float attackTime = gun.attackSpeed;
 
             float burstTime = gun.timeBetweenBullets;
             int burstCount = gun.bursts;

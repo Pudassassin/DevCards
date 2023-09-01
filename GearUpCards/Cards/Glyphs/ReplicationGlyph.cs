@@ -12,15 +12,13 @@ using GearUpCards.MonoBehaviours;
 using GearUpCards.Utils;
 using GearUpCards.Extensions;
 using static GearUpCards.Utils.CardUtils;
-using UnboundLib.Utils;
+
+// using RarityLib.Utils;
 
 namespace GearUpCards.Cards
 {
-    class GeometricGlyphCard : CustomCard
+    class ReplicationGlyph : CustomCard
     {
-        private static string targetBounceCardName = "Target BOUNCE";
-        public static GameObject screenEdgePrefab = null;
-
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
             cardInfo.categories = new CardCategory[]
@@ -30,27 +28,31 @@ namespace GearUpCards.Cards
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            gun.reflects += 3;
-            // gunAmmo.reloadTimeMultiplier *= 1.10f;
-            gunAmmo.reloadTimeAdd += 0.15f;
+            gun.projectielSimulatonSpeed *= 1.15f;
+            gun.projectileSpeed *= 1.25f;
 
-            characterStats.GetGearData().glyphGeometric += 1;
+            gun.attackSpeed *= 1.0f / 0.85f;
 
-            // borrow modifier to bullet -- bounce off screen edge
-            if (screenEdgePrefab == null)
-            {
-                CardInfo cardInfo = CardManager.cards.Values.First(card => card.cardInfo.cardName == targetBounceCardName).cardInfo;
-                Gun cardGun = cardInfo.gameObject.GetComponent<Gun>();
-                screenEdgePrefab = cardGun.objectsToSpawn[1].AddToProjectile;
-            }
+            // unused stats
+            // gun.attackSpeedMultiplier *= 0.85f;
 
-            List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList<ObjectsToSpawn>();
-            list.Add(new ObjectsToSpawn
-            {
-                AddToProjectile = screenEdgePrefab
-            });
+            gun.spread += 20.0f / 360.0f;
 
-            gun.objectsToSpawn = list.ToArray();
+            gun.numberOfProjectiles += 2;
+
+            characterStats.GetGearData().glyphReplication += 1;
+
+            // divination is special case to help finding spells MUCH easier
+            // RarityUtils.AjustCardRarityModifier
+            // (
+            //     GetCardInfo(GearUpCards.ModInitials, "Anti-Bullet Magick"),
+            //     mul: 2.50f
+            // );
+            // RarityUtils.AjustCardRarityModifier
+            // (
+            //     GetCardInfo(GearUpCards.ModInitials, "Orb-literation!"),
+            //     mul: 1.50f
+            // );
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -58,20 +60,20 @@ namespace GearUpCards.Cards
         }
         protected override string GetTitle()
         {
-            return "Geometric Glyph";
+            return "Replication Glyph";
         }
         protected override string GetDescription()
         {
-            // return "Add some bounces to your Bullets and Spell Orbs. Not all Spells can be bouncy, through...";
-            return "<i>\"Simple Geometry!\"</i>";
+            return "You fire more bullets and conjure more spell projectiles, and these extras are exact copies!";
         }
         protected override GameObject GetCardArt()
         {
-            return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_GlyphGeometry");
+            // return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_GlyphDivination");
+            return null;
         }
         protected override CardInfo.Rarity GetRarity()
         {
-            return CardInfo.Rarity.Common;
+            return CardInfo.Rarity.Uncommon;
         }
         protected override CardInfoStat[] GetStats()
         {
@@ -80,22 +82,29 @@ namespace GearUpCards.Cards
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "Bullet Bounces",
-                    amount = "+3",
+                    stat = "Gun Proj.",
+                    amount = "+2",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                },
+                // new CardInfoStat()
+                // {
+                //     positive = true,
+                //     stat = "Spell Proj.",
+                //     amount = "+1",
+                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                // },
+                new CardInfoStat()
+                {
+                    positive = false,
+                    stat = "ATK SPD",
+                    amount = "-15%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
-                    stat = "Reload Time",
-                    amount = "+0.15s",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
-                new CardInfoStat()
-                {
-                    positive = true,
-                    stat = "Spell Bounces",
-                    amount = "Increased",
+                    stat = "Spread",
+                    amount = "+20 deg",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };

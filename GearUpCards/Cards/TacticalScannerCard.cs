@@ -44,7 +44,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Blocking temporary amplify nearby Heal/Dmg done and shorten enemy's delayed damage time.";
+            return "Blocking temporary amplify nearby Heal/Dmg done and shorten enemy's Decay time.";
         }
         protected override GameObject GetCardArt()
         {

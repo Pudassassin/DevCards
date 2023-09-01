@@ -69,6 +69,7 @@ namespace GearUpCards.Extensions
         public int glyphPotency;
         public int glyphPiercing;
         public int glyphTime;
+        public int glyphReplication;
 
         // spell stacks
         public int orbObliterationStack;
@@ -110,6 +111,7 @@ namespace GearUpCards.Extensions
             glyphPotency = 0;
             glyphPiercing = 0;
             glyphTime = 0;
+            glyphReplication = 0;
 
             orbObliterationStack = 0;
             orbRollingBulwarkStack = 0;
@@ -172,6 +174,7 @@ namespace GearUpCards.Extensions
             __instance.GetGearData().glyphPotency = 0;
             __instance.GetGearData().glyphPiercing = 0;
             __instance.GetGearData().glyphTime = 0;
+            __instance.GetGearData().glyphReplication = 0;
 
             __instance.GetGearData().orbObliterationStack = 0;
             __instance.GetGearData().orbRollingBulwarkStack = 0;

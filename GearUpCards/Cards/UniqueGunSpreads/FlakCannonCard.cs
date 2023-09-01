@@ -73,7 +73,10 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Your gun fire bundled shells that split into shrapnels after 1s that also have bullet effects!"; //, or immediately after <i>directly hitting</i> someone.";
+            // return "Your gun fire bundled shells that split into shrapnels after 1s that also have bullet effects!"; //, or immediately after <i>directly hitting</i> someone.";
+            return "Your gun fires <color=red>SLOWER and with FEWER</color> bullets that split into shrapnels after 1s.\n<color=green> Some of the shrapnels carries bullet effects!</color>";
+
+
         }
         protected override GameObject GetCardArt()
         {
@@ -87,20 +90,20 @@ namespace GearUpCards.Cards
         {
             return new CardInfoStat[]
             {
-                new CardInfoStat()
-                {
-                    positive = false,
-                    stat = "Bursts",
-                    amount = "1/2 total",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
-                new CardInfoStat()
-                {
-                    positive = false,
-                    stat = "Shell Projs.",
-                    amount = "1/10 total",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
+                // new CardInfoStat()
+                // {
+                //     positive = false,
+                //     stat = "Bursts",
+                //     amount = "1/4 total",
+                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                // },
+                // new CardInfoStat()
+                // {
+                //     positive = false,
+                //     stat = "Shell Projs.",
+                //     amount = "1/10 total",
+                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                // },
                 // new CardInfoStat()
                 // {
                 //     positive = false,

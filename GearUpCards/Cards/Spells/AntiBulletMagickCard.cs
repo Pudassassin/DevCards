@@ -82,13 +82,13 @@ namespace GearUpCards.Cards
         {
             return new CardInfoStat[]
             {
-                new CardInfoStat()
-                {
-                    positive = true,
-                    stat = "Zone Time",
-                    amount = "1.5s",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                },
+                // new CardInfoStat()
+                // {
+                //     positive = true,
+                //     stat = "Zone Time",
+                //     amount = "1.5s",
+                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                // },
                 new CardInfoStat()
                 {
                     positive = true,

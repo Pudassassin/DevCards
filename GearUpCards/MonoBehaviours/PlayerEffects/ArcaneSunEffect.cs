@@ -67,8 +67,11 @@ namespace GearUpCards.MonoBehaviours
         private List<Player> lockedOnTargets, visibleTargets;
 
         internal float procTimer = 0.0f;
+        // pre round setup
         internal bool effectWarmup = false;
+        // core functionality
         internal bool effectEnabled = true;
+        // was player respawned from true death?
         internal bool wasDeactivated = false;
 
         internal Player player;
@@ -122,9 +125,11 @@ namespace GearUpCards.MonoBehaviours
 
         public void Update()
         {
-            if (ModdingUtils.Utils.PlayerStatus.PlayerAliveAndSimulated(player))
+            if (ModdingUtils.Utils.PlayerStatus.PlayerAliveAndSimulated(player) && effectWarmup)
             {
-                effectEnabled = true;
+                RefreshSpellStats();
+
+                effectWarmup = false;
             }
 
             if (wasDeactivated && !effectWarmup)
@@ -247,6 +252,7 @@ namespace GearUpCards.MonoBehaviours
             stackCount = stats.GetGearData().arcaneSunStack;
             if (stackCount <= 0)
             {
+                arcaneSunObject.SetActive(false);
                 effectEnabled = false;
                 return;
             }
@@ -269,6 +275,9 @@ namespace GearUpCards.MonoBehaviours
             debuffDecayRate     = Mathf.Max(0.5f, debuffDecayRate);
 
             effectRadius    = effectRadiusBase + (effectRadiusScaling * (glyphDivination + glyphInfluence));
+
+            arcaneSunObject.SetActive(true);
+            effectEnabled = true;
         }
 
         private IEnumerator OnPointStart(IGameModeHandler gm)
@@ -283,10 +292,12 @@ namespace GearUpCards.MonoBehaviours
 
         private IEnumerator OnBattleStart(IGameModeHandler gm)
         {
-            RefreshSpellStats();
-
+            if (effectWarmup)
+            {
+                RefreshSpellStats();
+            }
             effectWarmup = false;
-            effectEnabled = true;
+            // effectEnabled = true;
 
             yield break;
         }
@@ -299,7 +310,7 @@ namespace GearUpCards.MonoBehaviours
             }
 
             effectEnabled = false;
-            effectWarmup = true;
+            effectWarmup = false;
         
             // UnityEngine.Debug.Log($"[HOLLOW] from player [{player.playerID}] - Point End");
         

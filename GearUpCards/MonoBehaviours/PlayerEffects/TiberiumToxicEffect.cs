@@ -190,7 +190,7 @@ namespace GearUpCards.MonoBehaviours
 
             // recalculate self-regen penalty from tiberium cards
             tiberiumBulletStack = stats.GetGearData().tiberiumBulletStack;
-            selfRegenPenalty = 1.25f * tiberiumBulletStack;
+            selfRegenPenalty = 2.5f * tiberiumBulletStack;
 
             if (selfRegenPenalty > 0.0f)
             {

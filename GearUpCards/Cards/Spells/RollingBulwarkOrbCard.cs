@@ -61,7 +61,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Blocking cast the ricocheting orb that trigger block abilities every bounce!";
+            return "Blocking cast the ricocheting orb that trigger on-block effects on each and every bounce!";
         }
         protected override GameObject GetCardArt()
         {

@@ -16,7 +16,7 @@ using RarityLib.Utils;
 
 namespace GearUpCards.Cards
 {
-    class VeteransFriendCard : CustomCard
+    class SupplyDropCard : CustomCard
     {
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
@@ -39,12 +39,11 @@ namespace GearUpCards.Cards
 
             CardDrawTracker cardDrawTracker = player.gameObject.GetOrAddComponent<CardDrawTracker>();
 
-            CardDrawTracker.ExtraCardDraw extraCardDraw = new CardDrawTracker.ExtraCardDraw(1);
-            Rarity rarity = CardUtils.TryQueryRarity("Exotic", "Rare");
-            extraCardDraw.SetWhitelistCardPacks(new List<string> { "Vanilla" });
-            extraCardDraw.SetWhitelistRarityRange(rarity, includeHigher: true);
+            CardDrawTracker.ExtraCardDraw extraCardDraw = new CardDrawTracker.ExtraCardDraw(3, 1);
+            Rarity rarity = CardUtils.TryQueryRarity("Uncommon", "Uncommon");
+            extraCardDraw.SetWhitelistRarityRange(rarity, includeLower: true);
 
-            cardDrawTracker.extraCardDraws.Add(extraCardDraw);
+            cardDrawTracker.extraCardDrawsDelayed.Add(extraCardDraw);
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -52,11 +51,11 @@ namespace GearUpCards.Cards
         }
         protected override string GetTitle()
         {
-            return "Veterans Friend";
+            return "Supply Drop!";
         }
         protected override string GetDescription()
         {
-            return "You get to pick <color=green>ONE</color> <color=#FF2DC1ff>Rare</color> card from vanilla deck.\n(aka. <color=#0A45FFff>Exotic</color> or higher)";
+            return "You get to pick <color=green>THREE</color> more <color=#2CADFFff>Uncommon</color> or lower rarity cards in the next draw phase.";
         }
         protected override GameObject GetCardArt()
         {
@@ -65,7 +64,7 @@ namespace GearUpCards.Cards
         }
         protected override CardInfo.Rarity GetRarity()
         {
-            return CardInfo.Rarity.Rare;
+            return CardInfo.Rarity.Uncommon;
         }
         protected override CardInfoStat[] GetStats()
         {

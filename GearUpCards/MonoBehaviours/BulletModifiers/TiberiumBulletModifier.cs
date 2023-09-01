@@ -36,11 +36,11 @@ namespace GearUpCards.MonoBehaviours
                 // Calculate chronic HP Loss
                 CharacterData victimChar = hit.transform.gameObject.GetComponent<CharacterData>();
 
-                float gunDamage = shooterGun.damage * 55.0f;
-                float chronicDmg        = 0.05f * stackCount * gunDamage;
+                float gunDamage         = shooterGun.damage * 55.0f;
+                float chronicDmg        = 0.15f * stackCount * gunDamage;
                 float chronicFlat       = 0.35f * stackCount;
-                float chronicHpPercent  = 0.0005f * stackCount * victimChar.maxHealth;
-                float burstFactor = 0.25f * stackCount;
+                float chronicHpPercent  = 0.001f * stackCount * victimChar.maxHealth;
+                float burstFactor       = 0.25f * stackCount;
 
                 TiberiumToxicEffect victimToxic = hit.transform.gameObject.GetOrAddComponent<TiberiumToxicEffect>();
 

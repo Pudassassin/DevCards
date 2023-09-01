@@ -46,7 +46,7 @@ namespace GearUpCards
     {
         public const string ModId = "com.pudassassin.rounds.GearUpCards";
         public const string ModName = "GearUpCards";
-        public const string Version = "0.3.2.1"; //build #219 / Release 0-4-0
+        public const string Version = "0.3.2.14"; //build #232 / Release 0-4-0
 
         public const string ModInitials = "GearUP";
 
@@ -120,10 +120,12 @@ namespace GearUpCards
             CustomCard.BuildCard<GeometricGlyphCard>();
             CustomCard.BuildCard<PotencyGlyphCard>();
             CustomCard.BuildCard<TimeGlyphCard>();
+            CustomCard.BuildCard<ReplicationGlyph>();
 
             // Booster Packs
             CustomCard.BuildCard<VeteransFriendCard>();
             CustomCard.BuildCard<VintageGearsCard>();
+            CustomCard.BuildCard<SupplyDropCard>();
 
             // Adding hooks
             GameModeManager.AddHook(GameModeHooks.HookGameStart, GameStart);

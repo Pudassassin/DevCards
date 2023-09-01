@@ -25,7 +25,8 @@ namespace GearUpCards.Cards
                 GearCategory.typeBoosterPack,
                 GearCategory.tagNoGlitch,
                 GearCategory.tagNoRemove,
-                GearCategory.tagNoTableFlip
+                GearCategory.tagNoTableFlip,
+                GearCategory.tagCardManipulation
             };
 
             // gun.attackSpeed = 1.0f / 1.20f;
@@ -64,7 +65,7 @@ namespace GearUpCards.Cards
         }
         protected override CardInfo.Rarity GetRarity()
         {
-            return CardInfo.Rarity.Common;
+            return CardInfo.Rarity.Rare;
         }
         protected override CardInfoStat[] GetStats()
         {

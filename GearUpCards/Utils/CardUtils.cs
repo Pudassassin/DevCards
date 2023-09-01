@@ -417,6 +417,7 @@ namespace GearUpCards.Utils
             "Magick Fragments",
             "Potency Glyph",
             "Time Glyph",
+            "Replication Glyph",
 
             // C&C cards
             "Tiberium Bullet",
@@ -447,7 +448,8 @@ namespace GearUpCards.Utils
             "Influence Glyph",
             "Magick Fragments",
             "Potency Glyph",
-            "Time Glyph"
+            "Time Glyph",
+            "Replication Glyph"
         };
 
         public static List<string> cardListVanillaBlocks = new List<string>()

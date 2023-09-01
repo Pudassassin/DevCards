@@ -50,7 +50,7 @@ namespace GearUpCards.MonoBehaviours
                 this.roundDelay = roundDelay;
 
                 blacklistCategories.Add(CardUtils.GearCategory.typeBoosterPack);
-                // blacklistCategories.Add(CardUtils.GearCategory.tagCardManipulation);
+                blacklistCategories.Add(CardUtils.GearCategory.tagCardManipulation);
             }
 
             // set extra draws from specific rarities
@@ -114,12 +114,20 @@ namespace GearUpCards.MonoBehaviours
                         {
                             undoBlacklistCategories.Add(item);
                         }
+                        if (blacklistCategories.Contains(item))
+                        {
+                            blacklistCategories.Remove(item);
+                        }
                     }
                     else
                     {
                         if (undoBlacklistCategories.Contains(item))
                         {
                             undoBlacklistCategories.Remove(item);
+                        }
+                        if (!blacklistCategories.Contains(item))
+                        {
+                            blacklistCategories.Add(item);
                         }
                     }
                 }
@@ -312,7 +320,7 @@ namespace GearUpCards.MonoBehaviours
 
                     // B //
 
-                    yield return new WaitForSecondsRealtime(0.15f);
+                    yield return new WaitForSecondsRealtime(0.1f);
                 }
 
                 // B) restore original blacklist that had changed via this method; unlisted one will not be changed

@@ -12,6 +12,7 @@ using GearUpCards.MonoBehaviours;
 using GearUpCards.Utils;
 using GearUpCards.Extensions;
 using static GearUpCards.Utils.CardUtils;
+using RarityLib.Utils;
 
 namespace GearUpCards.Cards
 {
@@ -22,7 +23,8 @@ namespace GearUpCards.Cards
             cardInfo.allowMultiple = false;
             cardInfo.categories = new CardCategory[]
             {
-                GearCategory.typeCadModule
+                GearCategory.typeCadModule,
+                GearCategory.tagNoGlitch
             };
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
@@ -32,6 +34,14 @@ namespace GearUpCards.Cards
 
             player.gameObject.GetOrAddComponent<GearUpPreRoundEffects>();
             characterStats.GetGearData().addOnList.Add(GearUpConstants.AddOnType.cadModuleGlyph);
+
+            // give 1 bonus Glyph card
+            CardDrawTracker cardDrawTracker = player.gameObject.GetOrAddComponent<CardDrawTracker>();
+
+            CardDrawTracker.ExtraCardDraw extraCardDraw = new CardDrawTracker.ExtraCardDraw(2);
+            extraCardDraw.SetWhitelistGearUpCard(new List<CardCategory> { GearCategory.typeGlyph });
+
+            cardDrawTracker.extraCardDraws.Add(extraCardDraw);
 
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
@@ -44,7 +54,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Your Gun and Block benefit <b>TWICE</b> the bonus from Glyphs and boost the chance of finding Spell and more Glyphs";
+            return "Glyphs give <color=green>TWICE</color> the effect to your gun and block.\nBoost the chance of finding Spell and even more Glyphs.";
         }
         protected override GameObject GetCardArt()
         {
@@ -72,13 +82,13 @@ namespace GearUpCards.Cards
                 //     amount = "+60 deg",
                 //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 // },
-                // new CardInfoStat()
-                // {
-                //     positive = false,
-                //     stat = "DMG",
-                //     amount = "-35%",
-                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                // }
+                new CardInfoStat()
+                {
+                    positive = true,
+                    stat = "Glyph",
+                    amount = "+1",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                }
             };
         }
         protected override CardThemeColor.CardThemeColorType GetTheme()
