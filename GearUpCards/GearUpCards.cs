@@ -46,7 +46,7 @@ namespace GearUpCards
     {
         public const string ModId = "com.pudassassin.rounds.GearUpCards";
         public const string ModName = "GearUpCards";
-        public const string Version = "0.3.2.14"; //build #232 / Release 0-4-0
+        public const string Version = "0.3.2.21"; //build #239 / Release 0-4-0
 
         public const string ModInitials = "GearUP";
 
@@ -100,6 +100,7 @@ namespace GearUpCards
 
             // Other Spells
             CustomCard.BuildCard<ArcaneSunCard>();
+            CustomCard.BuildCard<MysticMissileCard>();
 
             // Specializing Charms
             CustomCard.BuildCard<GuardiansCharmCard>();
@@ -186,6 +187,9 @@ namespace GearUpCards
                 // [Flak Cannon] Vs BSC
                 MakeExclusive("Rolling Thunder", "Flak Cannon");
                 MakeExclusive("Splitting Rounds", "Flak Cannon");
+
+                // [Flak Cannon] Vs CR
+                MakeExclusive("Hive", "Flak Cannon");
 
                 // Vs CC's [Shock Blast]
                 if (GetCardInfo("Shock Blast"))

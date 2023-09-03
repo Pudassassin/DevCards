@@ -27,7 +27,7 @@ namespace GearUpCards.MonoBehaviours
         // internal bool addShotVFX = false;
 
         // extra bonus granted by Glyph CAD Module, may differ from actual card bonus for balancing reason
-        private const float glyphDivinationProjectileSpeed = 1.15f;
+        private const float glyphDivinationProjectileSpeed = 1.10f;
         private const float glyphDivinationProjectileSimSpeed = 1.10f;
 
         private const int glyphGeometricGunReflect = 3;
@@ -39,6 +39,8 @@ namespace GearUpCards.MonoBehaviours
 
         private const float glyphTimeGunDragMul = 0.80f;
         private const float glyphTimeGunLifetimeMul = 1.35f;
+        
+        private const int glyphReplicationProjectiles = 3;
 
         // internals
         private const float procTickTime = .10f;
@@ -53,6 +55,7 @@ namespace GearUpCards.MonoBehaviours
         internal Block block;
         internal CharacterStatModifiers stats;
         internal HealthHandler healthHandler;
+        internal HollowLifeEffect hollowLifeEffect;
 
         // backup of character stats
         private int prevGunMaxAmmo = 3;
@@ -63,13 +66,15 @@ namespace GearUpCards.MonoBehaviours
         public float prevGunProjSpeed = 1.0f;
         public float prevGunProjSim = 1.0f;
         public int prevGunReflect = 0;
-        public float prevGunDamageMul = 1.0f;
+        // public float prevGunDamageMul = 1.0f;
 
         public float prevBlockCdAdd = 0.0f;
         public float prevBlockCdMul = 1.0f;
 
         public float prevGunDrag = 0.0f;
         public float prevGunLifetime = 0.0f;
+
+        public int prevGunProjCount = 1;
 
         // additional chatacter stats
         private float hpPercentageRegen = 0.0f;
@@ -105,7 +110,22 @@ namespace GearUpCards.MonoBehaviours
 
                 if (procTimer >= procTickTime)
                 {
-                    healthHandler.Heal(hpPercentageRegen * procTickTime * player.data.maxHealth);
+                    // %HP regen up to (current) max health
+                    hollowLifeEffect = gameObject.GetComponent<HollowLifeEffect>();
+
+                    if (hollowLifeEffect != null)
+                    {
+                        if (player.data.health < player.data.maxHealth * hollowLifeEffect.GetHealthCapMultiplier())
+                        {
+                            healthHandler.Heal(hpPercentageRegen * procTickTime * player.data.maxHealth);
+                        }
+
+                    }
+                    else if (player.data.health < player.data.maxHealth)
+                    {
+                        healthHandler.Heal(hpPercentageRegen * procTickTime * player.data.maxHealth);
+                    }
+
                     RefreshStatsLiveUpdate();
 
                     procTimer -= procTickTime;
@@ -130,7 +150,7 @@ namespace GearUpCards.MonoBehaviours
             prevBlockCdAdd = block.cdAdd;
             prevBlockCdMul = block.cdMultiplier;
 
-            prevGunDamageMul = gun.damage;
+            // prevGunDamageMul = gun.damage;
             prevGunProjSim = gun.projectielSimulatonSpeed;
             prevGunProjSpeed = gun.projectileSpeed;
             prevGunReflect = gun.reflects;
@@ -142,6 +162,8 @@ namespace GearUpCards.MonoBehaviours
 
             prevGunDrag = gun.drag;
             prevGunLifetime = gun.destroyBulletAfter;
+
+            prevGunProjCount = gun.numberOfProjectiles;
         }
 
         private void RestorePlayerStats()
@@ -149,7 +171,7 @@ namespace GearUpCards.MonoBehaviours
             block.cdAdd = prevBlockCdAdd;
             block.cdMultiplier = prevBlockCdMul;
 
-            gun.damage = prevGunDamageMul;
+            // gun.damage = prevGunDamageMul;
             gun.projectielSimulatonSpeed = prevGunProjSim;
             gun.projectileSpeed = prevGunProjSpeed;
             gun.reflects = prevGunReflect;
@@ -161,6 +183,8 @@ namespace GearUpCards.MonoBehaviours
 
             gun.drag = prevGunDrag;
             gun.destroyBulletAfter = prevGunLifetime;
+
+            gun.numberOfProjectiles = prevGunProjCount;
         }
 
         internal void ApplyGlyphCADModuleEffect()
@@ -171,6 +195,7 @@ namespace GearUpCards.MonoBehaviours
             int magickFragment = stats.GetGearData().glyphMagickFragment;
             int glpyhPotency = stats.GetGearData().glyphPotency;
             int glyphTime = stats.GetGearData().glyphTime;
+            int glyphReplication = stats.GetGearData().glyphReplication;
 
             gun.projectileSpeed *= Mathf.Pow(glyphDivinationProjectileSpeed, glyphDivination);
             gun.projectielSimulatonSpeed *= Mathf.Pow(glyphDivinationProjectileSimSpeed, glyphDivination);
@@ -203,6 +228,8 @@ namespace GearUpCards.MonoBehaviours
                     gun.drag *= glyphTimeGunDragMul;
                 }
             }
+
+            gun.numberOfProjectiles += glyphReplication * glyphReplicationProjectiles;
         }
 
         private void ApplyBulletsDotRar()

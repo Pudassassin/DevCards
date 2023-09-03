@@ -482,7 +482,7 @@ namespace GearUpCards.MonoBehaviours
             dummySpreadGun1.bursts = 0;
             dummySpreadGun1.timeBetweenBullets = 0.15f;
 
-            dummySpreadGun1.numberOfProjectiles = Mathf.Clamp(flakProjectileAdd + Mathf.RoundToInt((float)playerOldGun.numberOfProjectiles / 8.0f), flakProjectileAdd, 8);
+            dummySpreadGun1.numberOfProjectiles = Mathf.Clamp(flakProjectileAdd + Mathf.FloorToInt((float)playerOldGun.numberOfProjectiles / 10.0f), flakProjectileAdd, 5);
 
             dummySpreadGun1.damage = playerOldGun.damage * 0.65f;
             dummySpreadGun1.bulletDamageMultiplier = playerOldGun.bulletDamageMultiplier * 0.65f;

@@ -153,6 +153,11 @@ namespace GearUpCards.MonoBehaviours
             tempHealthCapFlag = false;
         }
 
+        public float GetHealthCapMultiplier()
+        {
+            return healthCapPercentage;
+        }
+
         public float GetHealMultiplier()
         {
             // Let the patch handle heal multiplier

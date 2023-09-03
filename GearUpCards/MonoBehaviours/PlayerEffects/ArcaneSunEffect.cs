@@ -151,11 +151,11 @@ namespace GearUpCards.MonoBehaviours
                     ArcaneSunStatus arcaneSunStatus;
 
                     // check valid targets
-                    foreach (Player item in rayPlayerPairs.Keys)
+                    foreach (Player enemy in rayPlayerPairs.Keys)
                     {
                         linkFlag = true;
 
-                        if (!ModdingUtils.Utils.PlayerStatus.PlayerAliveAndSimulated(item))
+                        if (!ModdingUtils.Utils.PlayerStatus.PlayerAliveAndSimulated(enemy) || enemy.data.healthHandler.isRespawning)
                         {
                             // either dead or reviving, unlink it
                             linkFlag = false;
@@ -167,14 +167,14 @@ namespace GearUpCards.MonoBehaviours
                         //     linkFlag = false;
                         // }
 
-                        distance = (item.gameObject.transform.position - transform.root.position).magnitude;
+                        distance = (enemy.gameObject.transform.position - transform.root.position).magnitude;
                         if (distance > effectRadius)
                         {
                             // ...out of range
                             linkFlag = false;
                         }
 
-                        if (PlayerManager.instance.CanSeePlayer(sightPosition, item).canSee == false)
+                        if (PlayerManager.instance.CanSeePlayer(sightPosition, enemy).canSee == false)
                         {
                             // ...not in line of sight
                             linkFlag = false;
@@ -182,13 +182,13 @@ namespace GearUpCards.MonoBehaviours
 
                         if (linkFlag)
                         {
-                            playerDistancePairs[item] = distance;
+                            playerDistancePairs[enemy] = distance;
                         }
                         else
                         {
-                            playerDistancePairs[item] = -1.0f;
-                            lockedOnTargets.Remove(item);
-                            rayPlayerPairs[item].SetActive(false);
+                            playerDistancePairs[enemy] = -1.0f;
+                            lockedOnTargets.Remove(enemy);
+                            rayPlayerPairs[enemy].SetActive(false);
                         }
                     }
 

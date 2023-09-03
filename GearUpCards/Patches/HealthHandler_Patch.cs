@@ -12,10 +12,7 @@ namespace GearUpCards.Patches
     [HarmonyPatch(typeof(HealthHandler))]
     class HealthHandler_Patch
     {
-        [HarmonyPrefix]
-        [HarmonyPriority(Priority.First)]
-        [HarmonyPatch("Heal")]
-        static void ApplyHealMultiplier(Player ___player, ref float healAmount)
+        static float GetHealMultiplier(Player ___player)
         {
             float healMuliplier = 1.0f;
 
@@ -37,14 +34,10 @@ namespace GearUpCards.Patches
                 healMuliplier *= lifeforceBlastStatus.GetHealMultiplier();
             }
 
-
-            healAmount *= healMuliplier;
+            return healMuliplier;
         }
 
-        [HarmonyPrefix]
-        [HarmonyPriority(Priority.First)]
-        [HarmonyPatch("DoDamage")]
-        static void ApplyDamageMultiplier(HealthHandler __instance, ref Vector2 damage, Player ___player)
+        static float GetDamageMultiplier(Player ___player)
         {
             float damageMuliplier = 1.0f;
             // CharacterStatModifiers stats = ___player.gameObject.GetComponent<CharacterStatModifiers>();
@@ -67,7 +60,32 @@ namespace GearUpCards.Patches
                 damageMuliplier *= Mathf.Pow(1.15f, arcaneSunEffect.stackCount);
             }
 
-            damage *= damageMuliplier;
+            return damageMuliplier;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPriority(Priority.First)]
+        [HarmonyPatch("Heal")]
+        static void ApplyHealMultiplier(Player ___player, ref float healAmount)
+        {
+            // positive healing
+            if (healAmount > 0.0f)
+            {
+                healAmount *= GetHealMultiplier(___player);
+            }
+            // negative 'healing' -- magick damage, life drains, etc.
+            else if (healAmount < 0.0f)
+            {
+                healAmount *= GetDamageMultiplier(___player);
+            }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPriority(Priority.First)]
+        [HarmonyPatch("DoDamage")]
+        static void ApplyDamageMultiplier(HealthHandler __instance, ref Vector2 damage, Player ___player)
+        {
+            damage *= GetDamageMultiplier(___player);
         }
 
         // [HarmonyPostfix]

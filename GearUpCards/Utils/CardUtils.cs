@@ -409,6 +409,7 @@ namespace GearUpCards.Utils
             "Lifeforce Blast!",
 
             "Arcane Sun",
+            "Mystic Missile!",
 
             // glyphs
             "Divination Glyph",
@@ -438,7 +439,8 @@ namespace GearUpCards.Utils
             "Lifeforce Duorbity",
             "Lifeforce Blast!",
 
-            "Arcane Sun"
+            "Arcane Sun",
+            "Mystic Missile!"
         };
         public static List<string> cardListGlyph = new List<string>()
         {
@@ -616,6 +618,7 @@ namespace GearUpCards.Utils
             tempModifier += gearData.glyphPotency * 0.50f;
             tempModifier += gearData.glyphMagickFragment * 0.50f;
             tempModifier += gearData.glyphTime * 0.50f;
+            tempModifier += gearData.glyphReplication * 0.50f;
 
             // Miscs.Log(">.<");
             // Miscs.Log("> Glyph base modifier: " + tempModifier);
@@ -640,6 +643,7 @@ namespace GearUpCards.Utils
             tempModifier += gearData.orbObliterationStack * 0.50f;
             tempModifier += gearData.orbRollingBulwarkStack * 0.50f;
             tempModifier += gearData.arcaneSunStack * 0.50f;
+            tempModifier += gearData.mysticMissileStack * 0.50f;
             if (gearData.uniqueMagick != GearUpConstants.ModType.disabled && gearData.uniqueMagick != GearUpConstants.ModType.none)
             {
                 tempModifier += 2.00f;

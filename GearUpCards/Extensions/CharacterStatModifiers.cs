@@ -78,6 +78,7 @@ namespace GearUpCards.Extensions
         public int orbLifeforceBlastStack;
 
         public int arcaneSunStack;
+        public int mysticMissileStack;
 
         //
         public float hpPercentageRegen;
@@ -119,6 +120,7 @@ namespace GearUpCards.Extensions
             orbLifeforceBlastStack = 0;
 
             arcaneSunStack = 0;
+            mysticMissileStack = 0;
 
             // 1.0f being 100%/s!!
             hpPercentageRegen = 0.0f;
@@ -182,6 +184,7 @@ namespace GearUpCards.Extensions
             __instance.GetGearData().orbLifeforceBlastStack = 0;
 
             __instance.GetGearData().arcaneSunStack = 0;
+            __instance.GetGearData().mysticMissileStack = 0;
 
             __instance.GetGearData().hpPercentageRegen = 0.0f;
 
