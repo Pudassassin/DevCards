@@ -41,7 +41,7 @@ namespace GearUpCards.Patches
         [HarmonyPatch("FindTarget")]
         static void FindTargetRework(MoveTransform ___move, ref Player __result, ref HitInfo hit)
         {
-            Miscs.Log("position3  : " + ___move.transform.position);
+            // Miscs.Log("position3  : " + ___move.transform.position);
             List<Player> candidatePlayers = new List<Player>(PlayerManager.instance.players);
             Vector3 refPosition = ___move.transform.position + (Vector3)hit.normal * 0.25f;
             // Miscs.Log(refPosition);

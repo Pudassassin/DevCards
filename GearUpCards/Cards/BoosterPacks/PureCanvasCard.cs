@@ -16,33 +16,27 @@ using RarityLib.Utils;
 
 namespace GearUpCards.Cards
 {
-    class SupplyDropCard : CustomCard
+    class PureCanvasCard : CustomCard
     {
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
             ModdingUtils.Extensions.CardInfoExtension.GetAdditionalData(cardInfo).canBeReassigned = false;
             cardInfo.categories = new CardCategory[]
             {
-                GearCategory.typeBoosterPack,
+                GearCategory.typeCardShuffle,
                 GearCategory.tagNoGlitch,
                 GearCategory.tagNoRemove,
                 GearCategory.tagNoTableFlip,
                 GearCategory.tagCardManipulation
             };
-
-            // gun.attackSpeed = 1.0f / 1.20f;
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            // gun.damage *= 1.20f;
-            // gun.attackSpeedMultiplier += 0.25f;
-            // gunAmmo.maxAmmo += 3;
-
             CardDrawTracker cardDrawTracker = player.gameObject.GetOrAddComponent<CardDrawTracker>();
 
-            CardDrawTracker.ExtraCardDraw extraCardDraw = new CardDrawTracker.ExtraCardDraw(3, 1);
-            Rarity rarity = CardUtils.TryQueryRarity("Uncommon", "Uncommon");
-            extraCardDraw.SetWhitelistRarityRange(rarity, includeLower: true);
+            CardDrawTracker.ExtraCardDraw extraCardDraw = new CardDrawTracker.ExtraCardDraw(1);
+            List<CardCategory> cardCategories = new List<CardCategory>() { GearCategory.typeGlyph, GearCategory.typeSpell, GearCategory.typeUniqueMagick};
+            extraCardDraw.OverrideCategories(cardCategories, false);
 
             cardDrawTracker.QueueExtraDraw(extraCardDraw);
         }
@@ -52,11 +46,11 @@ namespace GearUpCards.Cards
         }
         protected override string GetTitle()
         {
-            return "Supply Drop!";
+            return "Pure Canvas";
         }
         protected override string GetDescription()
         {
-            return "You get to pick <color=green>THREE</color> more <color=#2CADFFff>Uncommon</color> or lower rarity cards in the next draw phase.";
+            return "Redraw and pick a card from the new offering.\n<i>Glyphs, Spells and Magicks <color=yellow>will not appear</color> in this shuffle.</i>";
         }
         protected override GameObject GetCardArt()
         {
@@ -65,7 +59,7 @@ namespace GearUpCards.Cards
         }
         protected override CardInfo.Rarity GetRarity()
         {
-            return CardInfo.Rarity.Uncommon;
+            return CardInfo.Rarity.Common;
         }
         protected override CardInfoStat[] GetStats()
         {
@@ -104,7 +98,7 @@ namespace GearUpCards.Cards
         }
         public override void Callback()
         {
-            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Booster\nPack";
+            this.cardInfo.gameObject.AddComponent<ExtraName>().text = "Shuffle";
         }
     }
 }

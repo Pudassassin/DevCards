@@ -46,7 +46,7 @@ namespace GearUpCards
     {
         public const string ModId = "com.pudassassin.rounds.GearUpCards";
         public const string ModName = "GearUpCards";
-        public const string Version = "0.3.2.21"; //build #239 / Release 0-4-0
+        public const string Version = "0.3.2.30"; //build #250 / Release 0-4-0
 
         public const string ModInitials = "GearUP";
 
@@ -127,6 +127,9 @@ namespace GearUpCards
             CustomCard.BuildCard<VeteransFriendCard>();
             CustomCard.BuildCard<VintageGearsCard>();
             CustomCard.BuildCard<SupplyDropCard>();
+
+            // Shuffle Cards
+            CustomCard.BuildCard<PureCanvasCard>();
 
             // Adding hooks
             GameModeManager.AddHook(GameModeHooks.HookGameStart, GameStart);
@@ -311,6 +314,13 @@ namespace GearUpCards
             });
             cardCategoryHasRarity = true;
 
+            // MysticMissileCard.CleanUp();
+
+            foreach (var player in PlayerManager.instance.players)
+            {
+                player.gameObject.AddComponent<CardDrawTracker>();
+            }
+
             yield break;
         }
 
@@ -330,21 +340,30 @@ namespace GearUpCards
             CardUtils.RarityDelta.UndoAll();
             // isCardPickingPhase = false;
 
-            if (!isCardExtraDrawPhase)
+            yield return new WaitForSecondsRealtime(0.1f);
+            if (!isCardExtraDrawPhase && CardDrawTracker.extraDrawPlayerQueue.Count > 0)
             {
                 isCardExtraDrawPhase = true;
+                Miscs.Log("[GearUpCard] Extra draw locked in");
+                // yield return new WaitForSecondsRealtime(0.1f);
+                // CardDrawTracker.extraDrawPlayerQueue.InsertRange(0, PlayerManager.instance.players);
 
-                foreach (Player player in PlayerManager.instance.players.ToArray())
+                for (int i = 0; i < CardDrawTracker.extraDrawPlayerQueue.Count; i++)
                 {
-                    CardDrawTracker cardDrawTracker = player.gameObject.GetComponent<CardDrawTracker>();
+                    Miscs.Log("Checking " + i + " | " + CardDrawTracker.extraDrawPlayerQueue[i]);
+                    CardDrawTracker cardDrawTracker = CardDrawTracker.extraDrawPlayerQueue[i].gameObject.GetComponent<CardDrawTracker>();
+
                     if (cardDrawTracker != null)
                     {
                         yield return cardDrawTracker.ResolveExtraDraws();
                         yield return new WaitForSecondsRealtime(0.1f);
                     }
+                    Miscs.Log("Checked! " + i + " | " + CardDrawTracker.extraDrawPlayerQueue[i]);
                 }
 
+                CardDrawTracker.extraDrawPlayerQueue.Clear();
                 isCardExtraDrawPhase = false;
+                Miscs.Log("[GearUpCard] Extra draw unlocked");
             }
 
             yield break;
@@ -382,6 +401,7 @@ namespace GearUpCards
         }
 
         // Assets loader
+        public static readonly AssetBundle ATPBundle = Jotunn.Utils.AssetUtils.LoadAssetBundleFromResources("gearup_game_effect", typeof(GearUpCards).Assembly);
         public static readonly AssetBundle VFXBundle = Jotunn.Utils.AssetUtils.LoadAssetBundleFromResources("gearup_asset", typeof(GearUpCards).Assembly);
         public static readonly AssetBundle CardArtBundle = Jotunn.Utils.AssetUtils.LoadAssetBundleFromResources("gearup_cardarts", typeof(GearUpCards).Assembly);
 

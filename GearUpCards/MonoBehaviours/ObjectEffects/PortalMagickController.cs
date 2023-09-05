@@ -110,13 +110,13 @@ namespace GearUpCards.MonoBehaviours
                     SyncBulletPosition syncMono = item.GetComponentInChildren<SyncBulletPosition>();
                     if (syncMono != null)
                     {
-                        syncMono.CallSyncPosition();
+                        syncMono.CallSyncs();
                     }
                     else
                     {
                         syncMono = item.AddComponent<SyncBulletPosition>();
                         syncMono.enableIntervalSync = false;
-                        syncMono.CallSyncPosition();
+                        syncMono.CallSyncs();
                     }
 
                     // boost regular gun bullets

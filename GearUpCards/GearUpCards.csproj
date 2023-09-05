@@ -17,11 +17,13 @@
   <ItemGroup>
     <None Remove="Assets\gearup_asset" />
     <None Remove="Assets\gearup_cardarts" />
+    <None Remove="Assets\gearup_game_effect" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Assets\gearup_asset" />
     <EmbeddedResource Include="Assets\gearup_cardarts" />
+    <EmbeddedResource Include="Assets\gearup_game_effect" />
   </ItemGroup>
 
   <ItemGroup>

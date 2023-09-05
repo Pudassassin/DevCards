@@ -29,7 +29,7 @@ namespace GearUpCards.Cards
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
             gun.projectielSimulatonSpeed *= 1.15f;
-            gun.projectileSpeed *= 1.25f;
+            gun.projectileSpeed *= 1.15f;
 
             characterStats.GetGearData().glyphDivination += 1;
 
@@ -73,7 +73,7 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "Bullet Speed",
-                    amount = "+25%",
+                    amount = "+15%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()

@@ -9,12 +9,25 @@ using UnityEngine;
 using GearUpCards.MonoBehaviours;
 using GearUpCards.Extensions;
 using static GearUpCards.Utils.CardUtils;
+using static GearUpCards.Utils.Miscs;
 
 namespace GearUpCards.Cards
 {
     class MysticMissileCard : CustomCard
     {
-        public static GameObject objectToSpawn = null;
+        public static GameObject ATPEffectPrefab = GearUpCards.ATPBundle.LoadAsset<GameObject>("ATP_Effect_MagicExplosion");
+        public static GameObject VFXPrefab = GearUpCards.ATPBundle.LoadAsset<GameObject>("VFX_Part_MagicSpark");
+
+        // public static GameObject objectToSpawn = null;
+        public static Dictionary<int, ObjectsToSpawn> objectSpawnDict = new Dictionary<int, ObjectsToSpawn>();
+        // public static void CleanUp()
+        // {
+        //     foreach(var obj in objectSpawnDict.Values)
+        //     {
+        //         Destroy(obj);
+        //     }
+        //     objectSpawnDict.Clear();
+        // }
 
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
@@ -48,21 +61,78 @@ namespace GearUpCards.Cards
             // add ONLY one copy of the object to the projectile
             if (characterStats.GetGearData().mysticMissileStack == 0)
             {
-                if (objectToSpawn == null)
-                {
-                    objectToSpawn = new GameObject("MysticMissileModifier", new Type[]
-                    {
-                        typeof(MysticMissileModifier)
-                    });
-                    DontDestroyOnLoad(objectToSpawn);
-                }
-
                 List<ObjectsToSpawn> list = gun.objectsToSpawn.ToList<ObjectsToSpawn>();
-                list.Add(new ObjectsToSpawn
-                {
-                    AddToProjectile = objectToSpawn
-                });
+                ObjectsToSpawn objectsToSpawn;
 
+                GameObject objectAddSpawn;
+                GameObject effectSpawn;
+                MysticMissileModifier modifier;
+
+                if (!objectSpawnDict.TryGetValue(player.playerID, out objectsToSpawn))
+                {
+                    List<Renderer> renderers;
+
+                    // persisting effect on bullet
+                    objectAddSpawn = Instantiate(VFXPrefab);
+                    objectAddSpawn.name = "MysticMissileModifier " + player.playerID;
+                    objectAddSpawn.transform.position = new Vector3(10000f, 10000f, 0.0f);
+                    modifier = objectAddSpawn.AddComponent<MysticMissileModifier>();
+
+                    renderers = objectAddSpawn.GetComponentsInChildren<Renderer>().ToList();
+                    foreach (var item in renderers)
+                    {
+                        item.sortingLayerName = "MostFront";
+                    }
+
+                    DontDestroyOnLoad(objectAddSpawn);
+
+                    // impact effect on bullet
+                    effectSpawn = Instantiate(ATPEffectPrefab);
+                    effectSpawn.name = "MysticMissileImpact " + player.playerID;
+                    effectSpawn.transform.position = new Vector3(10000f, 10000f, 0.0f);
+
+                    RemoveAfterSpawn removeSpawn = effectSpawn.AddComponent<RemoveAfterSpawn>();
+                    effectSpawn.AddComponent<SetColorToParticles>();
+                    removeSpawn.timeToRemove = 5.0f;
+
+                    // RemoveAfterSeconds removeAfterSeconds = effectSpawn.GetOrAddComponent<RemoveAfterSeconds>();
+                    // removeAfterSeconds.seconds = 5.0f;
+                    // removeAfterSeconds.enabled = false;
+
+                    renderers = effectSpawn.GetComponentsInChildren<Renderer>().ToList();
+                    foreach (var item in renderers)
+                    {
+                        item.sortingLayerName = "MostFront";
+                    }
+
+                    DontDestroyOnLoad(effectSpawn);
+
+                    // objectToSpawn = new GameObject("MysticMissileModifier", new Type[]
+                    // {
+                    //     typeof(MysticMissileModifier)
+                    // });
+
+                    // modifier.explosionImpact = effectSpawn.GetComponent<Explosion>();
+
+                    objectsToSpawn = new ObjectsToSpawn();
+                    objectsToSpawn.AddToProjectile = objectAddSpawn;
+                    objectsToSpawn.effect = effectSpawn;
+                    objectsToSpawn.normalOffset = 0.1f;
+                    // objectsToSpawn.scaleFromDamage = 0.75f;
+
+                    objectSpawnDict.Add(player.playerID, objectsToSpawn);
+                }
+                // else
+                // {
+                //     modifier = objectsToSpawn.AddToProjectile.GetComponent<MysticMissileModifier>();
+                // }
+
+                // list.Add(new ObjectsToSpawn
+                // {
+                //     AddToProjectile = objectAddSpawn
+                // });
+
+                list.Add(objectsToSpawn);
                 gun.objectsToSpawn = list.ToArray();
             }
 

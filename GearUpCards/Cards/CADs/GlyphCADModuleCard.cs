@@ -20,6 +20,7 @@ namespace GearUpCards.Cards
     {
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
+            ModdingUtils.Extensions.CardInfoExtension.GetAdditionalData(cardInfo).canBeReassigned = false;
             cardInfo.allowMultiple = false;
             cardInfo.categories = new CardCategory[]
             {
@@ -38,10 +39,10 @@ namespace GearUpCards.Cards
             // give 1 bonus Glyph card
             CardDrawTracker cardDrawTracker = player.gameObject.GetOrAddComponent<CardDrawTracker>();
 
-            CardDrawTracker.ExtraCardDraw extraCardDraw = new CardDrawTracker.ExtraCardDraw(2);
+            CardDrawTracker.ExtraCardDraw extraCardDraw = new CardDrawTracker.ExtraCardDraw(1);
             extraCardDraw.SetWhitelistGearUpCard(new List<CardCategory> { GearCategory.typeGlyph });
 
-            cardDrawTracker.extraCardDraws.Add(extraCardDraw);
+            cardDrawTracker.QueueExtraDraw(extraCardDraw);
 
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)

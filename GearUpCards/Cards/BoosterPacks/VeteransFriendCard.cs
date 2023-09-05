@@ -20,6 +20,7 @@ namespace GearUpCards.Cards
     {
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
+            ModdingUtils.Extensions.CardInfoExtension.GetAdditionalData(cardInfo).canBeReassigned = false;
             cardInfo.categories = new CardCategory[]
             {
                 GearCategory.typeBoosterPack,
@@ -44,7 +45,7 @@ namespace GearUpCards.Cards
             extraCardDraw.SetWhitelistCardPacks(new List<string> { "Vanilla" });
             extraCardDraw.SetWhitelistRarityRange(rarity, includeHigher: true);
 
-            cardDrawTracker.extraCardDraws.Add(extraCardDraw);
+            cardDrawTracker.QueueExtraDraw(extraCardDraw);
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {

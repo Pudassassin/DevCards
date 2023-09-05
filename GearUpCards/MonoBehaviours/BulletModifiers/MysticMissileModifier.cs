@@ -7,6 +7,7 @@ using ModdingUtils.Utils;
 
 using GearUpCards.Extensions;
 using GearUpCards.Utils;
+using GearUpCards.Cards;
 
 namespace GearUpCards.MonoBehaviours
 {
@@ -15,8 +16,8 @@ namespace GearUpCards.MonoBehaviours
         private static float seekAngleBase = 120.0f;
         private static float seekAngleScaling = 30.0f;
 
-        private static float turnSpeedBase = 240.0f;
-        private static float turnSpeedScaling = 60.0f;
+        private static float turnSpeedBase = 210.0f;
+        private static float turnSpeedScaling = 30.0f;
 
         private static float accelBase = 40.0f;
         private static float accelScaling = 10.0f;
@@ -25,20 +26,34 @@ namespace GearUpCards.MonoBehaviours
         private static float homingSpeedScaling = 10.0f;
 
         private static float homingRangeBase = 30.0f;
-        private static float homingRangeScaling = 10.0f;
+        private static float homingRangeScaling = 5.0f;
 
-        private static float damageLossMulBase = 0.50f;
-        private static float damageLossMulScaling = 0.05f;
+        private static float explosionForceBase = 9000.0f;
+        private static float explosionForceScaling = 4500.0f;
 
-        private static float damageMulMin = 0.10f;
+        private static float explosionRadiusBase = 4.5f;
+        private static float explosionRadiusScaling = 1.5f;
 
+        private static float damageFactorBase = 0.45f;
+        private static float damageFactorScaling = 0.15f;
 
+        private static float powerLossMulBase = 0.60f;
+        private static float powerLossMulScaling = 0.05f;
+
+        private static float powerLevelMin = 0.10f;
+
+        private static float logBaseProj = 5.0f;
+        private static float dmgDiv = 25.0f;
+        private static float trailScale = 0.75f;
         private static float procTime = 0.05f;
 
         private MoveTransform bulletMove;
         private RayHitReflect rayHitReflect;
         private ProjectileHit projectileHit;
-        private Explosion explosion;
+        private Explosion explosionImpact;
+        private SyncBulletPosition syncMono;
+        private Miscs.SetColorToParticles partColor;
+        private Miscs.SetColorToParticles partColorExp;
 
         private Player shooterPlayer;
         private Gun shooterGun;
@@ -55,7 +70,6 @@ namespace GearUpCards.MonoBehaviours
         // make it home toward enemies
         private int glyphDivination;
 
-        private int bounceCount = 0;
 
         // internals
         private List<Player> enemyPlayers = new List<Player>();
@@ -70,8 +84,14 @@ namespace GearUpCards.MonoBehaviours
         private float homingSpeed = 0.0f;
         private float homingRange = 0.0f;
 
+        private float powerLossFactor = 0.5f;
+        private float currentPower = 1.0f;
+
         private float prevGravity;
         private float tickTimer = 0.0f;
+
+        private int bounceCount = 0;
+        private bool dieNextHit = false;
 
         // temps
         Vector3 moveVelocity, vecToTarget;
@@ -82,8 +102,23 @@ namespace GearUpCards.MonoBehaviours
         {
             if (effectEnable)
             {
+                // gameObject.transform.localScale = Vector3.one * Mathf.Clamp(Mathf.Log(projectileHit.damage * projectileHit.dealDamageMultiplierr, logBaseProj), 1.0f, 15.0f);
+                // foreach (Transform child in transform)
+                // {
+                //     // child.transform.localScale = Vector3.one * Mathf.Clamp(Mathf.Log(projectileHit.damage * projectileHit.dealDamageMultiplierr, logBaseProj), 1.0f, 15.0f);
+                //     child.transform.localScale = Vector3.one * Mathf.Clamp(projectileHit.damage * projectileHit.dealDamageMultiplierr / dmgDiv, 0.25f, 25.0f);
+                // }
+                transform.GetChild(0).transform.localScale = Vector3.one * Mathf.Clamp(projectileHit.damage * projectileHit.dealDamageMultiplierr / dmgDiv, 0.5f, 25.0f);
+                transform.GetChild(1).transform.localScale = Vector3.one * Mathf.Clamp(projectileHit.damage * projectileHit.dealDamageMultiplierr / dmgDiv, 1.0f, 25.0f) * trailScale;
+
+                MysticMissileCard.objectSpawnDict[shooterPlayer.playerID].effect.transform.localScale = Vector3.one * explosionImpact.range * 0.25f;
+
+                partColor.targetColor = shooterGun.projectileColor;
+                partColorExp.targetColor = shooterGun.projectileColor;
+
                 if (tickTimer >= procTime)
                 {
+                    // subject to change the glyph
                     if (glyphDivination > 0)
                     {
                         moveVelocity = bulletMove.velocity;
@@ -136,7 +171,7 @@ namespace GearUpCards.MonoBehaviours
                             foreach (Player enemy in enemyPlayers)
                             {
                                 // skip dead enemy player
-                                if (!PlayerStatus.PlayerAliveAndSimulated(enemy) && !enemy.data.healthHandler.isRespawning)
+                                if (!PlayerStatus.PlayerAliveAndSimulated(enemy) || enemy.data.healthHandler.isRespawning)
                                 {
                                     continue;
                                 }
@@ -171,6 +206,19 @@ namespace GearUpCards.MonoBehaviours
                         }
                     }
 
+                    if (bounceCount > glyphGeometric)
+                    {
+                        currentPower = Mathf.Pow(powerLossFactor, bounceCount - glyphGeometric);
+                        if (currentPower < powerLevelMin)
+                        {
+                            dieNextHit = true;
+                        }
+                    }
+                    else
+                    {
+                        currentPower = 1.0f;
+                    }
+
                     tickTimer -= procTime;
                 }
 
@@ -202,6 +250,7 @@ namespace GearUpCards.MonoBehaviours
             Miscs.Log("[GearUpCard] Mystic Missle: Setup()");
             projectileHit = gameObject.GetComponentInParent<ProjectileHit>();
             bulletMove = gameObject.GetComponentInParent<MoveTransform>();
+            explosionImpact = gameObject.GetComponent<Explosion>();
 
             // fetch player stats
             Miscs.Log("[GearUpCard] Mystic Missle: Setup() - fetch player stats");
@@ -215,12 +264,21 @@ namespace GearUpCards.MonoBehaviours
             glyphInfluence = shooterStats.GetGearData().glyphInfluence;
             glyphPotency = shooterStats.GetGearData().glyphPotency;
 
-            // angle in degrees
-            seekAngle = seekAngleBase + (glyphDivination + stackCount - 1) * seekAngleScaling;
+            // homing, angle in degrees
+            float projSimSpeed = Mathf.Clamp(shooterGun.projectielSimulatonSpeed, 0.2f, 5.0f);
+
             turnSpeed = turnSpeedBase + (glyphDivination + stackCount - 1) * turnSpeedScaling;
+            turnSpeed *= projSimSpeed;
+
             acceleration = accelBase + (glyphDivination + stackCount - 1) * accelScaling;
+            acceleration *= projSimSpeed;
+
+            seekAngle = seekAngleBase + (glyphDivination + stackCount - 1) * seekAngleScaling;
             homingSpeed = homingSpeedBase + glyphDivination * homingSpeedScaling;
-            homingRange = homingRangeBase + (glyphDivination + (stackCount - 1) * 2) * homingSpeedScaling;
+            homingRange = homingRangeBase + (glyphDivination + (stackCount - 1) * 2) * homingRangeScaling;
+
+            // power loss
+            powerLossFactor = powerLossMulBase + (powerLossMulScaling * glyphPotency);
 
             // declare enemies
             Miscs.Log("[GearUpCard] Mystic Missle: Setup() - declare enemies");
@@ -248,42 +306,89 @@ namespace GearUpCards.MonoBehaviours
                 rayHitReflect.reflects += 1;
             }
 
+            // setup Explosion impact script
+            Miscs.Log("[GearUpCard] Mystic Missle: Setup() - setup Explosion impact script");
+            explosionImpact = MysticMissileCard.objectSpawnDict[shooterPlayer.playerID].effect.GetComponent<Explosion>();
+
+            explosionImpact.auto = true;
+            // explosionImpact.ignoreWalls = true;
+            explosionImpact.force = explosionForceBase + explosionForceScaling * ((stackCount - 1) * 2 + glyphPotency);
+            explosionImpact.range = explosionRadiusBase + explosionRadiusScaling * ((stackCount - 1) * 2 + glyphInfluence);
+            explosionImpact.damage = projectileHit.damage * (damageFactorBase + damageFactorScaling * ((stackCount - 1) * 2 + glyphPotency));
+
+            explosionImpact.objectForceMultiplier = 3.0f;
+            explosionImpact.scaleSlow = false;
+            explosionImpact.scaleSilence = false;
+            explosionImpact.scaleDmg = false;
+            explosionImpact.scaleRadius = false;
+            explosionImpact.scaleStun = false;
+            explosionImpact.scaleForce = false;
+
+            syncMono = transform.root.gameObject.GetOrAddComponent<SyncBulletPosition>();
+            syncMono.interval = 0.2f;
+
+            partColor = gameObject.GetOrAddComponent<Miscs.SetColorToParticles>();
+            partColor.targetColor = shooterGun.projectileColor;
+
+            partColorExp = MysticMissileCard.objectSpawnDict[shooterPlayer.playerID].effect.GetComponent<Miscs.SetColorToParticles>();
+            partColorExp.targetColor = shooterGun.projectileColor;
+
+            // make this resolve first
             projectileHit.effects.Remove(this);
             projectileHit.effects.Insert(0, this);
         }
 
         public override HasToReturn DoHitEffect(HitInfo hit)
         {
+            // bool explode = true;
             if (hit.transform == null)
             {
-                // return HasToReturn.canContinue;
-            }
+                // hitting screen edge
 
-            // hitting other bullet
-            if (hit.transform.gameObject.tag.Contains("Bullet"))
+                // explode = false;
+                bounceCount--;
+            }
+            else
             {
-                // give bounce buffer
-                rayHitReflect.reflects++;
+                // hitting other bullet
+                if (hit.transform.gameObject.tag.Contains("Bullet"))
+                {
+                    // give bounce buffer
+                    rayHitReflect.reflects++;
 
-                // return HasToReturn.hasToReturn;
+                }
+
+                // hitting map or player
+
+                if (hit.transform.GetComponent<Player>())
+                {
+                    // deal direct hit magic damage
+
+                    // give bounce buffer
+                    rayHitReflect.reflects++;
+                }
             }
 
-            // hitting map or player
+            // hit.point += hit.normal * 0.2f;
+            transform.position = (Vector3)hit.point + (Vector3)hit.normal * 0.2f;
+            syncMono.CallSyncs();
 
-            if (hit.transform.GetComponent<Player>())
-            {
-                // deal direct hit magic damage
+            // ...then explode and deal area magic damage
+            explosionImpact.damage = projectileHit.damage * (damageFactorBase + damageFactorScaling * ((stackCount - 1) * 2 + glyphPotency));
+            explosionImpact.damage *= currentPower;
 
-                // give bounce buffer
-                rayHitReflect.reflects++;
-            }
+            explosionImpact.force = explosionForceBase + explosionForceScaling * ((stackCount - 1) * 2 + glyphPotency);
+            explosionImpact.force *= currentPower;
 
-            // deal area magic damage
-            
+            // power loss on bounce
+            // if (bounceCount > glyphGeometric && hit.transform != null)
+            // {
+            //     projectileHit.
+            // }
 
             bounceCount++;
 
-            if (rayHitReflect.reflects <= 1)
+            if (rayHitReflect.reflects <= 1 || dieNextHit)
             {
                 rayHitReflect.reflects = 0;
             }

@@ -43,6 +43,7 @@ namespace GearUpCards.Utils
             public static CardCategory typeCadModule = CustomCardCategories.instance.CardCategory("GearUp_CAD-Module");
 
             public static CardCategory typeBoosterPack = CustomCardCategories.instance.CardCategory("GearUp_Booster-Pack");
+            public static CardCategory typeCardShuffle = CustomCardCategories.instance.CardCategory("GearUp_Card-Shuffle");
 
             public static CardCategory tagCardManipulation = CustomCardCategories.instance.CardCategory("CardManipulation");
             public static CardCategory tagNoGlitch = CustomCardCategories.instance.CardCategory("NoRandom");
@@ -62,6 +63,7 @@ namespace GearUpCards.Utils
                         __gearCategories = new List<CardCategory>();
                         __gearCategories.Add(noType);
                         __gearCategories.Add(typeBoosterPack);
+                        __gearCategories.Add(typeCardShuffle);
 
                         __gearCategories.Add(typeGunMod);
                         __gearCategories.Add(typeBlockMod);
@@ -609,14 +611,14 @@ namespace GearUpCards.Utils
             CharacterStatModifiers targetStats = targerPlayer.gameObject.GetComponent<CharacterStatModifiers>();
             CharacterStatModifiersGearData gearData = targetStats.GetGearData();
 
-            // spells and glyphs
+            // !! // spells and glyphs : Glyphs to boost spell, magick and specialized cards rate
             float tempModifier = 0.0f;
 
             tempModifier += gearData.glyphDivination * 2.00f;
             tempModifier += gearData.glyphGeometric * 0.50f;
             tempModifier += gearData.glyphInfluence * 1.00f;
             tempModifier += gearData.glyphPotency * 0.50f;
-            tempModifier += gearData.glyphMagickFragment * 0.50f;
+            tempModifier += gearData.glyphMagickFragment * 0.75f;
             tempModifier += gearData.glyphTime * 0.50f;
             tempModifier += gearData.glyphReplication * 0.50f;
 
@@ -638,6 +640,13 @@ namespace GearUpCards.Utils
             }
             BatchAdjustCardRarity(cardListSpells, mul: tempModifier);
 
+            RarityDelta.AdjustRarityModifier
+            (
+                GetCardInfo(GearUpCards.ModInitials, "Pure Canvas"),
+                mul: tempModifier * 0.5f - 0.5f
+            );
+
+            // !! // spells and glyphs : Spells/Magicks to boost glyph card rate
             tempModifier = gearData.orbLifeforceDualityStack * 0.50f;
             tempModifier += gearData.orbLifeforceBlastStack * 0.50f;
             tempModifier += gearData.orbObliterationStack * 0.50f;
@@ -650,7 +659,13 @@ namespace GearUpCards.Utils
             }
             BatchAdjustCardRarity(cardListGlyph, mul: tempModifier);
 
-            // [Empower] + [Shield Battery] boosting>> block abilities find chance
+            RarityDelta.AdjustRarityModifier
+            (
+                GetCardInfo(GearUpCards.ModInitials, "Pure Canvas"),
+                mul: tempModifier * 0.5f
+            );
+
+            // !! // [Empower] + [Shield Battery] boosting>> block abilities find chance
             tempModifier = (float)(gearData.shieldBatteryStack) * 0.25f;
             tempModifier += (float)(GetPlayerCardsWithName(targerPlayer, "Empower").Count) * 0.25f;
             tempModifier += gearData.glyphMagickFragment * 0.50f;
@@ -677,7 +692,7 @@ namespace GearUpCards.Utils
                 BatchAdjustCardRarity(cardListModdedBlocks, mul: tempModifier);
             }
 
-            // blocking ability boosting>> [Empower] + [Shield Battery] find chance
+            // !! // blocking ability boosting >> [Empower] + [Shield Battery] find chance
             List<PlayerCardData> tempList = GetPlayerCardsWithStringList(targerPlayer, cardListVanillaBlocks);
             tempModifier = (float)(tempList.Count) * 0.20f;
 

@@ -55,6 +55,106 @@ namespace GearUpCards.Utils
 			return vector;
         }
 
+		// Component Wrapper
+		public class RemoveAfterSpawn : MonoBehaviour
+        {
+			public float timeToRemove;
+
+			private void Update()
+            {
+				if (gameObject.GetComponent<SpawnedAttack>() == null)
+				{
+					return;
+				}
+				else
+				{
+					RemoveAfterSeconds remover = gameObject.GetOrAddComponent<RemoveAfterSeconds>();
+					remover.seconds = timeToRemove;
+					remover.enabled = true;
+					Destroy(this);
+				}
+            }
+        }
+
+		public class SetColorToParticles : MonoBehaviour
+        {
+			public List<ParticleSystem> particleSystems = new List<ParticleSystem>();
+			private Dictionary<ParticleSystem, Gradient> backupGradients = new Dictionary<ParticleSystem, Gradient>();
+
+			public Color targetColor;
+
+			public bool overrideHue = true;
+
+			private void Awake()
+            {
+				particleSystems.Clear();
+				backupGradients.Clear();
+
+				particleSystems.AddRange(gameObject.GetComponentsInChildren<ParticleSystem>());
+                foreach (var part in particleSystems)
+                {
+					Gradient gradient = new Gradient();
+					Gradient partGrad = part.colorOverLifetime.color.gradient;
+
+					gradient.alphaKeys = new GradientAlphaKey[partGrad.alphaKeys.Length];
+					for (int i = 0; i < partGrad.alphaKeys.Length; i++)
+                    {
+						gradient.alphaKeys[i] = new GradientAlphaKey(partGrad.alphaKeys[i].alpha, partGrad.alphaKeys[i].time);
+					}
+
+					gradient.colorKeys = new GradientColorKey[partGrad.colorKeys.Length];
+					for (int i = 0; i < partGrad.colorKeys.Length; i++)
+					{
+						gradient.colorKeys[i] = new GradientColorKey(partGrad.colorKeys[i].color, partGrad.colorKeys[i].time);
+					}
+
+					backupGradients.TryAdd(part, gradient);
+                }
+            }
+
+			private void Update()
+            {
+				if (overrideHue) SetHueAll();
+            }
+
+			public void SetHueAll()
+            {
+                foreach (var part in particleSystems)
+                {
+					// Gradient partGrad = part.colorOverLifetime.color.gradient;
+                    // for (int i = 0; i < partGrad.colorKeys.Length; i++)
+                    // {
+					// 	Color color = partGrad.colorKeys[i].color;
+					// 
+					// 	float hue, sat, value;
+					// 	Color.RGBToHSV(color, out _, out sat, out value);
+					// 	Color.RGBToHSV(targetColor, out hue, out _, out _);
+					// 
+					// 	partGrad.colorKeys[i].color = Color.HSVToRGB(hue, sat, value);
+					// }
+
+					Gradient partGrad = part.colorOverLifetime.color.gradient;
+					Gradient newGrad = new Gradient();
+					GradientColorKey[] colorKeys = new GradientColorKey[partGrad.colorKeys.Length];
+					
+					for (int i = 0; i < partGrad.colorKeys.Length; i++)
+					{
+						Color color = partGrad.colorKeys[i].color;
+					
+						float hue, sat, value;
+						Color.RGBToHSV(color, out _, out sat, out value);
+						Color.RGBToHSV(targetColor, out hue, out _, out _);
+					
+						colorKeys[i] = new GradientColorKey(Color.HSVToRGB(hue, sat, value), partGrad.colorKeys[i].time);
+					}
+
+					newGrad.SetKeys(colorKeys, partGrad.alphaKeys);
+					var col = part.colorOverLifetime;
+					col.color = newGrad;
+				}
+            }
+        }
+
 		// String Utils
 		public static List<string> StringSplit(string input, char splitAt)
 		{

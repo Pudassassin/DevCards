@@ -28,6 +28,7 @@ namespace GearUpCards.MonoBehaviours
     {
         // private static GameObject empowerShotVFX = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_EmpowerShot");
         // internal bool addShotVFX = false;
+        public static List<Player> extraDrawPlayerQueue = new List<Player>();
 
         public class ExtraCardDraw
         {
@@ -239,6 +240,27 @@ namespace GearUpCards.MonoBehaviours
         //}
 
         // Methods
+        public void QueueExtraDraw(ExtraCardDraw extraCardDraw)
+        {
+            if (extraCardDraw.roundDelay > 0)
+            {
+                extraCardDrawsDelayed.Add(extraCardDraw);
+            }
+            else
+            {
+                extraCardDraws.Add(extraCardDraw);
+
+                if (extraDrawPlayerQueue.Count == 0)
+                {
+                    extraDrawPlayerQueue.Add(this.player);
+                }
+                else if (extraDrawPlayerQueue[extraDrawPlayerQueue.Count-1] != player)
+                {
+                    extraDrawPlayerQueue.Add(this.player);
+                }
+            }
+        }
+
         public IEnumerator ResolveExtraDraws()
         {
             Miscs.Log("[GearUpCard] CardDrawTracker.ResolveExtraDraws()");
@@ -384,6 +406,10 @@ namespace GearUpCards.MonoBehaviours
                 if (item.roundDelay <= 0)
                 {
                     extraCardDraws.Add(item);
+                    if (!extraDrawPlayerQueue.Contains(this.player))
+                    {
+                        extraDrawPlayerQueue.Add(this.player);
+                    }
                 }
             }
             foreach (var item in extraCardDraws)
