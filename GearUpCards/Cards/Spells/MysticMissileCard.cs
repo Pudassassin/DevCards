@@ -153,8 +153,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            // return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_ChompyBullet");
-            return null;
+            return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_MysticMissile");
         }
         protected override CardInfo.Rarity GetRarity()
         {

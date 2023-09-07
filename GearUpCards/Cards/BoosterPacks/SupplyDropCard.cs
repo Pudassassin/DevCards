@@ -60,8 +60,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            // return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_GunParts");
-            return null;
+            return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_SupplyDrop");
         }
         protected override CardInfo.Rarity GetRarity()
         {

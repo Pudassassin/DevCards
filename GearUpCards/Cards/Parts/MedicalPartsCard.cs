@@ -66,8 +66,8 @@ namespace GearUpCards.Cards
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "HP Regen/s",
-                    amount = "+5 & +1%",
+                    stat = "Regen/s",
+                    amount = "+5 & +1%HP",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };

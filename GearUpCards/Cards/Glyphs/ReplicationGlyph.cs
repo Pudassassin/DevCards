@@ -28,10 +28,10 @@ namespace GearUpCards.Cards
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            gun.projectielSimulatonSpeed *= 1.15f;
-            gun.projectileSpeed *= 1.25f;
+            // gun.projectielSimulatonSpeed *= 1.15f;
+            // gun.projectileSpeed *= 1.25f;
 
-            gun.attackSpeed *= 1.0f / 0.80f;
+            gun.attackSpeed *= 1.0f / 0.75f;
 
             // unused stats
             // gun.attackSpeedMultiplier *= 0.85f;
@@ -68,8 +68,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            // return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_GlyphDivination");
-            return null;
+            return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_GlyphReplication");
         }
         protected override CardInfo.Rarity GetRarity()
         {
@@ -97,7 +96,7 @@ namespace GearUpCards.Cards
                 {
                     positive = false,
                     stat = "ATK SPD",
-                    amount = "-20%",
+                    amount = "-25%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()

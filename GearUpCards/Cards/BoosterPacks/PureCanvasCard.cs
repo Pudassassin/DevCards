@@ -54,8 +54,7 @@ namespace GearUpCards.Cards
         }
         protected override GameObject GetCardArt()
         {
-            // return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_GunParts");
-            return null;
+            return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_PureCanvas");
         }
         protected override CardInfo.Rarity GetRarity()
         {
