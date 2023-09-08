@@ -163,7 +163,7 @@ namespace GearUpCards.MonoBehaviours
             prevGunDrag = gun.drag;
             prevGunLifetime = gun.destroyBulletAfter;
 
-            prevGunProjCount = gun.numberOfProjectiles;
+            // prevGunProjCount = gun.numberOfProjectiles;
         }
 
         private void RestorePlayerStats()
@@ -184,7 +184,7 @@ namespace GearUpCards.MonoBehaviours
             gun.drag = prevGunDrag;
             gun.destroyBulletAfter = prevGunLifetime;
 
-            gun.numberOfProjectiles = prevGunProjCount;
+            // gun.numberOfProjectiles = prevGunProjCount;
         }
 
         internal void ApplyGlyphCADModuleEffect()

@@ -16,6 +16,10 @@ namespace GearUpCards.Utils
     {
         public static bool debugFlag = true;
 
+		public static void LogInfo(object message)
+        {
+			UnityEngine.Debug.Log(message);
+        }
         public static void Log(object message)
         {
             if (debugFlag)

@@ -1,11 +1,39 @@
-# GearUP Cards [v0.3.1] 
-Public Release 0-3-0, build #214 (Unity-packed)
+# GearUP Cards [v0.4.0] 
+Public Release 0-4-0, build #252 (Unity-packed)
 
 Adding in game-changing mechanics into the modded ROUNDS fray! Bought to you by Pudassassin
 
 ## **Cards**
 
-### **Rare Cards**
+<details>
+<summary>(NEW!) Booster Packs and Shuffles</summary>
+
+#### \[Vintage Gears]
+**Booster Pack** - *Vanilla goodies*
+
+- Immediately gives you THREE new offers of Uncommon or lower rarity cards from vanilla ROUNDS.
+
+#### \[Veterans Friend]
+**Booster Pack** - *Vanilla's rares*
+
+- Immediately gives you ONE new offer of RARE CARD from vanilla ROUNDS!
+
+#### \[Supply Drop!]
+**Booster Pack** - *Just wait for it...*
+
+- It takes one match point delivery. But you will be given THREE new offer of Uncommon or lower rarity cards to pick from, any card pack!
+
+#### \[Pure Canvas]
+**Card offer Shuffle** - *Go for a new idea!*
+
+- Discards the current offer and picks from a new one.
+
+- Glyph, Spell and Magick cards will be excluded and not appear in this shuffle.
+</details>
+
+<details>
+<summary>Unique Magick, Orbs and Passive Spells</summary>
+
 #### \[Anti-Bullet Magick]
 - **Unique Magick** - *Spell caster*
 
@@ -22,100 +50,24 @@ Adding in game-changing mechanics into the modded ROUNDS fray! Bought to you by 
 
 - NOW you are thinking with Portals! (TM)
 
-#### \[Hollow Life]
-Health Passive
-
-- *Puffs up your total Max HP; you no longer heal as effective and to full health.
-**(Stack multiplicatively)***
-
-- Max HP is **multiplied by 3**, but also gain **-25% HP Cap** to the current health and **-15% to healing effects**. (Heals and Regens)
-
-**Tip: Look for the cards that benefit from having larger Max HP pool, or having you to stay low on health, but definitely not \[Pristine Perserverance]!*
-
-### **Uncommon Cards**
-#### \[Shield Battery]
-**Passive Block Modifier**
-- *\[Empower] now have "+1 Empower Shot" but no longer give bullet boosts.*
-
-- Allowing you to fire multiple shots of \[Empower] after each block, increases by this card and \[Empower] card
-
-#### \[Chompy Bullet]
-**Passive Bullet Modifier**
-
-- *Bullets deal bonus damage based on target's current health. Effect varies with gun's firerate.\**
-
-- This will make your gun slightly harder to shoot but will do wonder against the hearty tankers!
-
-*The effect will spread and dilute out the more bullet you can shoot out per second
-
-#### \[Tactical Scanner]
-**Active Block** - *Gear equipments*
-
-- *Blocking scans nearby players' power: Scanned enemies take more damage. Scanned friendlies heal for more.*
-
-- Also displays a quick summary of the scanned players' combat stats.
-
-- Ability is improved for additional copies of the card
-
-#### \[Size Normalizer]
-**Unique Size Modification**
-
-- *Set your final player size to default, retaining the current mass and gravity.*
-
-- For when you are going **too BEEG** or **too smol** to your liking, moderately boost to health and movement speed.
-
-#### \[Arc of Bullets]
-**Unique Gun Spread Modification**
-
-- *Add and evenly spread bullets in an arc formation.*
-
-- also provides +4 projectiles, +60 degree spread and -35% damage penalty
-
-#### \[Flak Cannon]
-**Unique Gun Spread Modification**
-
-- *Your gun fire bundled shells that split into shrapnels after 1s that also have bullet effects!*
-
-- Flak 'Shells' has 99 bounces, increased DMG and adjusted bullet speed but only stay for 1s before splitting
-
-- Greatly reduce total # of projectile you fired and halves the total burst counts
-
-#### \[Parallel Bullets]
-**Unique Gun Spread Modification**
-
-- *Add and convert bullets spread into a parallel formation. Width scales with projectile counts.*
-
-- the bullets fired will fan out initally before arranging into uniformed trajectory
-
-- also provides +4 projectiles, initial spread and -65% damage penalty
-
-#### \[Tiberium Bullets]
-**Passive Bullet Modifier** - *Tiberium Prophecy*
-
-- *Bullets inflict "Tiberium poisoning" on hit, causing burst of HP losses and 'chronic' HP loss, last until respawn (not just one of the revives).*
-
-- +100% of bullet's damage dealt over 4 second burst **as HP Removal** on hit
-
-- inflict +5% bullet's damage, +0.05% target's HP and +0.35 **chronic flat HP Loss per second** on each bullet hit
-
 #### \[Orb-literation!]
 **Active Orb Spell** - *Orb sage*
 
 - *Blocking fires the orb that obliterates part of the map and reduce players' max HP.*
 
-- Culls the MAX HP of ALL PLAYERS in the impact area, **last until respawn**
+- Culls the MAX HP of ALL PLAYERS in the impact area, **last between revives, reset after true death**
 
 #### \[Rolling Buorbwark]
 **Active Orb Spell** - *Orb sage*
 
 - *Blocking cast the ricocheting orb that trigger block abilities every bounce!*
 
-- Works similarly to how the vanilla \[Empower\] would but fired on block and bouncy!
+- Works similarly to how the vanilla \[Empower] would but fired on block and bouncy!
 
 #### \[Lifeforce Blast!]
 **Active Orb Spell** - *Orb sage*
 
-- *Blocking cast the orb that heals & boosts friends' healings, damages & hinders foes' healings on impact.*
+- *Blocking cast the orb that heals & boosts friends' healings // damages & hinders foes' healings on impact.*
 
 - Inspired by and works similarly to Overwatch Ana's Biotic Grenade
 
@@ -135,96 +87,223 @@ Health Passive
 
 - *Summon a mini sun that deals increasing damage to nearby enemy you can see. Also cause them to take more damage from other sources.*
 
-- Only fire toward target(s) in your line-of-sight and in range
+- Only focus down toward enemy(ies) in your line-of-sight and in range
 
 - Enemy burnt also suffer "Damage Amp" debuff that cause them to temporarly take more damage; the longer they burns continuously the stronger the debuff becomes
 
-#### \[Guardians Charm]
-**Passive Charm**
+<details>
+<summary>Glyphs' bonus</summary>
 
-- *Boost your chance of drawing block-related cards.*
+- \[Potency Glyph] boost DPS and Damage Amp factor
 
-- Make you more likely to draw block-based ability cards and other block passives-- and the more you take them, the more they show up!
+- \[Magick Fragment] make it start stronger and ramp up quicker
 
-- By itself, greatly improve your block cooldown.
+- \[Divination Glyph] and \[Influence Glyph] increase the sun rays' range
 
-#### \[Glyph CAD Module]
-**Passive CAD Module**
+- \[Time Glyph] slow down the debuff decay
+</details>
 
-- *Your Gun and Block benefit **TWICE** the bonus from Glyphs and boost the chance of finding Spell and more Glyphs*
+#### \[Mystic Missile!]
+**Passive Spell**
 
-- it is rarer to show up by its own early on, only show up more often when you take more and more Glyphs cards
+- *Enchant the bullets with glyphs and make it explode on contact with scalable magic energy!*
 
-#### \[Bullets.rar]
-**Passive Gun modifier**
+- Mystic Missile gradually loss it's explosive damage and force each bounce
 
-- *Compress no. of projectiles down 1/3, each dealing up to 5x DMG!*
+<details>
+<summary>Glyphs' bonus</summary>
 
-- the ratio is actually based on the # of projectile before and after 'compression'; card will not work if your gun's projectile count is **one**
+- \[Potency Glyph] boosts explosion splash damage ratio and kinetic force
 
-### **Common Cards**
-#### \[Medical Parts]
-**Health Passive** - *Material*
+- \[Divination Glyph] adds and improves homing capability; only home toward enemies
 
-- *Some hearty doodads to help you survive longer.*
+- \[Influence Glyph] increase explosion radius
 
-- simply giving you +50% Health and 2 HP/s regen.
+- \[Geometric Glyph] make it bounce at 100% power an additional time
+</details>
 
-*\* Material cards can be obtained normally or as result of having conflicting cards together.*
+</details>
 
-#### \[Gun Parts]
-**Gun Passive** - *Material*
-
-- *Attachments and enhancements to up your gun games.*
-
-- simply giving +20% Damage, +20% ATK SPD and +3 to Max Ammo to your gun
+<details>
+<summary>Glyphs</summary>
 
 #### \[Magick Fragments]
-**Spell Passive** - *Glyph*
+**Spell's cooldowns and tick rates**
 
 - *This mysterious glyph hasten your spellcasting, but at what cost?*
 
-- on its own, it gives *-25%* and *-0.1s* Block Cooldown at the cost of -25% Health.
+- on its own, it gives Block Cooldown reductions at the cost of some Health.
 
 #### \[Divination Glyph]
-**Spell Passive** - *Glyph*
+**Spell's reaches and trajectories**
 
 - *Your Bullets and Spells reach a little further AND quicker!*
 
-- on its own, it gives +25% Bullet (velocity) Speed and +15% Projectile (simulation) Speed.
+- on its own, it gives a little boost to Bullet (velocity) Speed and Projectile (simulation) Speed.
 
 #### \[Geometric Glyph]
-**Spell Passive** - *Glyph*
+**Projectile spell's bounces!**
 
 - *"Simple Geometry!"*
 
-- on its own, it gives +3 Bullet Bounces and +0.15s Reload Time
+- on its own, it gives more Bullet Bounces and increases Reload Time by a little.
 
 #### \[Influence Glyph]
-**Spell Passive** - *Glyph*
+**Spell's areas-of-effect(s)** - *Specialized glyph*
 
 - *Improve your Spells' range and effect area.*
 
 - only available when you pick at least 1 'Spell' card-- it does nothing without one!
 
 #### \[Potency Glyph]
-**Spell Passive** - *Glyph*
+**Spell's strengths and firepowers**
 
 - *Your Bullets hurts more and your Spells become more powerful!*
 
-- on its own, it gives +65% Bullet Damage at the cost of -15% Health.
+- on its own, it gives hefty Bullet Damage boost at the cost of some Health.
 
 #### \[Time Glyph]
-**Spell Passive** - *Glyph*
+**Spell's status effects durations**
 
 - *Extend bullets' lifetime and slightly delay the damage you taken.*
 
-- You take delayed damage, +0.5 seconds longer
+- You take delayed damage over +0.5 seconds.
 
-- if there's bullet drag, it is decreased by 25%
+- if there's bullet drag, it is decreased by 25%.
 
-- if the bullet's lifetime is cut short, it is extended by 50%
+- if the bullet's lifetime is limited or cut short, it is extended by +50%.
 
+#### \[Replication Glyph]
+**Numbers of spell projectiles!**
+
+- *You fire more bullets and conjure more spell projectiles at once, and these extras are exact copies!*
+
+- on its own, it lets you fire more bullets each volley with no damage loss, abet at slower firerate and little bit inaccurate.
+</details>
+
+<details>
+<summary>Unique Gun Spread Modification</summary>
+
+#### \[Arc of Bullets]
+**A good CONTRA spreadshot throwback!**
+
+- *Add and evenly spread bullets in an arc formation.*
+
+- also provides more projectiles and reduce gun's damage.
+
+#### \[Parallel Bullets]
+**Shout out to one lone space bounty huntress.**
+
+- *Add and convert bullets spread into a parallel formation. Width scales with projectile counts.*
+
+- the bullets fired will fan out initally before arranging into uniformed, paralleled trajectory
+
+- also provides more projectiles, and hefty damage penalty.
+
+#### \[Flak Cannon]
+**"Flak Trooper reporting!"**
+
+- *Your gun fire bundled shells that split into shrapnels --few bigs and some smalls-- after 1s; big ones carry bullet effects!*
+
+- Flak 'Shells' has 24 bounces, increased DMG and adjusted bullet speed but only stay for 1s before splitting
+
+- Severely reduce the firerate, bursts count and no. of projectiles gain from cards and has hard upper firerate limit.
+</details>
+
+<details>
+<summary>Other Cards</summary>
+
+#### \[Hollow Life]
+Passive Health Stats
+
+- *Puffs up your total Max HP; you no longer heal as effective and to full health.
+**(Stack multiplicatively)***
+
+- Max HP is **multiplied by 3**, but also gain **-25% HP Cap** to the current health and **-15% to healing effects**. (Heals and Regens)
+
+**Tip: Look for the cards that benefit from having larger Max HP pool, or having you to stay low on health, but definitely not \[Pristine Perserverance]!*
+
+#### \[Shield Battery]
+Passive Block Modifier
+- *\[Empower] now have "+1 Empower Shot" but no longer give bullet boosts.*
+
+- Allowing you to fire multiple shots of \[Empower]'d bullets after each block, increases by this card and \[Empower] card.
+
+#### \[Chompy Bullet]
+Passive Bullet Modifier
+
+- *Bullets deal bonus damage based on target's current health. Effect scales along with gun's firerate.\**
+
+- This will make your gun slightly harder to shoot but will do wonder against the hearty tankers!
+
+- The effect will spread and dilute out the more bullet you can shoot out per second.
+
+#### \[Tactical Scanner]
+**Active Gear equipments** - Active block
+
+- *Blocking scans nearby players' power: Scanned enemies take more damage. Scanned friendlies heal for more.*
+
+- Also displays a quick summary of the scanned players' combat stats and cut enemies' \[Decay] time shorter for the duration.
+
+- Ability is improved for additional copies of the card
+
+#### \[Size Normalizer]
+**Unique Size Modification**
+
+- *Set your final player size to default, retaining the current mass and gravity.*
+
+- For when you are going **too BEEG** or **too smol** to your liking, moderately boost to health and movement speed.
+
+#### \[Tiberium Bullets]
+Passive Bullet Modifier - *Tiberium Prophecy*
+
+- *Bullets inflict "Tiberium poisoning" on hit, causing short burst of HP losses and 'chronic' HP loss. **Lasts between revives, only clean up after one's true death**
+
+- The inflicted life drains are **direct Health deduction**, porportional to the bullet's damage.
+
+- Also incur passive HP loss on self when pick up. Handle with care!
+
+#### \[Guardians Charm]
+**Specializing Charm** - Rarity modifier
+
+- *Boost your chance of drawing block-related cards.*
+
+- Make you more likely to draw block-based ability cards and other block passives-- and the more you take them, even more of them show up!
+
+- By itself, greatly improve your block cooldown.
+
+*The card affect are manually coded prioritizing popular card packs. Feel free to leave suggestions.
+
+#### \[Glyph CAD Module]
+Passive CAD Module - Rarity modifier
+
+- *Your Gun and Block benefit **TWICE** the bonus from Glyphs and boost the chance of finding Spell and more Glyphs*
+
+- Now comes packed with a Glyph card of your choice!
+
+- It is rarer to show up by its own early on, only show up more often when you take more and more Glyphs cards
+
+#### \[Bullets.rar]
+Passive Gun Stats
+
+- *Compress no. of projectiles down 1/3, each dealing up to 5x DMG!*
+
+- the ratio is actually based on the # of projectile before and after 'compression'; card will not work as well if your gun's projectile count is **one or is put under-ratio.**
+
+#### \[Medical Parts]
+**Health Passive** - *Material*
+
+- *Some hearty doodads to help you survive longer.*
+
+- Simply giving you some Max Health and both flat and scaling HP regeneration.
+
+#### \[Gun Parts]
+**Gun Passive** - *Material*
+
+- *Attachments and enhancements to up your gun games.*
+
+- Simply giving some Damage, Attack Speed and Max Ammo to your gun.
+</details>
 
 ## Note from the modder
-There will be more cards planned to expand in each category, here the second beta release give more contents and introducing 'Orb Spell', as well as bug fixes, rebalancing the first beta cards and framework updates
+There will be more cards planned to expand in each category. This forth update release explores in "Booster Pack" and "Shuffle" for the options to control the fate of the card draws. Notably trying to bring the spotlight back to classic ROUNDS cards we all know and familar with.

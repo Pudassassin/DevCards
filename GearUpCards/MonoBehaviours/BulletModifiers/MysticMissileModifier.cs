@@ -37,8 +37,8 @@ namespace GearUpCards.MonoBehaviours
         private static float damageFactorBase = 0.45f;
         private static float damageFactorScaling = 0.15f;
 
-        private static float powerLossMulBase = 0.60f;
-        private static float powerLossMulScaling = 0.05f;
+        private static float bouncePowerMulBase = 0.60f;
+        private static float bouncePowerMulScaling = 0.05f;
 
         private static float powerLevelMin = 0.10f;
 
@@ -84,13 +84,14 @@ namespace GearUpCards.MonoBehaviours
         private float homingSpeed = 0.0f;
         private float homingRange = 0.0f;
 
-        private float powerLossFactor = 0.5f;
+        private float bouncePowerFactor = 0.5f;
         private float currentPower = 1.0f;
 
         private float prevGravity;
         private float tickTimer = 0.0f;
 
         private int bounceCount = 0;
+        private int bounceFromPlayer = 0;
         private bool dieNextHit = false;
 
         // temps
@@ -208,11 +209,11 @@ namespace GearUpCards.MonoBehaviours
 
                     if (bounceCount > glyphGeometric)
                     {
-                        currentPower = Mathf.Pow(powerLossFactor, bounceCount - glyphGeometric);
-                        if (currentPower < powerLevelMin)
-                        {
-                            dieNextHit = true;
-                        }
+                        currentPower = Mathf.Pow(bouncePowerFactor, bounceCount - glyphGeometric);
+                        // if (currentPower < powerLevelMin)
+                        // {
+                        //     dieNextHit = true;
+                        // }
                     }
                     else
                     {
@@ -277,8 +278,8 @@ namespace GearUpCards.MonoBehaviours
             homingSpeed = homingSpeedBase + glyphDivination * homingSpeedScaling;
             homingRange = homingRangeBase + (glyphDivination + (stackCount - 1) * 2) * homingRangeScaling;
 
-            // power loss
-            powerLossFactor = powerLossMulBase + (powerLossMulScaling * glyphPotency);
+            // power scale on bounce
+            bouncePowerFactor = bouncePowerMulBase + (bouncePowerMulScaling * glyphPotency);
 
             // declare enemies
             Miscs.Log("[GearUpCard] Mystic Missle: Setup() - declare enemies");
@@ -364,8 +365,16 @@ namespace GearUpCards.MonoBehaviours
                 {
                     // deal direct hit magic damage
 
-                    // give bounce buffer
-                    rayHitReflect.reflects++;
+                    // give bounce buffer, or exhaust it quicker
+                    if (bounceFromPlayer <= glyphGeometric)
+                    {
+                        rayHitReflect.reflects++;
+                    }
+                    else
+                    {
+                        rayHitReflect.reflects--;
+                    }
+                    bounceFromPlayer++;
                 }
             }
 
@@ -375,10 +384,10 @@ namespace GearUpCards.MonoBehaviours
 
             // ...then explode and deal area magic damage
             explosionImpact.damage = projectileHit.damage * (damageFactorBase + damageFactorScaling * ((stackCount - 1) * 2 + glyphPotency));
-            explosionImpact.damage *= currentPower;
+            explosionImpact.damage *= Mathf.Clamp(currentPower, powerLevelMin, 2.0f);
 
             explosionImpact.force = explosionForceBase + explosionForceScaling * ((stackCount - 1) * 2 + glyphPotency);
-            explosionImpact.force *= currentPower;
+            explosionImpact.force *= Mathf.Clamp(currentPower, powerLevelMin, 2.0f);
 
             // power loss on bounce
             // if (bounceCount > glyphGeometric && hit.transform != null)

@@ -427,7 +427,8 @@ namespace GearUpCards.Utils
 
             // others
             "Glyph CAD Module",
-            "Shield Battery"
+            "Shield Battery",
+            "Pure Canvas"
         };
         public static Dictionary<string, float> raritySnapshot = new Dictionary<string, float>();
 
@@ -741,17 +742,17 @@ namespace GearUpCards.Utils
             {
                 CustomCardCategories.instance.MakeCardsExclusive(cardInfoA, cardInfoB);
 
-                Miscs.Log($"[GearUp] MakeExclusive: card [{cardA}] and card [{cardB}] made exclusive");
+                Miscs.LogInfo($"[GearUp] MakeExclusive: card [{cardA}] and card [{cardB}] made exclusive");
             }
             else
             {
                 if (cardInfoA == null)
                 {
-                    Miscs.LogWarn($"[GearUp] MakeExclusive: card [{cardA}] not found");
+                    Miscs.Log($"[GearUp] MakeExclusive: card [{cardA}] not found");
                 }
                 if (cardInfoB == null)
                 {
-                    Miscs.LogWarn($"[GearUp] MakeExclusive: card [{cardB}] not found");
+                    Miscs.Log($"[GearUp] MakeExclusive: card [{cardB}] not found");
                 }
             }
         }

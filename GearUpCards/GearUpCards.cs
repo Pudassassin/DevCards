@@ -121,7 +121,7 @@ namespace GearUpCards
             CustomCard.BuildCard<GeometricGlyphCard>();
             CustomCard.BuildCard<PotencyGlyphCard>();
             CustomCard.BuildCard<TimeGlyphCard>();
-            CustomCard.BuildCard<ReplicationGlyph>();
+            CustomCard.BuildCard<ReplicationGlyphCard>();
 
             // Booster Packs
             CustomCard.BuildCard<VeteransFriendCard>();

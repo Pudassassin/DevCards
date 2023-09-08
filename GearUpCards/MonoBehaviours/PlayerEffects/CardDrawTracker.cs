@@ -277,7 +277,7 @@ namespace GearUpCards.MonoBehaviours
             List<CardCategory> playerBlacklist = player.data.stats.GetAdditionalData().blacklistedCategories;
 
             // while (Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).markovChoice > 0)
-            for (int i = 0; i < extraCardDraws.Count; i++)
+            for (int drawQueue = 0; drawQueue < extraCardDraws.Count; drawQueue++)
             {
                 blacklistDelta = new Dictionary<CardCategory, bool>();
 
@@ -291,7 +291,7 @@ namespace GearUpCards.MonoBehaviours
 
                 // A) add to blacklist temporarily
                 Miscs.Log("[GearUpCard] CardDrawTracker.ResolveExtraDraws() : edit blacklist");
-                foreach (var item in extraCardDraws[i].blacklistCategories)
+                foreach (var item in extraCardDraws[drawQueue].blacklistCategories)
                 {
                     // check if already blacklisted
                     if (playerBlacklist.Contains(item))
@@ -308,7 +308,7 @@ namespace GearUpCards.MonoBehaviours
                 }
 
                 // undo (remove from) blacklist temporarily
-                foreach (var item in extraCardDraws[i].undoBlacklistCategories)
+                foreach (var item in extraCardDraws[drawQueue].undoBlacklistCategories)
                 {
                     // check if already blacklisted
                     if (playerBlacklist.Contains(item))
@@ -321,13 +321,12 @@ namespace GearUpCards.MonoBehaviours
                     else
                     {
                         // it's not there, no change
-                        break;
                     }
                 }
 
-                while (extraCardDraws[i].count > 0)
+                while (extraCardDraws[drawQueue].count > 0)
                 {
-                    extraCardDraws[i].count--;
+                    extraCardDraws[drawQueue].count--;
 
                     yield return GameModeManager.TriggerHook(GameModeHooks.HookPlayerPickStart);
 
