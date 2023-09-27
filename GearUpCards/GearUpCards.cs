@@ -164,6 +164,7 @@ namespace GearUpCards
                 }
 
                 // [Flak Cannon] Vs WWC
+                MakeExclusive("Gatling Gun", "Flak Cannon");
                 if (GetCardInfo("Plasma Rifle") != null)
                 {
                     CardInfo otherCard = GetCardInfo("Plasma Rifle");
