@@ -50,28 +50,34 @@ namespace GearUpCards.MonoBehaviours
 
             public void TickToxic()
             {
-                timer += TimeHandler.deltaTime;
-
                 if (timer >= tickInterval)
                 {
                     if (CheckToxicActive() && damagePerSecond > 0.0f)
                     {
+                        // drain down to -100% of player Max Health
                         float tickDamage = damagePerSecond * tickInterval;
+
+                        if (player.data.health - tickDamage < -player.data.maxHealth)
+                        {
+                            tickDamage = player.data.maxHealth + player.data.health;
+                        }
 
                         if (isLethal)
                         {
-                            player.data.health -= tickDamage * (1.0f - lethalTriggerFactor);
+                            // player.data.health -= tickDamage * (1.0f - lethalTriggerFactor);
+                            player.data.healthHandler.Heal(-(tickDamage * (1.0f - lethalTriggerFactor)));
                             player.data.healthHandler.DoDamage(new Vector2(tickDamage * lethalTriggerFactor, 0.0f), player.transform.position, new Color(0.0f, 0.85f, 0.0f, 1.0f));
                         }
                         else
                         {
-                            player.data.health -= tickDamage;
+                            // player.data.health -= tickDamage;
+                            player.data.healthHandler.Heal(-tickDamage);
                         }
 
-                        if (player.data.health < -1 * player.data.maxHealth)
-                        {
-                            player.data.health = -1 * player.data.maxHealth;
-                        }
+                        // if (player.data.health < -1 * player.data.maxHealth)
+                        // {
+                        //     player.data.health = -1 * player.data.maxHealth;
+                        // }
                     }
 
                     timer -= tickInterval;
@@ -80,6 +86,8 @@ namespace GearUpCards.MonoBehaviours
                         tickCount--;
                     }
                 }
+
+                timer += TimeHandler.deltaTime;
             }
 
             public void SetChronicToxic(float damageDelta, float newInterval)

@@ -219,7 +219,8 @@ namespace GearUpCards.MonoBehaviours
                                 // drain enemies' lives
                                 orbLifeTime += procTickTime * 0.25f;
                                 float drainAmount = (drainFlatRate + (item.data.maxHealth * drainPercentRate)) * procTickTime;
-                                item.data.health -= drainAmount * 0.5f;
+                                // item.data.health -= drainAmount * 0.5f;
+                                item.data.healthHandler.Heal(-drainAmount * 0.5f);
                                 item.data.healthHandler.RPCA_SendTakeDamage(new Vector2(drainAmount * 0.5f, 0.0f), this.transform.position, playerID: casterPlayer.playerID);
                             }
                         }

@@ -26,8 +26,6 @@ namespace GearUpCards.MonoBehaviours
 {
     internal class CardDrawTracker : MonoBehaviour
     {
-        // private static GameObject empowerShotVFX = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_EmpowerShot");
-        // internal bool addShotVFX = false;
         public static List<Player> extraDrawPlayerQueue = new List<Player>();
 
         public class ExtraCardDraw
@@ -43,6 +41,10 @@ namespace GearUpCards.MonoBehaviours
 
             public List<CardCategory> whitelistRarityCats = new List<CardCategory>();
             public List<CardCategory> blacklistCategories = new List<CardCategory>();
+
+            // meta data and action
+            public CardInfo sourceCard = null;
+            public Action<Player> dequeueAction = (player) => { };
 
             // simple extra draws
             public ExtraCardDraw(int count, int roundDelay = 0)
@@ -198,12 +200,7 @@ namespace GearUpCards.MonoBehaviours
         public List<ExtraCardDraw> extraCardDrawsDelayed = new List<ExtraCardDraw>();
 
         // internals
-        private const float procTickTime = .10f;
         private bool isResolving = false;
-
-        internal float procTimer = 0.0f;
-        internal bool effectEnabled = false;
-        // internal int proc_count = 0;
 
         internal Player player;
         internal CharacterStatModifiers stats;
@@ -233,11 +230,6 @@ namespace GearUpCards.MonoBehaviours
         {
 
         }
-
-        //public void RefreshStatsPreRound()
-        //{
-        //
-        //}
 
         // Methods
         public void QueueExtraDraw(ExtraCardDraw extraCardDraw)
@@ -276,10 +268,15 @@ namespace GearUpCards.MonoBehaviours
             Dictionary<CardCategory, bool> blacklistDelta;
             List<CardCategory> playerBlacklist = player.data.stats.GetAdditionalData().blacklistedCategories;
 
-            // while (Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).markovChoice > 0)
             for (int drawQueue = 0; drawQueue < extraCardDraws.Count; drawQueue++)
             {
                 blacklistDelta = new Dictionary<CardCategory, bool>();
+
+                // resolve booster-pack unpacking event
+                if (extraCardDraws[drawQueue].sourceCard != null)
+                {
+                    Miscs.Log("[GearUpCard] CardDrawTracker.ResolveExtraDraws() : " + extraCardDraws[drawQueue].sourceCard.cardName);
+                }
 
                 Miscs.Log("[GearUpCard] CardDrawTracker.ResolveExtraDraws() : player's blacklist before VVV");
                 string logBlacklist = "";
@@ -289,7 +286,7 @@ namespace GearUpCards.MonoBehaviours
                 }
                 Miscs.Log(logBlacklist);
 
-                // A) add to blacklist temporarily
+                // A1) add to blacklist temporarily
                 Miscs.Log("[GearUpCard] CardDrawTracker.ResolveExtraDraws() : edit blacklist");
                 foreach (var item in extraCardDraws[drawQueue].blacklistCategories)
                 {
@@ -307,7 +304,7 @@ namespace GearUpCards.MonoBehaviours
                     }
                 }
 
-                // undo (remove from) blacklist temporarily
+                // A2) undo (remove from) blacklist temporarily
                 foreach (var item in extraCardDraws[drawQueue].undoBlacklistCategories)
                 {
                     // check if already blacklisted
@@ -362,6 +359,10 @@ namespace GearUpCards.MonoBehaviours
                         playerBlacklist.Remove(item);
                     }
                 }
+
+                // C) resolve booster-pack post-unpacking event/action
+                Miscs.Log("[GearUpCard] CardDrawTracker.ResolveExtraDraws() : dequeue action");
+                extraCardDraws[drawQueue].dequeueAction(player);
 
                 Miscs.Log("[GearUpCard] CardDrawTracker.ResolveExtraDraws() : player's blacklist after VVV");
                 logBlacklist = "";

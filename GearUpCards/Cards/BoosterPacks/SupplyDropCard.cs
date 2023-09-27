@@ -34,17 +34,43 @@ namespace GearUpCards.Cards
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            // gun.damage *= 1.20f;
-            // gun.attackSpeedMultiplier += 0.25f;
-            // gunAmmo.maxAmmo += 3;
-
             CardDrawTracker cardDrawTracker = player.gameObject.GetOrAddComponent<CardDrawTracker>();
+            CardInfo thisCard = GetCardInfo("GearUP@Supply Drop!");
 
-            CardDrawTracker.ExtraCardDraw extraCardDraw = new CardDrawTracker.ExtraCardDraw(3, 1);
-            Rarity rarity = CardUtils.TryQueryRarity("Uncommon", "Uncommon");
-            extraCardDraw.SetWhitelistRarityRange(rarity, includeLower: true);
+            // limiting one delivery at a time
+            bool isDelivering = false;
+            List<CardDrawTracker.ExtraCardDraw> drawQueues = new List<CardDrawTracker.ExtraCardDraw>(cardDrawTracker.extraCardDraws);
+            drawQueues.AddRange(cardDrawTracker.extraCardDrawsDelayed);
 
-            cardDrawTracker.QueueExtraDraw(extraCardDraw);
+            foreach (var queue in drawQueues)
+            {
+                if (queue.sourceCard == null) { continue; }
+                if (queue.sourceCard.cardName == thisCard.cardName)
+                {
+                    isDelivering = true;
+                    break;
+                }
+            }
+
+            if (!isDelivering)
+            {
+                // black/whitelisting
+                ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.typeBoosterPack);
+                ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.tagCardManipulation);
+
+                CardDrawTracker.ExtraCardDraw extraCardDraw = new CardDrawTracker.ExtraCardDraw(3, 1);
+                Rarity rarity = TryQueryRarity("Uncommon", "Uncommon");
+                extraCardDraw.SetWhitelistRarityRange(rarity, includeLower: true);
+
+                extraCardDraw.sourceCard = thisCard;
+                extraCardDraw.dequeueAction = (player) =>
+                {
+                    ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Remove(GearCategory.typeBoosterPack);
+                    ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Remove(GearCategory.tagCardManipulation);
+                };
+
+                cardDrawTracker.QueueExtraDraw(extraCardDraw);
+            }
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -56,7 +82,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "You get to pick <color=green>THREE</color> more <color=#2CADFFff>Uncommon</color> or lower rarity cards in the next draw phase.";
+            return "You get to pick <color=green>THREE</color> more <color=#2CADFFff>Uncommon</color> or lower rarity cards in the next draw phase.\n<color=yellow>Only one ongoing supply drop per player at a time.</color>";
         }
         protected override GameObject GetCardArt()
         {

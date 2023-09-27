@@ -40,7 +40,7 @@ namespace GearUpCards.MonoBehaviours
         private const float glyphTimeGunDragMul = 0.80f;
         private const float glyphTimeGunLifetimeMul = 1.35f;
         
-        private const int glyphReplicationProjectiles = 3;
+        private const int glyphReplicationProjectiles = 2;
 
         // internals
         private const float procTickTime = .10f;

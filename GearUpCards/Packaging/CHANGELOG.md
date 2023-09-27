@@ -1,5 +1,20 @@
 ## Patch Notes
 <details>
+<summary>Public Beta 4-2 [V0.4.2]</summary>
+
+- make cards and spells that deal direct HP subtraction and life drains to utilize **Heal(negative)** function for proper interaction with damage-taken multipliers and to support displaying with \[DamageTracker]
+
+- nerfed **[Replication Glyph]**
+  - +3 > +2 Gun Projectiles
+  - -25% > -35% ATK SPD
+  - 0.0s > +0.25s Reload Time
+  
+- put a limit behind **[Supply Drop!]** to only have 1 ongoing 'delivery' at a time
+  - also have unlisted effect to temporarly blacklist CardManipulation and BoosterPack cards until the drop.
+
+</details>
+
+<details>
 <summary>Public Beta 4-0 [V0.4.0]</summary>
 
 ### Implemented [Booster Pack] mechanic:

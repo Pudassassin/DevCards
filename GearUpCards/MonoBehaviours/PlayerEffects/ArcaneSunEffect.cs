@@ -228,7 +228,8 @@ namespace GearUpCards.MonoBehaviours
                         
                         float damage = (damageFlat + (damagePercent * item.data.maxHealth)) * (arcaneSunStatus.GetEffectCharge() + preCharge) * procTickTime;
 
-                        item.data.health -= damage * hpDrainFactor;
+                        // item.data.health -= damage * hpDrainFactor;
+                        item.data.healthHandler.Heal(-(damage * hpDrainFactor));
                         item.data.healthHandler.RPCA_SendTakeDamage(new Vector2(damage * damageFactor, 0.0f), item.transform.position, playerID: player.playerID);
 
                         // beam visual

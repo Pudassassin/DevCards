@@ -81,6 +81,20 @@ namespace GearUpCards.Patches
         }
 
         [HarmonyPrefix]
+        [HarmonyPriority(Priority.Last)]
+        [HarmonyPatch("Heal")]
+        static bool NegativeHealRework(Player ___player, ref float healAmount)
+        {
+            if (healAmount >= 0.0f)
+            {
+                return true;
+            }
+
+            ___player.data.health += healAmount;
+            return false;
+        }
+
+        [HarmonyPrefix]
         [HarmonyPriority(Priority.First)]
         [HarmonyPatch("DoDamage")]
         static void ApplyDamageMultiplier(HealthHandler __instance, ref Vector2 damage, Player ___player)

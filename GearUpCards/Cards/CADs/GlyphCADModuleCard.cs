@@ -42,6 +42,8 @@ namespace GearUpCards.Cards
             CardDrawTracker.ExtraCardDraw extraCardDraw = new CardDrawTracker.ExtraCardDraw(1);
             extraCardDraw.SetWhitelistGearUpCard(new List<CardCategory> { GearCategory.typeGlyph });
 
+            extraCardDraw.sourceCard = GetCardInfo("GearUP@Glyph CAD Module");
+
             cardDrawTracker.QueueExtraDraw(extraCardDraw);
 
         }

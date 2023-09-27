@@ -31,14 +31,15 @@ namespace GearUpCards.Cards
             // gun.projectielSimulatonSpeed *= 1.15f;
             // gun.projectileSpeed *= 1.25f;
 
-            gun.attackSpeed *= 1.0f / 0.75f;
+            gun.attackSpeed *= 1.0f / 0.65f;
+            gunAmmo.reloadTimeAdd += 0.25f;
 
             // unused stats
             // gun.attackSpeedMultiplier *= 0.85f;
 
             gun.spread += 30.0f / 360.0f;
 
-            gun.numberOfProjectiles += 3;
+            gun.numberOfProjectiles += 2;
 
             characterStats.GetGearData().glyphReplication += 1;
 
@@ -82,7 +83,7 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "Gun Projectiles",
-                    amount = "+3",
+                    amount = "+2",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 // new CardInfoStat()
@@ -96,16 +97,23 @@ namespace GearUpCards.Cards
                 {
                     positive = false,
                     stat = "ATK SPD",
-                    amount = "-25%",
+                    amount = "-35%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
-                    stat = "Spread",
-                    amount = "+30 deg",
+                    stat = "Reload Time",
+                    amount = "+0.25s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                }
+                },
+                // new CardInfoStat()
+                // {
+                //     positive = false,
+                //     stat = "Spread",
+                //     amount = "+30 deg",
+                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                // }
             };
         }
         protected override CardThemeColor.CardThemeColorType GetTheme()

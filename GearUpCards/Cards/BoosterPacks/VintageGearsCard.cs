@@ -45,6 +45,8 @@ namespace GearUpCards.Cards
             extraCardDraw.SetWhitelistCardPacks(new List<string> { "Vanilla" });
             extraCardDraw.SetWhitelistRarityRange(rarity, includeLower: true);
 
+            extraCardDraw.sourceCard = GetCardInfo("GearUP@Vintage Gears");
+
             cardDrawTracker.QueueExtraDraw(extraCardDraw);
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)

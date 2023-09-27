@@ -38,6 +38,8 @@ namespace GearUpCards.Cards
             List<CardCategory> cardCategories = new List<CardCategory>() { GearCategory.typeGlyph, GearCategory.typeSpell, GearCategory.typeUniqueMagick};
             extraCardDraw.OverrideCategories(cardCategories, false);
 
+            extraCardDraw.sourceCard = GetCardInfo("GearUP@Pure Canvas");
+
             cardDrawTracker.QueueExtraDraw(extraCardDraw);
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)

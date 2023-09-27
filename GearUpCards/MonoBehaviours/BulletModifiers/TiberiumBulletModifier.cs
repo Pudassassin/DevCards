@@ -27,7 +27,8 @@ namespace GearUpCards.MonoBehaviours
                 ProjectileHit projectileHit = this.gameObject.GetComponentInParent<ProjectileHit>();
 
                 Player shooterPlayer = projectileHit.ownPlayer;
-                Gun shooterGun = projectileHit.ownWeapon.GetComponent<Gun>();
+                // Gun shooterGun = projectileHit.ownWeapon.GetComponent<Gun>();
+                ProjectileHit bulletHit = transform.parent.GetComponent<ProjectileHit>();
 
                 CharacterStatModifiers shooterStats = shooterPlayer.gameObject.GetComponent<CharacterStatModifiers>();
 
@@ -36,7 +37,8 @@ namespace GearUpCards.MonoBehaviours
                 // Calculate chronic HP Loss
                 CharacterData victimChar = hit.transform.gameObject.GetComponent<CharacterData>();
 
-                float gunDamage         = shooterGun.damage * 55.0f;
+                // float gunDamage         = shooterGun.damage * 55.0f;
+                float gunDamage         = bulletHit.damage;
                 float chronicDmg        = 0.15f * stackCount * gunDamage;
                 float chronicFlat       = 0.35f * stackCount;
                 float chronicHpPercent  = 0.001f * stackCount * victimChar.maxHealth;

@@ -114,7 +114,8 @@ namespace GearUpCards.MonoBehaviours
                 {
                     // drain enemies' lives
                     float drainAmount = (drainFlat + (item.data.maxHealth * drainPercent));
-                    item.data.health -= drainAmount * 0.5f;
+                    // item.data.health -= drainAmount * 0.5f;
+                    item.data.healthHandler.Heal(-drainAmount * 0.5f);
                     item.data.healthHandler.RPCA_SendTakeDamage(new Vector2(drainAmount * 0.5f, 0.0f), this.transform.position, playerID: casterPlayer.playerID);
 
                     LifeforceBlastStatus status = item.gameObject.GetOrAddComponent<LifeforceBlastStatus>();
