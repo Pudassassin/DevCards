@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Packaging\**" />
+    <EmbeddedResource Remove="Packaging\**" />
+    <None Remove="Packaging\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Cards\ShardSlinger.cs" />
     <Compile Remove="Cards\Template.cs" />
     <Compile Remove="MonoBehaviours\CrystalShardModifier.cs" />

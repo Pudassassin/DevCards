@@ -248,13 +248,13 @@ namespace GearUpCards.MonoBehaviours
 
         public void Setup()
         {
-            Miscs.Log("[GearUpCard] Mystic Missle: Setup()");
+            // Miscs.Log("[GearUpCard] Mystic Missle: Setup()");
             projectileHit = gameObject.GetComponentInParent<ProjectileHit>();
             bulletMove = gameObject.GetComponentInParent<MoveTransform>();
             explosionImpact = gameObject.GetComponent<Explosion>();
 
             // fetch player stats
-            Miscs.Log("[GearUpCard] Mystic Missle: Setup() - fetch player stats");
+            // Miscs.Log("[GearUpCard] Mystic Missle: Setup() - fetch player stats");
             shooterPlayer = projectileHit.ownPlayer;
             shooterGun = projectileHit.ownWeapon.GetComponent<Gun>();
             shooterStats = shooterPlayer.gameObject.GetComponent<CharacterStatModifiers>();
@@ -282,7 +282,7 @@ namespace GearUpCards.MonoBehaviours
             bouncePowerFactor = bouncePowerMulBase + (bouncePowerMulScaling * glyphPotency);
 
             // declare enemies
-            Miscs.Log("[GearUpCard] Mystic Missle: Setup() - declare enemies");
+            // Miscs.Log("[GearUpCard] Mystic Missle: Setup() - declare enemies");
             foreach (Player player in PlayerManager.instance.players)
             {
                 if (player.teamID != shooterPlayer.teamID)
@@ -292,7 +292,7 @@ namespace GearUpCards.MonoBehaviours
             }
 
             // setup RayHitReflect
-            Miscs.Log("[GearUpCard] Mystic Missle: Setup() - setup RayHitReflect");
+            // Miscs.Log("[GearUpCard] Mystic Missle: Setup() - setup RayHitReflect");
             rayHitReflect = transform.root.gameObject.GetComponent<RayHitReflect>();
             if (rayHitReflect == null)
             {
@@ -308,7 +308,7 @@ namespace GearUpCards.MonoBehaviours
             }
 
             // setup Explosion impact script
-            Miscs.Log("[GearUpCard] Mystic Missle: Setup() - setup Explosion impact script");
+            // Miscs.Log("[GearUpCard] Mystic Missle: Setup() - setup Explosion impact script");
             explosionImpact = MysticMissileCard.objectSpawnDict[shooterPlayer.playerID].effect.GetComponent<Explosion>();
 
             explosionImpact.auto = true;
@@ -406,7 +406,7 @@ namespace GearUpCards.MonoBehaviours
 
         public void Destroy()
         {
-            UnityEngine.Object.Destroy(this);
+            Destroy(this);
         }
 
     }

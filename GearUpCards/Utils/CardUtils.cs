@@ -60,26 +60,28 @@ namespace GearUpCards.Utils
                 {
                     if (__gearCategories == null)
                     {
-                        __gearCategories = new List<CardCategory>();
-                        __gearCategories.Add(noType);
-                        __gearCategories.Add(typeBoosterPack);
-                        __gearCategories.Add(typeCardShuffle);
+                        __gearCategories = new List<CardCategory>()
+                        {
+                            noType,
+                            typeBoosterPack,
+                            typeCardShuffle,
 
-                        __gearCategories.Add(typeGunMod);
-                        __gearCategories.Add(typeBlockMod);
-                        __gearCategories.Add(typeSizeMod);
+                            typeGunMod,
+                            typeBlockMod,
+                            typeSizeMod,
 
-                        __gearCategories.Add(typeUniqueMagick);
-                        __gearCategories.Add(typeUniqueGunSpread);
-                        __gearCategories.Add(typeUniqueCAD);
+                            typeUniqueMagick,
+                            typeUniqueGunSpread,
+                            typeUniqueCAD,
 
-                        __gearCategories.Add(typeParts);
-                        __gearCategories.Add(typeCharm);
-                        __gearCategories.Add(typeGear);
+                            typeParts,
+                            typeCharm,
+                            typeGear,
 
-                        __gearCategories.Add(typeGlyph);
-                        __gearCategories.Add(typeSpell);
-                        __gearCategories.Add(typeCadModule);
+                            typeGlyph,
+                            typeSpell,
+                            typeCadModule
+                        };
                     }
 
                     return __gearCategories;
