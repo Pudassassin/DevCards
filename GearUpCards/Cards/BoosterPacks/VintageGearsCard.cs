@@ -40,7 +40,7 @@ namespace GearUpCards.Cards
 
             CardDrawTracker cardDrawTracker = player.gameObject.GetOrAddComponent<CardDrawTracker>();
 
-            CardDrawTracker.ExtraCardDraw extraCardDraw = new CardDrawTracker.ExtraCardDraw(3);
+            CardDrawTracker.ExtraCardDraw extraCardDraw = new CardDrawTracker.ExtraCardDraw(2);
             Rarity rarity = CardUtils.TryQueryRarity("Uncommon", "Uncommon");
             extraCardDraw.SetWhitelistCardPacks(new List<string> { "Vanilla" });
             extraCardDraw.SetWhitelistRarityRange(rarity, includeLower: true);
@@ -59,7 +59,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "You get to pick <color=green>THREE</color> <color=#2CADFFff>Uncommon</color> or lower rarity cards from vanilla deck.";
+            return "You get to pick <color=green>TWO</color> <color=#2CADFFff>Uncommon</color> or lower rarity cards from vanilla deck.";
         }
         protected override GameObject GetCardArt()
         {

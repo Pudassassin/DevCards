@@ -44,7 +44,7 @@ namespace GearUpCards.Cards
                 block.cdAdd -= 0.25f;
             }
 
-            gun.reloadTimeAdd += 1.25f;
+            gunAmmo.reloadTimeAdd += 1.25f;
             // gun.attackSpeed *= 1.0f / 0.75f;
 
             // player.gameObject.GetOrAddComponent<GearUpPreRoundEffects>();

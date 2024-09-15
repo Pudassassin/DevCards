@@ -25,8 +25,8 @@ namespace GearUpCards.Cards
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            data.maxHealth *= 3.0f;
-            characterStats.sizeMultiplier *= .95f;
+            data.maxHealth *= 4.0f;
+            characterStats.sizeMultiplier *= .90f;
 
             characterStats.GetGearData().hollowLifeStack += 1;
 
@@ -63,21 +63,21 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "Max HP",
-                    amount = "+200%",
+                    amount = "+300%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "HP Cap",
-                    amount = "-25%",
+                    amount = "-30%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "Heal Effects",
-                    amount = "-15%",
+                    amount = "-25%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };

@@ -15,22 +15,24 @@ using static GearUpCards.Utils.CardUtils;
 
 namespace GearUpCards.Cards
 {
-    class MedicalPartsCard : CustomCard
+    class HyperRegeneration : CustomCard
     {
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
             cardInfo.categories = new CardCategory[]
             {
-                GearCategory.typeParts
+                GearCategory.noType
             };
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            data.maxHealth *= 1.5f;
-            data.healthHandler.regeneration += 7.5f;
+            data.healthHandler.regeneration += 25.0f;
 
-            // GearUpPreRoundEffects mono = player.gameObject.GetOrAddComponent<GearUpPreRoundEffects>();
-            // characterStats.GetGearData().hpPercentageRegen += 0.001f;
+            characterStats.GetGearData().hpPercentageRegen += 0.005f;
+            GearUpPreRoundEffects preRound = player.gameObject.GetOrAddComponent<GearUpPreRoundEffects>();
+
+            characterStats.GetGearData().hyperRegenerationStack += 1;
+            HollowLifeEffect hollowLife = player.gameObject.GetOrAddComponent<HollowLifeEffect>();
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -38,19 +40,20 @@ namespace GearUpCards.Cards
         }
         protected override string GetTitle()
         {
-            return "Medical Parts";
+            return "Hyper Regeneration!";
         }
         protected override string GetDescription()
         {
-            return "Some hearty doodads to help you survive longer.";
+            return "<i>\"You should've gone for the head... or one-shot kill.\"";
         }
         protected override GameObject GetCardArt()
         {
-            return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_MedicalParts");
+            // return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_MedicalParts");
+            return null;
         }
         protected override CardInfo.Rarity GetRarity()
         {
-            return CardInfo.Rarity.Common;
+            return CardInfo.Rarity.Uncommon;
         }
         protected override CardInfoStat[] GetStats()
         {
@@ -59,22 +62,22 @@ namespace GearUpCards.Cards
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "HP",
-                    amount = "+50%",
+                    stat = "Flat Regen",
+                    amount = "+25 /s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = true,
-                    stat = "Regen/s",
-                    amount = "+7.5",
+                    stat = "HP Regen",
+                    amount = "+0.5% /s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
-                    positive = true,
-                    stat = "Heal Effects",
-                    amount = "+5%",
+                    positive = false,
+                    stat = "HP Cap",
+                    amount = "-15%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };

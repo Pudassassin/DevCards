@@ -5,6 +5,7 @@ using UnityEngine;
 using UnboundLib;
 
 using GearUpCards.MonoBehaviours;
+using GearUpCards.Extensions;
 // using GearUpCards.Extensions;
 
 namespace GearUpCards.Patches
@@ -33,6 +34,14 @@ namespace GearUpCards.Patches
             {
                 healMuliplier *= lifeforceBlastStatus.GetHealMultiplier();
             }
+
+            CharacterStatModifiers stats = ___player.gameObject.GetComponent<CharacterStatModifiers>();
+
+            int medicCheckupStack = stats.GetGearData().medicCheckupStack;
+            healMuliplier *= Mathf.Pow(0.90f, medicCheckupStack);
+
+            int medicalPartStack = stats.GetGearData().medicalPartStack;
+            healMuliplier *= Mathf.Pow(1.05f, medicalPartStack);
 
             return healMuliplier;
         }
@@ -100,6 +109,22 @@ namespace GearUpCards.Patches
         static void ApplyDamageMultiplier(HealthHandler __instance, ref Vector2 damage, Player ___player)
         {
             damage *= GetDamageMultiplier(___player);
+        }
+
+
+        [HarmonyPrefix]
+        [HarmonyPriority(Priority.Last)]
+        [HarmonyPatch("DoDamage")]
+        static void BountyScoreFromDamage(HealthHandler __instance, ref Vector2 damage, ref Player damagingPlayer, ref bool lethal, Player ___player)
+        {
+            int sourceID = -1;
+            if (damagingPlayer != null)
+            {
+                sourceID = damagingPlayer.playerID;
+            }
+
+            int targetID = ___player.playerID;
+            BountyDamageTracker.ScoreFromDamage(sourceID, targetID, damage.magnitude, lethal);
         }
 
         // [HarmonyPostfix]

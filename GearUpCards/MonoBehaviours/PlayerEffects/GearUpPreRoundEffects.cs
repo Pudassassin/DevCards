@@ -23,6 +23,8 @@ namespace GearUpCards.MonoBehaviours
 {
     internal class GearUpPreRoundEffects : MonoBehaviour
     {
+        public static List<GearUpPreRoundEffects> instanceList = new List<GearUpPreRoundEffects>();
+
         // private static GameObject empowerShotVFX = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_EmpowerShot");
         // internal bool addShotVFX = false;
 
@@ -33,9 +35,9 @@ namespace GearUpCards.MonoBehaviours
         private const int glyphGeometricGunReflect = 3;
 
         private const float glyphMagickFragmentBlockCooldownAdd = -0.1f;
-        private const float glyphMagickFragmentBlockCooldownMul = 0.75f;
+        private const float glyphMagickFragment_BlockCdMul = 0.75f;
 
-        private const float glyphPotencyDamage = 1.50f;
+        private const float glyphPotencyDamage = 1.40f;
 
         private const float glyphTimeGunDragMul = 0.80f;
         private const float glyphTimeGunLifetimeMul = 1.35f;
@@ -57,6 +59,34 @@ namespace GearUpCards.MonoBehaviours
         internal HealthHandler healthHandler;
         internal HollowLifeEffect hollowLifeEffect;
 
+        // stats deltas -- for [Glyph CAD Module]
+        public bool playerHas_GlyphCAD = false;
+
+        public int statsDelta_GunNumProjectile_ADD = 0;
+        public float statsDelta_GunDamage_MUL = 1.0f;
+
+        public float statsDelta_GunProjSpeed_MUL = 1.0f;
+        public float statsDelta_GunProjSim_MUL = 1.0f;
+        public int statsDelta_GunReflect_ADD = 0;
+
+        public float statsDelta_BlockCdAdd_ADD = 0.0f;
+        public float statsDelta_BlockCdMul_ADD = 0.0f;
+        public float statsDelta_BlockCdMul_MUL = 1.0f;
+
+        public float statsDelta_GunDrag_MUL = 1.0f;
+        public float statsDelta_GunLifetime_MUL = 1.0f;
+
+        // stats deltas 2 -- for [Bullets.rar]
+        public bool playerHas_BulletRAR = false;
+
+        public int statsDelta_GunMaxAmmo_ADD_2 = 0;
+        public float statsDelta_GunDamage_MUL_2 = 1.0f;
+        public int statsDelta_GunNumProjectile_ADD_2 = 0;
+        public float statsDelta_GunBurstTime_ADD_2 = 0.0f;
+
+        // stats deltas omega -- live update stats
+
+
         // backup of character stats
         private int prevGunMaxAmmo = 3;
         private int prevGunNumProjectile = 1;
@@ -74,8 +104,6 @@ namespace GearUpCards.MonoBehaviours
         public float prevGunDrag = 0.0f;
         public float prevGunLifetime = 0.0f;
 
-        public int prevGunProjCount = 1;
-
         // additional chatacter stats
         private float hpPercentageRegen = 0.0f;
 
@@ -91,10 +119,12 @@ namespace GearUpCards.MonoBehaviours
             GameModeManager.AddHook(GameModeHooks.HookPointStart, OnPointStart);
             GameModeManager.AddHook(GameModeHooks.HookPointEnd, OnPointEnd);
 
-            GameModeManager.AddHook(GameModeHooks.HookPickEnd, OnPickEnd);
+            // GameModeManager.AddHook(GameModeHooks.HookPickEnd, OnPickEnd);
             GameModeManager.AddHook(GameModeHooks.HookPickStart, OnPickStart);
 
             GameModeManager.AddHook(GameModeHooks.HookGameStart, OnRematch);
+
+            instanceList.Add(this);
         }
 
         public void Start()
@@ -135,6 +165,14 @@ namespace GearUpCards.MonoBehaviours
 
         }
 
+        public static void TriggerStatsMods()
+        {
+            foreach (var item in instanceList)
+            {
+                item.ApplyStatsMods();
+            }
+        }
+
         //public void RefreshStatsPreRound()
         //{
         //
@@ -166,29 +204,94 @@ namespace GearUpCards.MonoBehaviours
             // prevGunProjCount = gun.numberOfProjectiles;
         }
 
-        private void RestorePlayerStats()
+        private void UndoStatsChange()
         {
-            block.cdAdd = prevBlockCdAdd;
-            block.cdMultiplier = prevBlockCdMul;
+            if (playerHas_BulletRAR)
+            {
+                gun.timeBetweenBullets -= statsDelta_GunBurstTime_ADD_2;
+                gun.numberOfProjectiles -= statsDelta_GunNumProjectile_ADD_2;
+                gun.damage /= statsDelta_GunDamage_MUL_2;
+                gunAmmo.maxAmmo -= statsDelta_GunMaxAmmo_ADD_2;
 
-            // gun.damage = prevGunDamageMul;
-            gun.projectielSimulatonSpeed = prevGunProjSim;
-            gun.projectileSpeed = prevGunProjSpeed;
-            gun.reflects = prevGunReflect;
+                playerHas_BulletRAR = false;
 
-            gunAmmo.maxAmmo = prevGunMaxAmmo;
-            gun.numberOfProjectiles = prevGunNumProjectile;
-            gun.timeBetweenBullets = prevGunBurstTime;
-            gun.damage = prevGunDamage;
 
-            gun.drag = prevGunDrag;
-            gun.destroyBulletAfter = prevGunLifetime;
+                statsDelta_GunBurstTime_ADD_2 = 0.0f;
+                statsDelta_GunNumProjectile_ADD_2 = 0;
+                statsDelta_GunDamage_MUL_2 = 1.0f;
+                statsDelta_GunMaxAmmo_ADD_2 = 0;
+            }
 
-            // gun.numberOfProjectiles = prevGunProjCount;
+            if (playerHas_GlyphCAD)
+            {
+                gun.numberOfProjectiles -= statsDelta_GunNumProjectile_ADD;
+
+                gun.drag /= statsDelta_GunDrag_MUL;
+                gun.destroyBulletAfter /= statsDelta_GunLifetime_MUL;
+
+                gun.damage /= statsDelta_GunDamage_MUL;
+
+                block.cdMultiplier /= statsDelta_BlockCdMul_MUL;
+                block.cdMultiplier -= statsDelta_BlockCdMul_ADD;
+                block.cdAdd -= statsDelta_BlockCdAdd_ADD;
+
+                gun.reflects -= statsDelta_GunReflect_ADD;
+
+                gun.projectielSimulatonSpeed /= statsDelta_GunProjSim_MUL;
+
+                gun.projectileSpeed /= statsDelta_GunProjSpeed_MUL;
+
+                playerHas_GlyphCAD = false;
+
+
+                statsDelta_GunNumProjectile_ADD = 0;
+                statsDelta_GunDamage_MUL = 1.0f;
+
+                statsDelta_GunProjSpeed_MUL = 1.0f;
+                statsDelta_GunProjSim_MUL = 1.0f;
+                statsDelta_GunReflect_ADD = 0;
+
+                statsDelta_BlockCdAdd_ADD = 0.0f;
+                statsDelta_BlockCdMul_ADD = 0.0f;
+                statsDelta_BlockCdMul_MUL = 1.0f;
+
+                statsDelta_GunDrag_MUL = 1.0f;
+                statsDelta_GunLifetime_MUL = 1.0f;
+            }
+
+            Miscs.Log("[GearUp] UndoStatsChange() applied");
         }
+
+        // private void RestorePlayerStats()
+        // {
+        //     block.cdAdd = prevBlockCdAdd;
+        //     block.cdMultiplier = prevBlockCdMul;
+        // 
+        //     // gun.damage = prevGunDamageMul;
+        //     gun.projectielSimulatonSpeed = prevGunProjSim;
+        //     gun.projectileSpeed = prevGunProjSpeed;
+        //     gun.reflects = prevGunReflect;
+        // 
+        //     gunAmmo.maxAmmo = prevGunMaxAmmo;
+        //     gun.numberOfProjectiles = prevGunNumProjectile;
+        //     gun.timeBetweenBullets = prevGunBurstTime;
+        //     gun.damage = prevGunDamage;
+        // 
+        //     gun.drag = prevGunDrag;
+        //     gun.destroyBulletAfter = prevGunLifetime;
+        // 
+        //     // gun.numberOfProjectiles = prevGunProjCount;
+        // }
 
         internal void ApplyGlyphCADModuleEffect()
         {
+            if (playerHas_GlyphCAD)
+            {
+                Miscs.LogWarn("[GearUp] ApplyGlyphCADModuleEffect() is called more than once!");
+                return;
+            }
+            playerHas_GlyphCAD = true;
+
             int glyphDivination = stats.GetGearData().glyphDivination;
             int glyphGeometric = stats.GetGearData().glyphGeometric;
             // int glyphInfluence      = this.stats.GetGearData().glyphInfluence;
@@ -197,63 +300,110 @@ namespace GearUpCards.MonoBehaviours
             int glyphTime = stats.GetGearData().glyphTime;
             int glyphReplication = stats.GetGearData().glyphReplication;
 
-            gun.projectileSpeed *= Mathf.Pow(glyphDivinationProjectileSpeed, glyphDivination);
-            gun.projectielSimulatonSpeed *= Mathf.Pow(glyphDivinationProjectileSimSpeed, glyphDivination);
+            // modify and save delta's
 
-            gun.reflects += glyphGeometricGunReflect * glyphGeometric;
+            // Divination Glyph
+            statsDelta_GunProjSpeed_MUL = Mathf.Pow(glyphDivinationProjectileSpeed, glyphDivination);
+            gun.projectileSpeed *= statsDelta_GunProjSpeed_MUL;
 
-            block.cdAdd += glyphMagickFragmentBlockCooldownAdd * magickFragment;
+            statsDelta_GunProjSim_MUL = Mathf.Pow(glyphDivinationProjectileSimSpeed, glyphDivination);
+            gun.projectielSimulatonSpeed *= statsDelta_GunProjSim_MUL;
+
+            // Geometric Glyph
+            statsDelta_GunReflect_ADD = glyphGeometricGunReflect * glyphGeometric;
+            gun.reflects += statsDelta_GunReflect_ADD;
+
+            // Magick Fragment
+            statsDelta_BlockCdAdd_ADD = glyphMagickFragmentBlockCooldownAdd * magickFragment;
+            block.cdAdd += statsDelta_BlockCdAdd_ADD;
+
+            statsDelta_BlockCdMul_ADD = 0.0f;
+            statsDelta_BlockCdMul_MUL = 1.0f;
+
             for (int i = 0; i < magickFragment; i++)
             {
                 if (block.cdMultiplier >= 1.25f)
                 {
-                    block.cdMultiplier -= (1.0f - glyphMagickFragmentBlockCooldownMul);
+                    statsDelta_BlockCdMul_ADD -= (1.0f - glyphMagickFragment_BlockCdMul);
+                    block.cdMultiplier -= (1.0f - glyphMagickFragment_BlockCdMul);
                 }
                 else
                 {
-                    block.cdMultiplier *= glyphMagickFragmentBlockCooldownMul;
+                    statsDelta_BlockCdMul_MUL *= glyphMagickFragment_BlockCdMul;
+                    block.cdMultiplier *= glyphMagickFragment_BlockCdMul;
                 }
             }
 
-            gun.damage *= Mathf.Pow(glyphPotencyDamage, glpyhPotency);
+            // Potency Glyph
+            statsDelta_GunDamage_MUL = Mathf.Pow(glyphPotencyDamage, glpyhPotency);
+            gun.damage *= statsDelta_GunDamage_MUL;
+
+            // Time Glyph
+            statsDelta_GunLifetime_MUL = 1.0f;
+            statsDelta_GunDrag_MUL = 1.0f;
 
             for (int i = 0; i < glyphTime; i++)
             {
                 if (gun.destroyBulletAfter > 0.0f)
                 {
+                    statsDelta_GunLifetime_MUL *= glyphTimeGunLifetimeMul;
                     gun.destroyBulletAfter *= glyphTimeGunLifetimeMul;
                 }
                 if (gun.drag > 0.0f)
                 {
+                    statsDelta_GunDrag_MUL *= glyphTimeGunDragMul;
                     gun.drag *= glyphTimeGunDragMul;
                 }
             }
 
-            gun.numberOfProjectiles += glyphReplication * glyphReplicationProjectiles;
+            // Replication Glyph
+            statsDelta_GunNumProjectile_ADD = glyphReplication * glyphReplicationProjectiles;
+            gun.numberOfProjectiles += statsDelta_GunNumProjectile_ADD;
+
+            Miscs.Log("[GearUp] ApplyGlyphCADModuleEffect() applied");
         }
 
         private void ApplyBulletsDotRar()
         {
+            if (playerHas_BulletRAR)
+            {
+                Miscs.LogWarn("[GearUp] ApplyBulletsDotRar() is called more than once!");
+                return;
+            }
+            playerHas_BulletRAR = true;
+
+            int oldnumProjectile = gun.numberOfProjectiles;
             int newNumProjectile = Mathf.RoundToInt(Mathf.Clamp((float)prevGunNumProjectile / 3.0f, 1.0f, 100.0f));
-            if (newNumProjectile == prevGunNumProjectile) return;
+            if (newNumProjectile == oldnumProjectile) return;
 
             float damageScale = (float)prevGunMaxAmmo / (float)newNumProjectile * 1.7f;
 
-            gunAmmo.maxAmmo = Mathf.RoundToInt(Mathf.Clamp((float)prevGunMaxAmmo / 2.0f, 1.0f, (float)int.MaxValue / 2.0f));
+            // Clamp Gun clip size
+            int newMaxAmmo = Mathf.RoundToInt(Mathf.Clamp((float)prevGunMaxAmmo / 2.0f, 1.0f, (float)int.MaxValue / 2.0f));
+            statsDelta_GunMaxAmmo_ADD_2 = newMaxAmmo - gunAmmo.maxAmmo;
+            gunAmmo.maxAmmo = newMaxAmmo;
+
+            // Scale Gun damage
+            statsDelta_GunDamage_MUL_2 = damageScale;
             gun.damage *= damageScale;
+
+            // Set new num of projectile
+            statsDelta_GunNumProjectile_ADD_2 = newNumProjectile - oldnumProjectile;
             gun.numberOfProjectiles = newNumProjectile;
 
+            // Set new burst cooldown 
             if (prevGunBurstTime > 0.0f)
             {
-                gun.timeBetweenBullets = 0.075f + (prevGunBurstTime / 3.0f);
+                float newGunBurstTime = 0.075f + (prevGunBurstTime / 3.0f);
+                statsDelta_GunBurstTime_ADD_2 = newGunBurstTime - gun.timeBetweenBullets;
+                gun.timeBetweenBullets = newGunBurstTime;
             }
+
+            Miscs.Log("[GearUp] ApplyBulletsDotRar() applied");
         }
 
-        // Event methods
-        private IEnumerator OnPickEnd(IGameModeHandler gm)
+        private void ApplyStatsMods()
         {
-            SavePlayerStats();
-
             if (this.stats.GetGearData().addOnList.Contains(GearUpConstants.AddOnType.cadModuleGlyph))
             {
                 ApplyGlyphCADModuleEffect();
@@ -263,13 +413,22 @@ namespace GearUpCards.MonoBehaviours
             {
                 ApplyBulletsDotRar();
             }
+        }
+
+        // Event methods
+        private IEnumerator OnPickEnd(IGameModeHandler gm)
+        {
+            SavePlayerStats();
+
+            ApplyStatsMods();
 
             yield break;
         }
 
         private IEnumerator OnPickStart(IGameModeHandler gm)
         {
-            RestorePlayerStats();
+            // RestorePlayerStats();
+            UndoStatsChange();
 
             yield break;
         }
@@ -308,7 +467,7 @@ namespace GearUpCards.MonoBehaviours
             GameModeManager.RemoveHook(GameModeHooks.HookPointStart, OnPointStart);
             GameModeManager.RemoveHook(GameModeHooks.HookPointEnd, OnPointEnd);
 
-            GameModeManager.RemoveHook(GameModeHooks.HookPickEnd, OnPickEnd);
+            // GameModeManager.RemoveHook(GameModeHooks.HookPickEnd, OnPickEnd);
             GameModeManager.RemoveHook(GameModeHooks.HookPickStart, OnPickStart);
 
             GameModeManager.RemoveHook(GameModeHooks.HookGameStart, OnRematch);

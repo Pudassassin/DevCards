@@ -17,13 +17,17 @@ namespace GearUpCards.MonoBehaviours
 {
     internal class HollowLifeEffect : MonoBehaviour
     {
-        private const float healthCapFactor = .75f;
-        private const float healingFactor = .85f;
+        private const float hollowHpCapFactor = .70f;
+        private const float hollowHealFactor = .75f;
 
-        private const float healthCullRate = .05f;
+        private const float hyperRegenHpCapFactor = 0.85f;
+
+        // private const float healthCullRate = .05f;
         private const float procTime = .10f;
 
-        internal int stackCount = 0;
+        internal int hollowLifeStack = 0;
+        internal int hyperRegenStack = 0;
+
         internal float healthCapPercentage = 1.0f;
         internal float healingEffectPercentage = 1.0f;
 
@@ -65,10 +69,10 @@ namespace GearUpCards.MonoBehaviours
         public void FixedUpdate()
         {
             // Attempt to make hard HP Capped reliable and at foremost of the updates
-            if (effectEnabled && player.data.HealthPercentage > .80f && stackCount > 0)
+            if (effectEnabled && player.data.HealthPercentage > .80f && hollowLifeStack + hyperRegenStack > 0)
             {
                 // hard cap to prevent [Pristine Perserverence] to become active and mess things up
-                player.data.health = player.data.maxHealth * .80f;
+                player.data.health = player.data.maxHealth * .85f;
                 previousHealth = player.data.health;
             }
         }
@@ -77,7 +81,7 @@ namespace GearUpCards.MonoBehaviours
         {
             timer += TimeHandler.deltaTime;
 
-            if (effectWarmup && stackCount > 0)
+            if (effectWarmup && hollowLifeStack + hyperRegenStack > 0)
             {
                 // resolving with [Pristine Perserverence] at point start
                 this.player.data.health = this.player.data.maxHealth * healthCapPercentage;
@@ -104,7 +108,6 @@ namespace GearUpCards.MonoBehaviours
                 // [?] EXC's [Second Wind] implement it differently and seem to either look for health removal or it tries its best to heal up to said health point
                 // [!] HDC's [Holy Light] will accumulate damage charges on each ebb and flow of health now incurred by [Hollow Life]
                 // [!!] This card is dis-synergistic with [Pristine Perserverance] and any issue with it is considered as edge cases
-                stackCount = stats.GetGearData().hollowLifeStack;
                 CalculateEffects();
 
                 // if (proc_count >= 10)
@@ -114,13 +117,14 @@ namespace GearUpCards.MonoBehaviours
                 //     proc_count = 0;
                 // }
 
-                if ((effectEnabled && stackCount > 0 ) ||
+                if ((effectEnabled && hollowLifeStack + hyperRegenStack > 0 ) ||
                     tempHealthCapFlag)
                 {
                     if (player.data.HealthPercentage > healthCapPercentage)
                     {
-                        float healthCullPercentage = Mathf.Clamp(player.data.HealthPercentage - healthCapPercentage, 0.0f, healthCullRate * (stackCount + 1));
-                        player.data.health -= player.data.maxHealth * healthCullPercentage;
+                        // float healthCullPercentage = Mathf.Clamp(player.data.HealthPercentage - healthCapPercentage, 0.0f, healthCullRate * (hollowLifeStack + 1));
+                        // player.data.health -= player.data.maxHealth * healthCullPercentage;
+                        player.data.health = player.data.maxHealth * healthCapPercentage;
                     }
                 }
 
@@ -131,8 +135,15 @@ namespace GearUpCards.MonoBehaviours
 
         public void CalculateEffects()
         {
-            this.healthCapPercentage = Mathf.Pow(healthCapFactor, stackCount);
-            this.healingEffectPercentage = Mathf.Pow(healingFactor, stackCount);
+            hollowLifeStack = stats.GetGearData().hollowLifeStack;
+            hyperRegenStack = stats.GetGearData().hyperRegenerationStack;
+
+            float healthCapMul = 1.0f;
+            healthCapMul *= Mathf.Pow(hollowHpCapFactor, hollowLifeStack);
+            healthCapMul *= Mathf.Pow(hyperRegenHpCapFactor, hyperRegenStack);
+            this.healthCapPercentage = healthCapMul;
+
+            this.healingEffectPercentage = Mathf.Pow(hollowHealFactor, hollowLifeStack);
 
             if (tempHealthCapFlag)
             {
@@ -184,11 +195,10 @@ namespace GearUpCards.MonoBehaviours
             previousHealth = this.player.data.health;
             previousMaxHealth = this.player.data.maxHealth;
 
-            stackCount = stats.GetGearData().hollowLifeStack;
             CalculateEffects();
 
             effectWarmup = false;
-            if (stackCount > 0)
+            if (hollowLifeStack + hyperRegenStack > 0)
             {
                 effectEnabled = true;
             }
@@ -215,7 +225,7 @@ namespace GearUpCards.MonoBehaviours
             previousHealth = this.player.data.health;
             previousMaxHealth = this.player.data.maxHealth;
 
-            if (stackCount > 0)
+            if (hollowLifeStack + hyperRegenStack > 0)
             {
                 effectEnabled = true;
             }

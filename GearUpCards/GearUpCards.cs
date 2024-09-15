@@ -23,6 +23,7 @@ using UnboundLib.Utils;
 
 using UnboundLib.Extensions;
 using RarityLib.Utils;
+using static GearUpCards.MonoBehaviours.CardDrawTracker;
 
 namespace GearUpCards
 {
@@ -46,9 +47,12 @@ namespace GearUpCards
     {
         public const string ModId = "com.pudassassin.rounds.GearUpCards";
         public const string ModName = "GearUpCards";
-        public const string Version = "0.4.1.5"; //build #254 / Release 0-4-2
+        public const string Version = "0.4.3.7"; //build #267 / Release 0-5-0
 
         public const string ModInitials = "GearUP";
+
+        public const int CardEffectPriority = HarmonyLib.Priority.Last;
+        public const int ExtraCardDrawPriority = HarmonyLib.Priority.Low;
 
         // // card category dicts >>> CardUtils.cs
         // public bool cardCategoryHasRarity = false;
@@ -65,6 +69,8 @@ namespace GearUpCards
             // Use this to call any harmony patch files your mod may have
             var harmony = new Harmony(ModId);
             harmony.PatchAll();
+
+            gameObject.AddComponent<BountyDamageTracker>();
         }
         void Start()
         {
@@ -76,6 +82,12 @@ namespace GearUpCards
             CustomCard.BuildCard<TacticalScannerCard>();
             CustomCard.BuildCard<SizeNormalizerCard>();
             CustomCard.BuildCard<BulletsDotRarCard>();
+
+            CustomCard.BuildCard<MedicCheckup>();
+            CustomCard.BuildCard<HyperRegeneration>();
+
+            // Bounty system card
+            // CustomCard.BuildCard<SheriffCard>();
 
             // Tiberium card series
             CustomCard.BuildCard<TiberiumBulletCard>();
@@ -141,6 +153,8 @@ namespace GearUpCards
             GameModeManager.AddHook(GameModeHooks.HookPlayerPickEnd, OnPlayerPickEnd);
             GameModeManager.AddHook(GameModeHooks.HookPointStart, PointStart);
 
+            GameModeManager.AddHook(GameModeHooks.HookPickEnd, LateExtraDrawEvent, ExtraCardDrawPriority);
+
             // make cards mutually exclusive
             this.ExecuteAfterFrames(10, () =>
             {
@@ -192,8 +206,24 @@ namespace GearUpCards
                 MakeExclusive("Rolling Thunder", "Flak Cannon");
                 MakeExclusive("Splitting Rounds", "Flak Cannon");
 
+                if (GetCardInfo("Pong") != null)
+                {
+                    CardInfo otherCard = GetCardInfo("Pong");
+                    MakeExclusive("Pong", "Flak Cannon");
+                    MakeExclusive("Pong", "Arc of Bullets");
+                    MakeExclusive("Pong", "Parallel Bullets");
+
+                    List<CardCategory> newList = otherCard.categories.ToList();
+                    newList.Add(GearCategory.typeGunMod);
+                    newList.Add(GearCategory.typeUniqueGunSpread);
+                    otherCard.categories = newList.ToArray();
+                }
+
                 // [Flak Cannon] Vs CR
                 MakeExclusive("Hive", "Flak Cannon");
+                
+                // [Flak Cannon] Vs Cards+
+                MakeExclusive("Snake Attack", "Flak Cannon");
 
                 // Vs CC's [Shock Blast]
                 if (GetCardInfo("Shock Blast"))
@@ -319,15 +349,17 @@ namespace GearUpCards
 
             foreach (var player in PlayerManager.instance.players)
             {
-                player.gameObject.AddComponent<CardDrawTracker>();
+                player.gameObject.GetOrAddComponent<CardDrawTracker>();
             }
+
+            GearUpPreRoundEffects.instanceList.Clear();
 
             yield break;
         }
 
         IEnumerator OnPickStart(IGameModeHandler gm)
         {
-            Miscs.Log("[GearUpCard] OnPickStart()");
+            Miscs.Log("\n[GearUpCard] OnPickStart()");
             // CardUtils.SaveCardRarity();
             isCardPickingPhase = true;
 
@@ -336,18 +368,56 @@ namespace GearUpCards
 
         IEnumerator OnPlayerPickEnd(IGameModeHandler gm)
         {
-            Miscs.Log("[GearUpCard] OnPickEnd()");
-            // CardUtils.RestoreGearUpCardRarity();
+            Miscs.Log("\n[GearUpCard] OnPickEnd()");
             CardUtils.RarityDelta.UndoAll();
-            // isCardPickingPhase = false;
 
             yield return new WaitForSecondsRealtime(0.1f);
             if (!isCardExtraDrawPhase && CardDrawTracker.extraDrawPlayerQueue.Count > 0)
             {
                 isCardExtraDrawPhase = true;
                 Miscs.Log("[GearUpCard] Extra draw locked in");
-                // yield return new WaitForSecondsRealtime(0.1f);
-                // CardDrawTracker.extraDrawPlayerQueue.InsertRange(0, PlayerManager.instance.players);
+
+                for (int i = 0; i < CardDrawTracker.extraDrawPlayerQueue.Count; i++)
+                {
+                    Miscs.Log("Checking " + i + " | " + CardDrawTracker.extraDrawPlayerQueue[i]);
+                    CardDrawTracker cardDrawTracker = CardDrawTracker.extraDrawPlayerQueue[i].gameObject.GetComponent<CardDrawTracker>();
+            
+                    if (cardDrawTracker != null)
+                    {
+                        yield return cardDrawTracker.ResolveExtraDraws();
+                        yield return new WaitForSecondsRealtime(0.1f);
+                    }
+                    Miscs.Log("Checked! " + i + " | " + CardDrawTracker.extraDrawPlayerQueue[i]);
+                }
+            
+                CardDrawTracker.extraDrawPlayerQueue.Clear();
+
+                // requeue skipped draws
+                if (CardDrawTracker.extraDrawPlayerQueue_Late.Count > 0)
+                {
+                    foreach (Player item in CardDrawTracker.extraDrawPlayerQueue_Late)
+                    {
+                        CardDrawTracker.extraDrawPlayerQueue.Add(item);
+                    }
+                    CardDrawTracker.extraDrawPlayerQueue_Late.Clear();
+                }
+
+                isCardExtraDrawPhase = false;
+                Miscs.Log("[GearUpCard] Extra draw unlocked");
+            }
+
+            yield break;
+        }
+
+        IEnumerator LateExtraDrawEvent(IGameModeHandler gm)
+        {
+            Miscs.Log("\n[GearUpCard] LateExtraDrawEvent()");
+
+            yield return new WaitForSecondsRealtime(0.1f);
+            if (!isCardExtraDrawPhase && CardDrawTracker.extraDrawPlayerQueue.Count > 0)
+            {
+                isCardExtraDrawPhase = true;
+                Miscs.Log("[GearUpCard] Late Extra draw locked in");
 
                 for (int i = 0; i < CardDrawTracker.extraDrawPlayerQueue.Count; i++)
                 {
@@ -356,7 +426,7 @@ namespace GearUpCards
 
                     if (cardDrawTracker != null)
                     {
-                        yield return cardDrawTracker.ResolveExtraDraws();
+                        yield return cardDrawTracker.ResolveExtraDraws(resolveLateDraw: true);
                         yield return new WaitForSecondsRealtime(0.1f);
                     }
                     Miscs.Log("Checked! " + i + " | " + CardDrawTracker.extraDrawPlayerQueue[i]);
@@ -364,7 +434,11 @@ namespace GearUpCards
 
                 CardDrawTracker.extraDrawPlayerQueue.Clear();
                 isCardExtraDrawPhase = false;
-                Miscs.Log("[GearUpCard] Extra draw unlocked");
+                Miscs.Log("[GearUpCard] Late Extra draw unlocked");
+
+                // post card-phase code here
+                GearUpPreRoundEffects.TriggerStatsMods();
+
             }
 
             yield break;

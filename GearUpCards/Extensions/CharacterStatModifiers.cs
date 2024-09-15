@@ -53,9 +53,14 @@ namespace GearUpCards.Extensions
     public class CharacterStatModifiersGearData
     {
         // card stacks
-        public int hollowLifeStack;
         public int tacticalScannerStack;
         public int shieldBatteryStack;
+
+        public int medicalPartStack;
+        public int medicCheckupStack;
+
+        public int hyperRegenerationStack;
+        public int hollowLifeStack;
 
         public int chompyBulletStack;
         public int tiberiumBulletStack;
@@ -98,9 +103,14 @@ namespace GearUpCards.Extensions
 
         public CharacterStatModifiersGearData()
         {
-            hollowLifeStack = 0;
             tacticalScannerStack = 0;
             shieldBatteryStack = 0;
+
+            medicalPartStack = 0;
+            medicCheckupStack = 0;
+
+            hyperRegenerationStack = 0;
+            hollowLifeStack = 0;
 
             chompyBulletStack = 0;
             tiberiumBulletStack = 0;
@@ -161,9 +171,14 @@ namespace GearUpCards.Extensions
     {
         private static void Prefix(CharacterStatModifiers __instance)
         {
-            __instance.GetGearData().hollowLifeStack = 0;
             __instance.GetGearData().tacticalScannerStack = 0;
             __instance.GetGearData().shieldBatteryStack = 0;
+
+            __instance.GetGearData().medicalPartStack = 0;
+            __instance.GetGearData().medicCheckupStack = 0;
+
+            __instance.GetGearData().hyperRegenerationStack = 0;
+            __instance.GetGearData().hollowLifeStack = 0;
 
             __instance.GetGearData().chompyBulletStack = 0;
             __instance.GetGearData().tiberiumBulletStack = 0;

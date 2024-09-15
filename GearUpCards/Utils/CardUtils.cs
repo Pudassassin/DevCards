@@ -22,6 +22,8 @@ namespace GearUpCards.Utils
         {
             public static CardCategory noType = CustomCardCategories.instance.CardCategory("GearUp_Unspecified");
 
+            public static CardCategory uniqueCardSheriff = CustomCardCategories.instance.CardCategory("GearUp_Unique-Sheriff");
+
             public static CardCategory typeGunMod = CustomCardCategories.instance.CardCategory("GearUp_Gun-Mod");
             public static CardCategory typeBlockMod = CustomCardCategories.instance.CardCategory("GearUp_Block-Mod");
             public static CardCategory typeSizeMod = CustomCardCategories.instance.CardCategory("GearUp_Size-Mod");
@@ -595,15 +597,15 @@ namespace GearUpCards.Utils
             }
         }
 
-        public static void ModifyPerPlayerCardRarity(int playerID)
+        public static void ModifyPerPlayerCardRarity(int pickerID)
         {
             // Miscs.Log($"[GearUp] ModifyPerPlayerCardRarity({playerID})");
             Player targerPlayer = null;
-            if (playerID <= -1) return;
+            if (pickerID <= -1) return;
 
             foreach (Player item in PlayerManager.instance.players)
             {
-                if (item.playerID == playerID)
+                if (item.playerID == pickerID)
                 {
                     targerPlayer = item;
                     break;
@@ -720,6 +722,43 @@ namespace GearUpCards.Utils
             {
                 BatchAdjustCardRarity(cardListVanillaBlocks, mul: (tempModifier * 2.0f) + 3.0f);
                 BatchAdjustCardRarity(cardListModdedBlocks, mul: tempModifier + 1.5f);
+            }
+
+            // [Medic Checkup!] weight based on player's MAX HP
+            tempModifier = 0.0f;
+
+            Player pickerPlayer = PlayerManager.instance.players[pickerID];
+            float maxHP = pickerPlayer.data.maxHealth;
+
+            if (maxHP < 100.0f)
+            {
+                tempModifier += 2.0f * (100.0f - maxHP) / 100.0f;
+            }
+            else if (maxHP > 500.0f)
+            {
+                tempModifier -= (maxHP - 500.0f) / 500.0f;
+            }
+
+            tempModifier = Mathf.Clamp(tempModifier, -0.999f, 3.0f);
+            Miscs.Log("[GearUp] MEDIC!!! weight mul delta : " + tempModifier);
+
+            RarityDelta.AdjustRarityModifier
+            (
+                GetCardInfo(GearUpCards.ModInitials, "Medic!!!"),
+                mul: tempModifier
+            );
+
+            float medicCheckupWeight = RarityUtils.GetCardRarityModifier(GetCardInfo(GearUpCards.ModInitials, "Medic!!!"));
+            Miscs.Log("[GearUp] MEDIC!!! current weight : " + medicCheckupWeight);
+
+            if (medicCheckupWeight < 0)
+            {
+                RarityDelta.AdjustRarityModifier
+                (
+                    GetCardInfo(GearUpCards.ModInitials, "Medic!!!"),
+                    add: 0.0001f - medicCheckupWeight
+                );
+                Miscs.LogWarn("[GearUp] MEDIC!!! weight gone negative!");
             }
         }
 

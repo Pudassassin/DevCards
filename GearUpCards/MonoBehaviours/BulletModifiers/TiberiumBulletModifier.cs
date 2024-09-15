@@ -40,9 +40,9 @@ namespace GearUpCards.MonoBehaviours
                 // float gunDamage         = shooterGun.damage * 55.0f;
                 float gunDamage         = bulletHit.damage;
                 float chronicDmg        = 0.15f * stackCount * gunDamage;
-                float chronicFlat       = 0.35f * stackCount;
+                float chronicFlat       = 1.00f * stackCount;
                 float chronicHpPercent  = 0.001f * stackCount * victimChar.maxHealth;
-                float burstFactor       = 0.25f * stackCount;
+                float burstFactor       = 0.10f * stackCount;
 
                 TiberiumToxicEffect victimToxic = hit.transform.gameObject.GetOrAddComponent<TiberiumToxicEffect>();
 

@@ -27,11 +27,14 @@ namespace GearUpCards.MonoBehaviours
     internal class CardDrawTracker : MonoBehaviour
     {
         public static List<Player> extraDrawPlayerQueue = new List<Player>();
+        public static List<Player> extraDrawPlayerQueue_Late = new List<Player>();
 
         public class ExtraCardDraw
         {
             public int count;
             public int roundDelay;
+            public bool isLateDraw = false;
+
             public List<CardCategory> whitelistTags = new List<CardCategory>();
             public List<CardCategory> whitelistPacks = new List<CardCategory>();
             public List<Rarity> whitelistRarities = new List<Rarity>();
@@ -55,6 +58,8 @@ namespace GearUpCards.MonoBehaviours
                 blacklistCategories.Add(CardUtils.GearCategory.typeBoosterPack);
                 blacklistCategories.Add(CardUtils.GearCategory.tagCardManipulation);
             }
+
+            private ExtraCardDraw() { }
 
             // set extra draws from specific rarities
             public void SetWhitelistRarities(List<Rarity> exactRarities)
@@ -194,10 +199,36 @@ namespace GearUpCards.MonoBehaviours
                     }
                 }
             }
+
+            public ExtraCardDraw Clone()
+            {
+                ExtraCardDraw newCopy = new ExtraCardDraw
+                {
+                    count = count,
+                    roundDelay = roundDelay,
+
+                    whitelistTags = new List<CardCategory>(whitelistTags),
+                    whitelistPacks = new List<CardCategory>(whitelistPacks),
+
+                    whitelistRarities = new List<Rarity>(whitelistRarities),
+                    whitelistRarityCats = new List<CardCategory>(whitelistRarityCats),
+
+                    undoBlacklistCategories = new List<CardCategory>(undoBlacklistCategories),
+                    blacklistCategories = new List<CardCategory>(blacklistCategories),
+
+                    sourceCard = sourceCard,
+                    dequeueAction = dequeueAction
+                };
+
+                return newCopy;
+            }
         }
 
         public List<ExtraCardDraw> extraCardDraws = new List<ExtraCardDraw>();
         public List<ExtraCardDraw> extraCardDrawsDelayed = new List<ExtraCardDraw>();
+
+        public List<ExtraCardDraw> extraCardDraws_Late = new List<ExtraCardDraw>();
+
 
         // internals
         private bool isResolving = false;
@@ -253,7 +284,7 @@ namespace GearUpCards.MonoBehaviours
             }
         }
 
-        public IEnumerator ResolveExtraDraws()
+        public IEnumerator ResolveExtraDraws(bool resolveLateDraw = false)
         {
             Miscs.Log("[GearUpCard] CardDrawTracker.ResolveExtraDraws()");
             if (extraCardDraws.Count <= 0 || isResolving)
@@ -270,6 +301,18 @@ namespace GearUpCards.MonoBehaviours
 
             for (int drawQueue = 0; drawQueue < extraCardDraws.Count; drawQueue++)
             {
+                // Skipping Late extra-draw to be resolved after all other card picks
+                if (!resolveLateDraw && extraCardDraws[drawQueue].isLateDraw)
+                {
+                    if (!extraDrawPlayerQueue_Late.Contains(this.player))
+                    {
+                        extraDrawPlayerQueue_Late.Add(this.player);
+                    }
+
+                    extraCardDraws_Late.Add(extraCardDraws[drawQueue]);
+                    continue;
+                }
+
                 blacklistDelta = new Dictionary<CardCategory, bool>();
 
                 // resolve booster-pack unpacking event
@@ -376,6 +419,16 @@ namespace GearUpCards.MonoBehaviours
             Miscs.Log("[GearUpCard] CardDrawTracker.ResolveExtraDraws() : finishing");
             extraCardDraws.Clear();
 
+            // requeue skipped draws
+            if (extraCardDraws_Late.Count > 0)
+            {
+                foreach (ExtraCardDraw item in extraCardDraws_Late)
+                {
+                    extraCardDraws.Add(item);
+                }
+                extraCardDraws_Late.Clear();
+            }
+
             this.isResolving = false;
             yield break;
         }
@@ -397,9 +450,7 @@ namespace GearUpCards.MonoBehaviours
 
         private IEnumerator OnPointStart(IGameModeHandler gm)
         {
-            // effectEnabled = true;
-            // procTimer = 0.0f;
-
+            // ticking down delayed card draw queue
             foreach (var item in extraCardDrawsDelayed)
             {
                 item.roundDelay -= 1;

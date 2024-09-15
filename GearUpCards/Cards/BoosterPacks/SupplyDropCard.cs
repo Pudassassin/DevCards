@@ -58,9 +58,10 @@ namespace GearUpCards.Cards
                 ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.typeBoosterPack);
                 ModdingUtils.Extensions.CharacterStatModifiersExtension.GetAdditionalData(player.data.stats).blacklistedCategories.Add(GearCategory.tagCardManipulation);
 
-                CardDrawTracker.ExtraCardDraw extraCardDraw = new CardDrawTracker.ExtraCardDraw(3, 1);
+                CardDrawTracker.ExtraCardDraw extraCardDraw = new CardDrawTracker.ExtraCardDraw(2, 1);
                 Rarity rarity = TryQueryRarity("Uncommon", "Uncommon");
                 extraCardDraw.SetWhitelistRarityRange(rarity, includeLower: true);
+                extraCardDraw.isLateDraw = true;
 
                 extraCardDraw.sourceCard = thisCard;
                 extraCardDraw.dequeueAction = (player) =>
@@ -82,7 +83,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "You get to pick <color=green>THREE</color> more <color=#2CADFFff>Uncommon</color> or lower rarity cards in the next draw phase.\n<color=yellow>Only one ongoing supply drop per player at a time.</color>";
+            return "You get to pick <color=green>TWO</color> more <color=#2CADFFff>Uncommon</color> or lower rarity cards in the next draw phase.\n<color=yellow>Only one ongoing supply drop per player at a time.</color>";
         }
         protected override GameObject GetCardArt()
         {
