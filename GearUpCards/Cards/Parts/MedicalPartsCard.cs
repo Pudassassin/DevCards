@@ -26,7 +26,7 @@ namespace GearUpCards.Cards
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            data.maxHealth *= 1.5f;
+            data.maxHealth *= 1.25f;
             data.healthHandler.regeneration += 7.5f;
 
             // GearUpPreRoundEffects mono = player.gameObject.GetOrAddComponent<GearUpPreRoundEffects>();
@@ -60,7 +60,7 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "HP",
-                    amount = "+50%",
+                    amount = "+25%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
@@ -74,7 +74,7 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "Heal Effects",
-                    amount = "+5%",
+                    amount = "+10%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };

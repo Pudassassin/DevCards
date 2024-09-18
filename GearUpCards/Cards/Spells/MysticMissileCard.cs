@@ -10,12 +10,16 @@ using GearUpCards.MonoBehaviours;
 using GearUpCards.Extensions;
 using static GearUpCards.Utils.CardUtils;
 using static GearUpCards.Utils.Miscs;
+using GearUpCards.Utils;
 
 namespace GearUpCards.Cards
 {
     class MysticMissileCard : CustomCard
     {
         public static GameObject ATPEffectPrefab = GearUpCards.ATPBundle.LoadAsset<GameObject>("ATP_Effect_MagicExplosion");
+        public static GameObject ATPEffectEcoMode = GearUpCards.ATPBundle.LoadAsset<GameObject>("ATP_Effect_MagicExplosion_Eco");
+        public static GameObject ATPEffectLiteMode = GearUpCards.ATPBundle.LoadAsset<GameObject>("ATP_Effect_MagicExplosion_Lite");
+
         public static GameObject VFXPrefab = GearUpCards.ATPBundle.LoadAsset<GameObject>("VFX_Part_MagicSpark");
 
         // public static GameObject objectToSpawn = null;
@@ -76,7 +80,11 @@ namespace GearUpCards.Cards
                     objectAddSpawn = Instantiate(VFXPrefab);
                     objectAddSpawn.name = "MysticMissileModifier " + player.playerID;
                     objectAddSpawn.transform.position = new Vector3(10000f, 10000f, 0.0f);
+
                     modifier = objectAddSpawn.AddComponent<MysticMissileModifier>();
+                    SimpleRemoveAfterUnparent remover = objectAddSpawn.AddComponent<SimpleRemoveAfterUnparent>();
+                    remover.enabled = false;
+                    remover.delayTime = 3.0f;
 
                     renderers = objectAddSpawn.GetComponentsInChildren<Renderer>().ToList();
                     foreach (var item in renderers)
@@ -85,34 +93,57 @@ namespace GearUpCards.Cards
                     }
 
                     DontDestroyOnLoad(objectAddSpawn);
+                    if (GearUpCards.ReducedVFX)
+                    {
+                        ParticleSystem.EmissionModule emission;
+
+                        emission = objectAddSpawn.transform.GetChild(0).GetComponent<ParticleSystem>().emission;
+                        emission.rateOverTime = 3.0f;
+
+                        emission = objectAddSpawn.transform.GetChild(1).GetComponent<ParticleSystem>().emission;
+                        emission.rateOverTime = 10.0f;
+
+                        remover.delayTime = 1.0f;
+                    }
 
                     // impact effect on bullet
-                    effectSpawn = Instantiate(ATPEffectPrefab);
+                    if (GearUpCards.ReducedVFX && !GearUpCards.EcoModeVFX)
+                    {
+                        effectSpawn = Instantiate(ATPEffectLiteMode);
+
+                        RemoveAfterSpawn removeSpawn = effectSpawn.AddComponent<RemoveAfterSpawn>();
+                        effectSpawn.AddComponent<SetColorToParticles>();
+                        removeSpawn.timeToRemove = 2.5f;
+                    }
+                    else if (GearUpCards.EcoModeVFX)
+                    {
+                        effectSpawn = Instantiate(ATPEffectEcoMode);
+
+                        RemoveAfterSpawn removeSpawn = effectSpawn.AddComponent<RemoveAfterSpawn>();
+                        removeSpawn.timeToRemove = 1.25f;
+                    }
+                    else
+                    {
+                        effectSpawn = Instantiate(ATPEffectPrefab);
+
+                        RemoveAfterSpawn removeSpawn = effectSpawn.AddComponent<RemoveAfterSpawn>();
+                        effectSpawn.AddComponent<SetColorToParticles>();
+                        removeSpawn.timeToRemove = 5.0f;
+                    }
+
                     effectSpawn.name = "MysticMissileImpact " + player.playerID;
                     effectSpawn.transform.position = new Vector3(10000f, 10000f, 0.0f);
 
-                    RemoveAfterSpawn removeSpawn = effectSpawn.AddComponent<RemoveAfterSpawn>();
-                    effectSpawn.AddComponent<SetColorToParticles>();
-                    removeSpawn.timeToRemove = 5.0f;
-
-                    // RemoveAfterSeconds removeAfterSeconds = effectSpawn.GetOrAddComponent<RemoveAfterSeconds>();
-                    // removeAfterSeconds.seconds = 5.0f;
-                    // removeAfterSeconds.enabled = false;
-
-                    renderers = effectSpawn.GetComponentsInChildren<Renderer>().ToList();
-                    foreach (var item in renderers)
+                    if (!GearUpCards.EcoModeVFX)
                     {
-                        item.sortingLayerName = "MostFront";
+                        renderers = effectSpawn.GetComponentsInChildren<Renderer>().ToList();
+                        foreach (var item in renderers)
+                        {
+                            item.sortingLayerName = "MostFront";
+                        }
                     }
 
                     DontDestroyOnLoad(effectSpawn);
-
-                    // objectToSpawn = new GameObject("MysticMissileModifier", new Type[]
-                    // {
-                    //     typeof(MysticMissileModifier)
-                    // });
-
-                    // modifier.explosionImpact = effectSpawn.GetComponent<Explosion>();
 
                     objectsToSpawn = new ObjectsToSpawn();
                     objectsToSpawn.AddToProjectile = objectAddSpawn;
@@ -122,15 +153,6 @@ namespace GearUpCards.Cards
 
                     objectSpawnDict.Add(player.playerID, objectsToSpawn);
                 }
-                // else
-                // {
-                //     modifier = objectsToSpawn.AddToProjectile.GetComponent<MysticMissileModifier>();
-                // }
-
-                // list.Add(new ObjectsToSpawn
-                // {
-                //     AddToProjectile = objectAddSpawn
-                // });
 
                 list.Add(objectsToSpawn);
                 gun.objectsToSpawn = list.ToArray();

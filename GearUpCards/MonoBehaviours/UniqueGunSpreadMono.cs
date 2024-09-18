@@ -59,7 +59,7 @@ namespace GearUpCards.MonoBehaviours
         internal float parallelWidth = 0.0f;
 
         // Flak Cannon Stat Clamps
-        private const float FlakCannon_minAttackTime = 0.35f;
+        private const float FlakCannon_minAttackTime = 0.15f;
         private const float FlakCannon_maxAttackMul = 1.5f;
 
         public float statsDelta_FlakCannon_AttackTime_ADD = 0.0f;
@@ -1005,7 +1005,7 @@ namespace GearUpCards.MonoBehaviours
                 if (!isDirectlyHit)
                 {
                     isDirectlyHit = true;
-                    timer = delayTime - 0.2f;
+                    timer = delayTime - 0.15f;
                 }
             }
             if (hit.transform == null)

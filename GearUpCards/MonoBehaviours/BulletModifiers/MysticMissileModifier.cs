@@ -8,11 +8,15 @@ using ModdingUtils.Utils;
 using GearUpCards.Extensions;
 using GearUpCards.Utils;
 using GearUpCards.Cards;
+using static GearUpCards.Utils.Miscs;
+using System.Net.Http.Headers;
 
 namespace GearUpCards.MonoBehaviours
 {
     public class MysticMissileModifier : RayHitEffect
     {
+        public static float ecoScaling = 0.75f;
+
         private static float seekAngleBase = 120.0f;
         private static float seekAngleScaling = 30.0f;
 
@@ -112,10 +116,25 @@ namespace GearUpCards.MonoBehaviours
                 transform.GetChild(0).transform.localScale = Vector3.one * Mathf.Clamp(projectileHit.damage * projectileHit.dealDamageMultiplierr / dmgDiv, 0.5f, 25.0f);
                 transform.GetChild(1).transform.localScale = Vector3.one * Mathf.Clamp(projectileHit.damage * projectileHit.dealDamageMultiplierr / dmgDiv, 1.0f, 25.0f) * trailScale;
 
-                MysticMissileCard.objectSpawnDict[shooterPlayer.playerID].effect.transform.localScale = Vector3.one * explosionImpact.range * 0.25f;
+                if (GearUpCards.EcoModeVFX)
+                {
+                    // Miscs.Log("\n\n[GearUp] : MysticMissileMod - DoHitEffect() - Eco Update");
+                    MysticMissileCard.objectSpawnDict[shooterPlayer.playerID].effect.transform.localScale = Vector3.one * explosionImpact.range * ecoScaling;
+
+                    GameObject VFXObject = MysticMissileCard.objectSpawnDict[shooterPlayer.playerID].effect;
+                    GameObject AOEObject = Miscs.GetChildByHierachy(VFXObject, "MagicExplosion_Root\\AoECircle");
+                    SpriteRenderer renderer = AOEObject.GetComponent<SpriteRenderer>();
+                    renderer.color = shooterGun.projectileColor;
+                    renderer.color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, 0.10f);
+                }
+                else
+                {
+                    MysticMissileCard.objectSpawnDict[shooterPlayer.playerID].effect.transform.localScale = Vector3.one * explosionImpact.range * 0.25f;
+
+                    partColorExp.targetColor = shooterGun.projectileColor;
+                }
 
                 partColor.targetColor = shooterGun.projectileColor;
-                partColorExp.targetColor = shooterGun.projectileColor;
 
                 if (tickTimer >= procTime)
                 {
@@ -248,6 +267,10 @@ namespace GearUpCards.MonoBehaviours
 
         public void Setup()
         {
+            SimpleRemoveAfterUnparent remover = gameObject.GetComponent<SimpleRemoveAfterUnparent>();
+            remover.parent = gameObject.transform.parent.gameObject;
+            remover.enabled = true;
+
             // Miscs.Log("[GearUpCard] Mystic Missle: Setup()");
             projectileHit = gameObject.GetComponentInParent<ProjectileHit>();
             bulletMove = gameObject.GetComponentInParent<MoveTransform>();
@@ -331,8 +354,19 @@ namespace GearUpCards.MonoBehaviours
             partColor = gameObject.GetOrAddComponent<Miscs.SetColorToParticles>();
             partColor.targetColor = shooterGun.projectileColor;
 
-            partColorExp = MysticMissileCard.objectSpawnDict[shooterPlayer.playerID].effect.GetComponent<Miscs.SetColorToParticles>();
-            partColorExp.targetColor = shooterGun.projectileColor;
+            if (GearUpCards.EcoModeVFX)
+            {
+                GameObject VFXObject = MysticMissileCard.objectSpawnDict[shooterPlayer.playerID].effect;
+                GameObject AOEObject = Miscs.GetChildByHierachy(VFXObject, "MagicExplosion_Root\\AoECircle");
+                SpriteRenderer renderer = AOEObject.GetComponent<SpriteRenderer>();
+                renderer.color = shooterGun.projectileColor + new Color(0.0f, 0.0f, 0.0f, 0.15f);
+            }
+            else
+            {
+                partColorExp = MysticMissileCard.objectSpawnDict[shooterPlayer.playerID].effect.GetComponent<Miscs.SetColorToParticles>();
+                partColorExp.targetColor = shooterGun.projectileColor;
+            }
+
 
             // make this resolve first
             projectileHit.effects.Remove(this);
@@ -341,6 +375,8 @@ namespace GearUpCards.MonoBehaviours
 
         public override HasToReturn DoHitEffect(HitInfo hit)
         {
+            Miscs.Log("\n\n[GearUp] : MysticMissileMod - DoHitEffect() - A");
+
             // bool explode = true;
             if (hit.transform == null)
             {
@@ -378,10 +414,12 @@ namespace GearUpCards.MonoBehaviours
                 }
             }
 
+            Miscs.Log("\n\n[GearUp] : MysticMissileMod - DoHitEffect() - B");
             // hit.point += hit.normal * 0.2f;
             transform.position = (Vector3)hit.point + (Vector3)hit.normal * 0.2f;
             syncMono.CallSyncs();
 
+            Miscs.Log("\n\n[GearUp] : MysticMissileMod - DoHitEffect() - C");
             // ...then explode and deal area magic damage
             explosionImpact.damage = projectileHit.damage * (damageFactorBase + damageFactorScaling * ((stackCount - 1) * 2 + glyphPotency));
             explosionImpact.damage *= Mathf.Clamp(currentPower, powerLevelMin, 2.0f);
@@ -395,6 +433,7 @@ namespace GearUpCards.MonoBehaviours
             //     projectileHit.
             // }
 
+            Miscs.Log("\n\n[GearUp] : MysticMissileMod - DoHitEffect() - D");
             bounceCount++;
 
             if (rayHitReflect.reflects <= 1 || dieNextHit)

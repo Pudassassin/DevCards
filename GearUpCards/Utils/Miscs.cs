@@ -158,6 +158,69 @@ namespace GearUpCards.Utils
 				}
             }
         }
+		
+		public class SimpleRemoveAfterUnparent : MonoBehaviour
+		{
+			public GameObject parent = null;
+			public bool triggered = false;
+
+			public float delayTime = 3.0f;
+			public float timer = 0.0f;
+
+			void Start ()
+			{
+				if (parent == null)
+				{
+					parent = transform.parent.gameObject;
+				}
+			}
+
+			void Update ()
+			{
+                if (parent == null)
+                {
+                    triggered = true;
+                }
+
+                if (triggered)
+				{
+					timer += TimeHandler.deltaTime;
+					if (timer >= delayTime)
+					{
+						Destroy(gameObject);
+					}
+				}
+			}
+		}
+
+		// Get GameObject's child by hierachy path
+		public static GameObject GetChildByHierachy(GameObject queryFrom, string path)
+		{
+			List<string> accessList = StringSplit(path, '\\');
+			Transform result = queryFrom.transform;
+
+			foreach (string access in accessList)
+			{
+				bool success = false;
+
+				for (int i = 0; i < result.childCount; i++)
+				{
+					if (result.GetChild(i).name.Equals(access))
+					{
+						result = result.GetChild(i);
+						success = true;
+						break;
+					}
+				}
+
+				if (!success)
+				{
+					break;
+				}
+			}
+
+			return result.gameObject;
+		}
 
 		// String Utils
 		public static List<string> StringSplit(string input, char splitAt)

@@ -47,7 +47,7 @@ namespace GearUpCards
     {
         public const string ModId = "com.pudassassin.rounds.GearUpCards";
         public const string ModName = "GearUpCards";
-        public const string Version = "0.4.3.7"; //build #267 / Release 0-5-0
+        public const string Version = "0.4.3.12"; //build #271 / Release 0-5-0
 
         public const string ModInitials = "GearUP";
 
@@ -63,6 +63,64 @@ namespace GearUpCards
         public static bool isCardPickingPhase = false;
         public static bool isCardExtraDrawPhase = false;
         static int lastPickerID = -1;
+
+        // ========================================
+        public const string CompatibilityModName = "GearUpCards";
+
+        internal static string ConfigKey(string name)
+        {
+            return $"{CompatibilityModName}_{name.ToLower()}";
+        }
+        internal static bool GetBool(string name, bool defaultValue = false)
+        {
+            return PlayerPrefs.GetInt(ConfigKey(name), defaultValue ? 1 : 0) == 1;
+        }
+        internal static void SetBool(string name, bool value)
+        {
+            PlayerPrefs.SetInt(ConfigKey(name), value ? 1 : 0);
+        }
+        internal static int GetInt(string name, int defaultValue = 0)
+        {
+            return PlayerPrefs.GetInt(ConfigKey(name), defaultValue);
+        }
+        internal static void SetInt(string name, int value)
+        {
+            PlayerPrefs.SetInt(ConfigKey(name), value);
+        }
+        internal static float GetFloat(string name, float defaultValue = 0)
+        {
+            return PlayerPrefs.GetFloat(ConfigKey(name), defaultValue);
+        }
+        internal static void SetFloat(string name, float value)
+        {
+            PlayerPrefs.SetFloat(ConfigKey(name), value);
+        }
+
+
+        public static bool ReducedVFX
+        {
+            get
+            {
+                return GetBool("ReduceVFX", true);
+            }
+            set
+            {
+                SetBool("ReduceVFX", value);
+            }
+        }
+        public static bool EcoModeVFX
+        {
+            get
+            {
+                return GetBool("EcoModeVFX", true);
+            }
+            set
+            {
+                SetBool("EcoModeVFX", value);
+            }
+        }
+
+        // ========================================
 
         void Awake()
         {
@@ -345,7 +403,13 @@ namespace GearUpCards
             });
             cardCategoryHasRarity = true;
 
-            // MysticMissileCard.CleanUp();
+            // MysticMissileCard origin object Clean Up
+            foreach (var item in MysticMissileCard.objectSpawnDict.Values)
+            {
+                Destroy(item.effect);
+                Destroy(item.AddToProjectile);
+            }
+            MysticMissileCard.objectSpawnDict.Clear();
 
             foreach (var player in PlayerManager.instance.players)
             {

@@ -41,7 +41,7 @@ namespace GearUpCards.Patches
             healMuliplier *= Mathf.Pow(0.90f, medicCheckupStack);
 
             int medicalPartStack = stats.GetGearData().medicalPartStack;
-            healMuliplier *= Mathf.Pow(1.05f, medicalPartStack);
+            healMuliplier *= Mathf.Pow(1.10f, medicalPartStack);
 
             return healMuliplier;
         }
