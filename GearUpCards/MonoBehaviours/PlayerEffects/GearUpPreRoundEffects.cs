@@ -37,7 +37,7 @@ namespace GearUpCards.MonoBehaviours
         private const float glyphMagickFragmentBlockCooldownAdd = -0.1f;
         private const float glyphMagickFragment_BlockCdMul = 0.75f;
 
-        private const float glyphPotencyDamage = 1.40f;
+        private const float glyphPotencyDamage = 1.35f;
 
         private const float glyphTimeGunDragMul = 0.80f;
         private const float glyphTimeGunLifetimeMul = 1.35f;

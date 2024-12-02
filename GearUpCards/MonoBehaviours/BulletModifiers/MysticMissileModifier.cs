@@ -32,8 +32,8 @@ namespace GearUpCards.MonoBehaviours
         private static float homingRangeBase = 30.0f;
         private static float homingRangeScaling = 5.0f;
 
-        private static float explosionForceBase = 9000.0f;
-        private static float explosionForceScaling = 4500.0f;
+        private static float explosionForceBase = 4000.0f;
+        private static float explosionForceScaling = 2000.0f;
 
         private static float explosionRadiusBase = 4.5f;
         private static float explosionRadiusScaling = 1.5f;
@@ -126,6 +126,11 @@ namespace GearUpCards.MonoBehaviours
                     SpriteRenderer renderer = AOEObject.GetComponent<SpriteRenderer>();
                     renderer.color = shooterGun.projectileColor;
                     renderer.color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, 0.10f);
+
+                    AOEObject = Miscs.GetChildByHierachy(VFXObject, "MagicExplosion_Root\\ShockCircle");
+                    renderer = AOEObject.GetComponent<SpriteRenderer>();
+                    renderer.color = shooterGun.projectileColor;
+                    renderer.color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, 1.0f);
                 }
                 else
                 {
@@ -375,7 +380,7 @@ namespace GearUpCards.MonoBehaviours
 
         public override HasToReturn DoHitEffect(HitInfo hit)
         {
-            Miscs.Log("\n\n[GearUp] : MysticMissileMod - DoHitEffect() - A");
+            // Miscs.Log("\n\n[GearUp] : MysticMissileMod - DoHitEffect() - A");
 
             // bool explode = true;
             if (hit.transform == null)
@@ -414,12 +419,12 @@ namespace GearUpCards.MonoBehaviours
                 }
             }
 
-            Miscs.Log("\n\n[GearUp] : MysticMissileMod - DoHitEffect() - B");
+            // Miscs.Log("\n\n[GearUp] : MysticMissileMod - DoHitEffect() - B");
             // hit.point += hit.normal * 0.2f;
             transform.position = (Vector3)hit.point + (Vector3)hit.normal * 0.2f;
             syncMono.CallSyncs();
 
-            Miscs.Log("\n\n[GearUp] : MysticMissileMod - DoHitEffect() - C");
+            // Miscs.Log("\n\n[GearUp] : MysticMissileMod - DoHitEffect() - C");
             // ...then explode and deal area magic damage
             explosionImpact.damage = projectileHit.damage * (damageFactorBase + damageFactorScaling * ((stackCount - 1) * 2 + glyphPotency));
             explosionImpact.damage *= Mathf.Clamp(currentPower, powerLevelMin, 2.0f);
@@ -433,7 +438,7 @@ namespace GearUpCards.MonoBehaviours
             //     projectileHit.
             // }
 
-            Miscs.Log("\n\n[GearUp] : MysticMissileMod - DoHitEffect() - D");
+            // Miscs.Log("\n\n[GearUp] : MysticMissileMod - DoHitEffect() - D");
             bounceCount++;
 
             if (rayHitReflect.reflects <= 1 || dieNextHit)

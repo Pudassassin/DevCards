@@ -15,7 +15,7 @@ using static GearUpCards.Utils.CardUtils;
 
 namespace GearUpCards.Cards
 {
-    class TacticalScannerCard : CustomCard
+    class DesolationCard : CustomCard
     {
         public override void SetupCard(CardInfo cardInfo, Gun gun, ApplyCardStats cardStats, CharacterStatModifiers statModifiers, Block block)
         {
@@ -26,12 +26,11 @@ namespace GearUpCards.Cards
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            block.cdAdd += 0.25f;
-            player.gameObject.GetOrAddComponent<TacticalScannerEffect>();
-            characterStats.GetGearData().tacticalScannerStack += 1;
+            block.cdAdd += 1.0f;
+            player.gameObject.GetOrAddComponent<DesolationEffect>();
+            characterStats.GetGearData().desolationStack += 1;
 
-            CooldownUIMono cooldownUI = player.gameObject.GetOrAddComponent<CooldownUIMono>();
-            // cooldownUI.FetchAbilities();
+            // CooldownUIMono cooldownUI = player.gameObject.GetOrAddComponent<CooldownUIMono>();
         }
         public override void OnRemoveCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
@@ -40,15 +39,16 @@ namespace GearUpCards.Cards
         }
         protected override string GetTitle()
         {
-            return "Tactical Scanner";
+            return "Desolation";
         }
         protected override string GetDescription()
         {
-            return "Blocking temporarily amplify Heal/Dmg taken and shorten enemy's Decay time.";
+            return "Blocking temporarily strip away enemy block's invulnerability!";
         }
         protected override GameObject GetCardArt()
         {
-            return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_TacticalScanner");
+            return null;
+            // return GearUpCards.CardArtBundle.LoadAsset<GameObject>("C_TacticalScanner");
         }
         protected override CardInfo.Rarity GetRarity()
         {
@@ -58,32 +58,25 @@ namespace GearUpCards.Cards
         {
             return new CardInfoStat[]
             {
-                // new CardInfoStat()
-                // {
-                //     positive = true,
-                //     stat = "DMG/Heal AMP",
-                //     amount = "+50%",
-                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                // },
-                // new CardInfoStat()
-                // {
-                //     positive = true,
-                //     stat = "Duration",
-                //     amount = "6s",
-                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                // },
+                new CardInfoStat()
+                {
+                    positive = true,
+                    stat = "Duration",
+                    amount = "3s",
+                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "Block CD",
-                    amount = "+0.25s",
+                    amount = "+1s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "Gear CD",
-                    amount = "9s",
+                    amount = "6s",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 }
             };

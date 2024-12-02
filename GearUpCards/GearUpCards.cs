@@ -47,7 +47,7 @@ namespace GearUpCards
     {
         public const string ModId = "com.pudassassin.rounds.GearUpCards";
         public const string ModName = "GearUpCards";
-        public const string Version = "0.4.3.12"; //build #271 / Release 0-5-0
+        public const string Version = "0.4.3.19"; //build #278 / Release 0-5-0
 
         public const string ModInitials = "GearUP";
 
@@ -140,6 +140,7 @@ namespace GearUpCards
             CustomCard.BuildCard<TacticalScannerCard>();
             CustomCard.BuildCard<SizeNormalizerCard>();
             CustomCard.BuildCard<BulletsDotRarCard>();
+            CustomCard.BuildCard<DesolationCard>();
 
             CustomCard.BuildCard<MedicCheckup>();
             CustomCard.BuildCard<HyperRegeneration>();
@@ -290,6 +291,20 @@ namespace GearUpCards
                     MakeExclusive("Shock Blast", "Flak Cannon");
                     MakeExclusive("Shock Blast", "Arc of Bullets");
                     MakeExclusive("Shock Blast", "Parallel Bullets");
+
+                    List<CardCategory> newList = otherCard.categories.ToList();
+                    newList.Add(GearCategory.typeGunMod);
+                    newList.Add(GearCategory.typeUniqueGunSpread);
+                    otherCard.categories = newList.ToArray();
+                }
+
+                // Vs RSCards & Classes
+                if (GetCardInfo("Mirror Mage"))
+                {
+                    CardInfo otherCard = GetCardInfo("Mirror Mage");
+                    MakeExclusive("Mirror Mage", "Flak Cannon");
+                    MakeExclusive("Mirror Mage", "Arc of Bullets");
+                    MakeExclusive("Mirror Mage", "Parallel Bullets");
 
                     List<CardCategory> newList = otherCard.categories.ToList();
                     newList.Add(GearCategory.typeGunMod);

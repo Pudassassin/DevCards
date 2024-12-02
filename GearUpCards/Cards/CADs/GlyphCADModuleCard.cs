@@ -42,6 +42,9 @@ namespace GearUpCards.Cards
             CardDrawTracker.ExtraCardDraw extraCardDraw = new CardDrawTracker.ExtraCardDraw(1);
             extraCardDraw.SetWhitelistGearUpCard(new List<CardCategory> { GearCategory.typeGlyph });
 
+            Rarity rarity = CardUtils.TryQueryRarity("Uncommon", "Uncommon");
+            extraCardDraw.SetWhitelistRarityRange(rarity, includeLower: true);
+
             extraCardDraw.sourceCard = GetCardInfo("GearUP@Glyph CAD Module");
 
             cardDrawTracker.QueueExtraDraw(extraCardDraw);
@@ -57,7 +60,7 @@ namespace GearUpCards.Cards
         }
         protected override string GetDescription()
         {
-            return "Glyphs give <color=green>TWICE</color> the effect to your gun and block.\nBoost the chance of finding Spell and even more Glyphs.";
+            return "Glyphs give <color=green>TWICE</color> the effect to your gun and block and let you find Glyphs easier.\nPick <color=green>a free</color> <color=#2CADFFff>Uncommon</color> or lower Glyph.";
         }
         protected override GameObject GetCardArt()
         {
@@ -85,13 +88,13 @@ namespace GearUpCards.Cards
                 //     amount = "+60 deg",
                 //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 // },
-                new CardInfoStat()
-                {
-                    positive = true,
-                    stat = "Glyph",
-                    amount = "+1",
-                    simepleAmount = CardInfoStat.SimpleAmount.notAssigned
-                }
+                // new CardInfoStat()
+                // {
+                //     positive = true,
+                //     stat = "Glyph",
+                //     amount = "+1",
+                //     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
+                // }
             };
         }
         protected override CardThemeColor.CardThemeColorType GetTheme()

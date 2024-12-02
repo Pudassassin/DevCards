@@ -26,8 +26,8 @@ namespace GearUpCards.Cards
         }
         public override void OnAddCard(Player player, Gun gun, GunAmmo gunAmmo, CharacterData data, HealthHandler health, Gravity gravity, Block block, CharacterStatModifiers characterStats)
         {
-            gun.damage *= 1.65f;
-            data.maxHealth *= 0.85f;
+            gun.damage *= 1.50f;
+            data.maxHealth *= 0.90f;
 
             characterStats.GetGearData().glyphPotency += 1;
         }
@@ -59,14 +59,14 @@ namespace GearUpCards.Cards
                 {
                     positive = true,
                     stat = "Bullet DMG",
-                    amount = "+65%",
+                    amount = "+50%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()
                 {
                     positive = false,
                     stat = "Health",
-                    amount = "-15%",
+                    amount = "-10%",
                     simepleAmount = CardInfoStat.SimpleAmount.notAssigned
                 },
                 new CardInfoStat()

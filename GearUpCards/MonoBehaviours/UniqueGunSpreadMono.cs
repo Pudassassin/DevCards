@@ -495,7 +495,10 @@ namespace GearUpCards.MonoBehaviours
 
             // newSpreadGun.destroyBulletAfter = 0.0f;
 
-            // fragmentation stats (Big sharpnel: has effects, less projectile)
+            //******//
+            //fragmentation stats (Big sharpnel: has effects, less projectile)
+            //******//
+
             //Miscs.Log("ApplySpreadFlak() : dummySpreadGun");
             Miscs.CopyGunStatsNoActions(playerOldGun, dummySpreadGun0);
 
@@ -507,8 +510,8 @@ namespace GearUpCards.MonoBehaviours
             // careful with this one!!
             dummySpreadGun0.numberOfProjectiles = 5 + Mathf.RoundToInt(Mathf.Log(playerOldGun.numberOfProjectiles, 2));
 
-            dummySpreadGun0.damage = playerOldGun.damage * 0.65f;
-            dummySpreadGun0.bulletDamageMultiplier = playerOldGun.bulletDamageMultiplier * 0.65f;
+            dummySpreadGun0.damage = playerOldGun.damage * 0.60f;
+            dummySpreadGun0.bulletDamageMultiplier = playerOldGun.bulletDamageMultiplier * 0.60f;
             dummySpreadGun0.percentageDamage = playerOldGun.percentageDamage * 0.2f;
 
             dummySpreadGun0.projectileSpeed = Mathf.Clamp(playerOldGun.projectileSpeed, 0.75f, 25.0f);
@@ -533,8 +536,10 @@ namespace GearUpCards.MonoBehaviours
             // };
             // dummySpreadGun0.ShootPojectileAction = (Action<GameObject>)Delegate.Combine(gun.ShootPojectileAction, bigFlakSplit);
 
-
+            //******//
             // fragmentation stats (Little Shrapnels: only damage, more projectiles)
+            //******//
+
             Miscs.CopyGunStatsNoActions(playerOldGun, dummySpreadGun1);
 
             dummySpreadGun1.attackID = player.playerID;
@@ -544,8 +549,8 @@ namespace GearUpCards.MonoBehaviours
 
             dummySpreadGun1.numberOfProjectiles = Mathf.Clamp(flakProjectileAdd + Mathf.FloorToInt((float)playerOldGun.numberOfProjectiles / 10.0f), flakProjectileAdd, 3);
 
-            dummySpreadGun1.damage = playerOldGun.damage * 0.60f;
-            dummySpreadGun1.bulletDamageMultiplier = playerOldGun.bulletDamageMultiplier * 0.60f;
+            dummySpreadGun1.damage = playerOldGun.damage * 0.50f;
+            dummySpreadGun1.bulletDamageMultiplier = playerOldGun.bulletDamageMultiplier * 0.50f;
 
             dummySpreadGun1.projectileSpeed = Mathf.Clamp(playerOldGun.projectileSpeed * 0.75f, 0.5f, 25.0f);
             dummySpreadGun1.projectielSimulatonSpeed = Mathf.Clamp(playerOldGun.projectielSimulatonSpeed, 0.20f, 10.0f);

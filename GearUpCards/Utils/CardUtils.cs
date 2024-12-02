@@ -487,6 +487,7 @@ namespace GearUpCards.Utils
             "GearUP@Magick Fragments",
             "GearUP@Shield Battery",
             "GearUP@Tactical Scanner",
+            "GearUP@Desolation",
             "GearUP@Rolling Borbwark",
 
             // Willis' Cards Plus - Cards+
@@ -631,8 +632,8 @@ namespace GearUpCards.Utils
             // Miscs.Log("> Glyph base modifier: " + tempModifier);
             if (gearData.addOnList.Contains(GearUpConstants.AddOnType.cadModuleGlyph))
             {
-                tempModifier *= 1.25f;
-                BatchAdjustCardRarity(cardListGlyph, mul: 1.00f);
+                // tempModifier *= 1.25f;
+                BatchAdjustCardRarity(cardListGlyph, mul: 2.00f);
             }
             else
             {

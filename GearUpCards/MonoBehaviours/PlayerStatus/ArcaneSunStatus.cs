@@ -11,10 +11,11 @@ namespace GearUpCards.MonoBehaviours
     internal class ArcaneSunStatus : ReversibleEffect
     {
         private static GameObject vfxSunBurn = GearUpCards.VFXBundle.LoadAsset<GameObject>("VFX_Part_SunBurn");
+        private static float effectSizeScale = 1.1f;
+        private static float particleEmissionScale = 5.0f;
 
         // value is the multiplier to be used multiplicatively
         private float damageMultiplierFactor = 1.0f;
-        private float particleEmissionScale = 2.0f;
 
         // private bool isDecaying = false;
         private float effectCharge = 0.0f;
@@ -86,7 +87,7 @@ namespace GearUpCards.MonoBehaviours
                 emission = sunBurnPart.emission;
             }
 
-            shape.scale = player.transform.localScale * 1.25f;
+            shape.scale = player.transform.localScale * effectSizeScale;
             emission.rateOverTime = effectCharge * particleEmissionScale;
 
             if (effectCharge < 0.0f)
